@@ -297,12 +297,9 @@ section { position: relative; }
    ============================================================ */
 #story {
   padding: 7rem 2.5rem;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4rem;
-  max-width: 1200px;
+  max-width: 800px;
   margin: 0 auto;
-  align-items: center;
+  text-align: center;
 }
 
 .story-body p {
@@ -314,53 +311,13 @@ section { position: relative; }
 }
 .story-body p strong { color: var(--white); font-weight: 500; }
 
-.story-visual {
-  display: flex; justify-content: center; align-items: center;
+/* Gold accent divider above story text */
+.story-accent {
+  width: 60px; height: 2px;
+  background: var(--gold-dim);
+  margin: 1.5rem auto 2rem;
+  border-radius: 1px;
 }
-
-/* Decorative vinyl (bio) */
-.deco-vinyl {
-  width: 280px; height: 280px;
-  border-radius: 50%;
-  position: relative;
-  background: repeating-radial-gradient(
-    circle at 50% 50%,
-    #181818 0px, #181818 3px,
-    #0f0f0f 3px, #0f0f0f 6px,
-    #181818 6px, #181818 8px,
-    #121212 8px, #121212 10px
-  );
-  box-shadow:
-    inset 0 0 40px rgba(0,0,0,0.9),
-    0 0 0 2px #222,
-    0 0 0 5px #111,
-    0 0 30px rgba(0,0,0,0.5);
-}
-.deco-vinyl .deco-label {
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  width: 50%; height: 50%;
-  border-radius: 50%;
-  overflow: hidden;
-  box-shadow: 0 0 20px rgba(0,0,0,0.8);
-  border: 2px solid #1a1a1a;
-}
-.deco-vinyl .deco-label img {
-  width: 100%; height: 100%;
-  object-fit: cover; display: block;
-}
-.deco-vinyl .deco-hole {
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: #000;
-  z-index: 1;
-}
-.deco-vinyl.spin { animation: spinSlow 3s linear infinite; }
-@keyframes spinSlow { to { transform: rotate(360deg); } }
 
 /* ============================================================
    THE SOUND — Player
@@ -396,22 +353,47 @@ section { position: relative; }
   position: relative;
   cursor: pointer;
   transition: transform 0.3s ease;
+  /* Subtle rim highlight */
+  box-shadow:
+    0 0 0 1.5px #333,
+    0 0 0 3px #111,
+    0 6px 25px rgba(0,0,0,0.7);
 }
 .vinyl-disc:hover { transform: scale(1.02); }
+
+/* Light reflection sweep — makes the vinyl look glossy */
+.vinyl-disc::after {
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  background: linear-gradient(
+    135deg,
+    transparent 25%,
+    rgba(255,255,255,0.035) 38%,
+    rgba(255,255,255,0.07) 42%,
+    transparent 52%
+  );
+  pointer-events: none;
+  z-index: 3;
+}
 
 .vinyl-grooves {
   position: absolute; inset: 0;
   border-radius: 50%;
-  background: repeating-radial-gradient(
-    circle at 50% 50%,
-    #181818 0px, #181818 2px,
-    #0e0e0e 2px, #0e0e0e 5px,
-    #181818 5px, #181818 7px
-  );
+  /* More detailed groove bands + subtle color variation */
+  background:
+    repeating-radial-gradient(
+      circle at 50% 50%,
+      #1c1c1c 0px, #1c1c1c 1px,
+      #0e0e0e 1px, #0e0e0e 2.5px,
+      #1a1a1a 2.5px, #1a1a1a 3.5px,
+      #0a0a0a 3.5px, #0a0a0a 5px,
+      #181818 5px, #181818 6px
+    ),
+    conic-gradient(from 45deg, #151515 0%, #222 25%, #151515 50%, #1a1a1a 75%, #151515 100%);
   box-shadow:
-    inset 0 0 25px rgba(0,0,0,0.8),
-    0 0 0 2px #222,
-    0 0 0 4px #111;
+    inset 0 0 35px rgba(0,0,0,0.95),
+    inset 0 0 8px rgba(0,0,0,0.5);
 }
 
 .vinyl-label-ring {
@@ -429,24 +411,6 @@ section { position: relative; }
   object-fit: cover; display: block;
 }
 
-.vinyl-label-text {
-  position: absolute;
-  bottom: 13%;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.55rem;
-  letter-spacing: 2px;
-  color: var(--gold-dim);
-  text-transform: uppercase;
-  font-weight: 500;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
-  white-space: nowrap;
-  z-index: 2;
-  background: rgba(13,11,9,0.7);
-  padding: 1px 8px;
-  border-radius: 2px;
-}
-
 .vinyl-hole {
   position: absolute; top: 50%; left: 50%;
   transform: translate(-50%, -50%);
@@ -455,11 +419,14 @@ section { position: relative; }
   background: #000; z-index: 2;
 }
 
-.vinyl-disc.spin .vinyl-grooves { animation: spinVinyl 2s linear infinite; }
-@keyframes spinVinyl { to { transform: rotate(360deg); } }
-.vinyl-disc.spin .vinyl-label-ring,
-.vinyl-disc.spin .vinyl-label-text,
-.vinyl-disc.spin .vinyl-hole { animation: none; }
+/* Whole disc spins, label ring + text counter-rotate so cover art stays readable */
+.vinyl-disc.spin { animation: spinDisc 2s linear infinite; }
+@keyframes spinDisc { to { transform: rotate(360deg); } }
+
+.vinyl-disc.spin .vinyl-label-ring {
+  animation: spinCounter 2s linear infinite;
+}
+@keyframes spinCounter { to { transform: translate(-50%,-50%) rotate(-360deg); } }
 
 .vinyl-name {
   font-family: 'Bebas Neue', sans-serif;
@@ -832,11 +799,8 @@ body.overdrive .hero-cta:hover { background: var(--gold); color: #000; }
    ============================================================ */
 @media (max-width: 860px) {
   #story {
-    grid-template-columns: 1fr; gap: 2.5rem;
     padding: 4rem 2rem;
   }
-  .story-visual { order: -1; }
-  .deco-vinyl { width: 200px; height: 200px; }
 
   .player-wrap {
     grid-template-columns: 1fr; gap: 2rem;
@@ -929,22 +893,16 @@ body.overdrive .hero-cta:hover { background: var(--gold); color: #000; }
 
 <!-- STORY -->
 <section id="story">
-  <div class="story-visual reveal">
-    <div class="deco-vinyl" id="decoVinyl">
-      <div class="deco-label">
-        <img src="assets/album-cover.jpg" alt="A Night in Neo-City">
-      </div>
-      <div class="deco-hole"></div>
-    </div>
-  </div>
-
   <div class="story-body reveal">
     <p class="tag">// The Story</p>
-    <h2 class="title-md">Stadium<br>Grandeur</h2>
-    <p style="margin-top: 1.5rem;">
+    <h2 class="title-md">Stadium Grandeur</h2>
+    <div class="story-accent"></div>
+    <p>
       <strong>Silicon Riot</strong> is the high-octane fusion of 80s arena rock and cyberpunk aesthetics. 
-      Born in the heart of a digital metropolis, the debut album <strong>A Night in Neo-City</strong> 
-      serves as the ultimate soundtrack for a world of neon lights and high-speed chrome.
+      Born in the heart of a digital metropolis, their debut <strong>A Night in Neo-City</strong> 
+      serves as the ultimate soundtrack for a world of neon lights and high-speed chrome, while 
+      their sophomore album <strong>Neon Ghosts &amp; Iron Dreams</strong> plunges deeper into 
+      the gritty machinery of tomorrow.
     </p>
     <p>
       Fusing glam metal energy with synthwave grit, Silicon Riot brings the spirit of the legends 
@@ -970,12 +928,11 @@ body.overdrive .hero-cta:hover { background: var(--gold); color: #000; }
         <div class="vinyl-label-ring">
           <img src="assets/album-cover.jpg" alt="A Night in Neo-City" id="vinylArt">
         </div>
-        <span class="vinyl-label-text" id="labelText">Side A · Neon Fantasy</span>
         <div class="vinyl-hole"></div>
       </div>
 
       <p class="vinyl-name" id="trackTitle">NEON FANTASY</p>
-      <p class="vinyl-meta"><span id="trackDuration">3:42</span> · from <em>A Night in Neo-City</em></p>
+      <p class="vinyl-meta"><span id="trackDuration">3:42</span> · from <em>A Night in Neo-City</em> · <a href="#" id="trackYTLink" onclick="openYT(event)" style="color:var(--gold-dim);text-decoration:none;font-size:0.7rem;" title="Watch on YouTube"><i class="fa-brands fa-youtube"></i> Video</a></p>
 
       <div class="vinyl-ctrls">
         <button onclick="prevTrack(event)" title="Prev"><i class="fa-solid fa-backward-step"></i></button>
@@ -1182,10 +1139,7 @@ let trackIdx = 0;
 const trackTitle = document.getElementById('trackTitle');
 const trackDur   = document.getElementById('trackDuration');
 const playBtn    = document.getElementById('playBtn');
-const playIcon   = document.getElementById('playIcon');
-const labelText  = document.getElementById('labelText');
 const vDisc      = document.getElementById('vinylDisc');
-const dVinyl     = document.getElementById('decoVinyl');
 const trackList  = document.getElementById('trackList');
 const vinylArt   = document.getElementById('vinylArt');
 
@@ -1193,6 +1147,13 @@ let ytPlayer = null;
 
 function playlist() { return albums[albumIdx].tracks; }
 function currentTrack() { return playlist()[trackIdx]; }
+
+function openYT(e) {
+  e.preventDefault();
+  const t = currentTrack();
+  window.open('https://youtu.be/' + t.yt, '_blank');
+  try { gtag?.('event', 'watch_on_youtube', { event_label: t.title }); } catch(_) {}
+}
 
 // ==========================================
 // 5. YOUTUBE IFRAME API — lazy load
@@ -1230,12 +1191,10 @@ function onYTState(e) {
     playBtn.classList.add('playing');
     playIcon.className = 'fa-solid fa-pause';
     vDisc.classList.add('spin');
-    dVinyl.classList.add('spin');
   } else if (e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.ENDED) {
     playBtn.classList.remove('playing');
     playIcon.className = 'fa-solid fa-play';
     vDisc.classList.remove('spin');
-    dVinyl.classList.remove('spin');
   }
 }
 
@@ -1271,7 +1230,6 @@ function switchAlbum(i) {
   playBtn.classList.remove('playing');
   playIcon.className = 'fa-solid fa-play';
   vDisc.classList.remove('spin');
-  dVinyl.classList.remove('spin');
 
   // Update cover art
   vinylArt.src = albums[i].cover;
@@ -1282,8 +1240,6 @@ function switchAlbum(i) {
     tab.classList.toggle('active', idx === i);
   });
 
-  // Update initial text
-  labelText.innerText = 'Side A · ' + albums[i].name;
   renderTrackList();
   loadTrack(0);
 }
@@ -1296,14 +1252,15 @@ function loadTrack(i) {
   const t = currentTrack();
   trackTitle.innerText = t.title;
   trackDur.innerText   = t.duration;
-  labelText.innerText  = 'Side A · ' + t.title;
   notify('▶ ' + t.title);
+
+  const ytLink = document.getElementById('trackYTLink');
+  if (ytLink) ytLink.href = 'https://youtu.be/' + t.yt;
 
   if (ytPlayer && ytPlayer.stopVideo) ytPlayer.stopVideo();
   playBtn.classList.remove('playing');
   playIcon.className = 'fa-solid fa-play';
   vDisc.classList.remove('spin');
-  dVinyl.classList.remove('spin');
   renderTrackList();
 }
 
