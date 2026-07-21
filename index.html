@@ -783,16 +783,113 @@ footer p {
 }
 
 /* ============================================================
-   OVERDRIVE (Konami)
+   OVERDRIVE (Konami) — ⚡ UNLEASHED
    ============================================================ */
 body.overdrive {
   --gold:      #ff4400;
   --gold-dim:  #cc3300;
   --gold-dim2: #883300;
 }
+
+/* Noise goes WILD */
+body.overdrive .noise {
+  opacity: 0.12;
+  animation: noiseFlicker 0.15s steps(2) infinite;
+}
+@keyframes noiseFlicker {
+  0%   { opacity: 0.10; transform: scale(1.01); }
+  50%  { opacity: 0.18; transform: scale(1); }
+  100% { opacity: 0.10; transform: scale(1.01); }
+}
+
+/* Scanlines punch harder */
+body.overdrive .scanlines {
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0,0,0,0.2) 0px,
+    rgba(0,0,0,0.2) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  background-size: 100% 3px;
+  animation: scanlinePulse 4s ease-in-out infinite;
+}
+@keyframes scanlinePulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.6; }
+}
+
+/* Vinyl goes into OVERDRIVE */
+body.overdrive .vinyl-disc.spin {
+  animation-duration: 0.6s;
+}
+
+/* RGB chromatic aberration on big text */
+body.overdrive .title-lg,
+body.overdrive .title-md,
+body.overdrive .vinyl-name,
+body.overdrive .hero-logo img {
+  animation: rgbGlitch 0.12s infinite;
+  filter: drop-shadow(3px 0 rgba(255,0,0,0.6)) drop-shadow(-3px 0 rgba(0,255,255,0.6));
+}
+@keyframes rgbGlitch {
+  0%, 100% { transform: translate(0); }
+  20%      { transform: translate(-2px, 1px); }
+  40%      { transform: translate(2px, -1px); }
+  60%      { transform: translate(-1px, -2px); }
+  80%      { transform: translate(1px, 2px); }
+}
+
+/* Player and story section catch fire */
+body.overdrive .vinyl {
+  border-color: var(--gold-dim);
+  box-shadow:
+    0 0 30px rgba(255,68,0,0.25),
+    0 0 60px rgba(255,68,0,0.1),
+    inset 0 0 30px rgba(255,68,0,0.05);
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+body.overdrive .vinyl:hover {
+  box-shadow:
+    0 0 40px rgba(255,68,0,0.4),
+    0 0 80px rgba(255,68,0,0.15),
+    inset 0 0 40px rgba(255,68,0,0.08);
+}
+
+/* Nav glows */
+body.overdrive nav {
+  border-bottom-color: var(--gold-dim);
+  box-shadow: 0 2px 20px rgba(255,68,0,0.15);
+}
+
+/* Fire accent on gamepad icon when active */
+body.overdrive .nav-easter {
+  color: var(--gold) !important;
+  text-shadow: 0 0 15px rgba(255,68,0,0.8), 0 0 30px rgba(255,68,0,0.4);
+  animation: gamepadPulse 1s ease-in-out infinite;
+}
+@keyframes gamepadPulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.2); text-shadow: 0 0 25px rgba(255,68,0,1), 0 0 50px rgba(255,68,0,0.6); }
+}
+
+/* All accent buttons get the heat */
 body.overdrive .crt-btn,
 body.overdrive .hero-cta { border-color: var(--gold-dim); color: var(--gold); }
-body.overdrive .hero-cta:hover { background: var(--gold); color: #000; }
+body.overdrive .hero-cta:hover { background: var(--gold); color: #000; box-shadow: 0 0 30px rgba(255,68,0,0.4); }
+body.overdrive .crt-btn:hover { text-shadow: 0 0 10px rgba(255,68,0,0.6); }
+
+/* Divider glows */
+body.overdrive .divider {
+  border-color: var(--gold-dim);
+  box-shadow: 0 0 20px rgba(255,68,0,0.15);
+}
+
+/* Tracklist active glows red */
+body.overdrive .track-item.active {
+  border-left-color: var(--gold);
+  background: rgba(255,68,0,0.08);
+}
 
 /* ============================================================
    RESPONSIVE
@@ -1350,8 +1447,20 @@ document.addEventListener('keydown', (e) => {
   if (k === t) {
     ki++;
     if (ki === konami.length) {
+      const on = !document.body.classList.contains('overdrive');
       document.body.classList.toggle('overdrive');
-      notify(document.body.classList.contains('overdrive') ? '⚡ OVERDRIVE' : 'OVERDRIVE OFF');
+      if (on) {
+        notify('⚡ OVERDRIVE — SYSTEM OVERLOAD');
+        // Activation flash
+        const flash = document.createElement('div');
+        flash.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#ff4400;pointer-events:none;opacity:0;transition:opacity 0.1s';
+        document.body.appendChild(flash);
+        requestAnimationFrame(() => { flash.style.opacity = '0.4'; });
+        setTimeout(() => { flash.style.opacity = '0'; }, 100);
+        setTimeout(() => flash.remove(), 300);
+      } else {
+        notify('OVERDRIVE OFF');
+      }
       ki = 0;
     }
   } else { ki = 0; }
