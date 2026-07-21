@@ -25,7 +25,7 @@
   <meta name="twitter:description" content="Official site of Silicon Riot. Listen to Neon Fantasy and connect on streaming platforms.">
   <meta name="twitter:image" content="https://silicon-riot.com/assets/cover.jpg">
 
-  <!-- Iconos de Redes Sociales (FontAwesome) -->
+  <!-- FontAwesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   
   <style>
@@ -35,6 +35,13 @@
       --neon-pink: #ff007f;
       --neon-cyan: #00f3ff;
       --bg-dark: #05020a;
+    }
+
+    /* MODO OVERDRIVE (EASTER EGG KONAMI CODE) */
+    body.overdrive {
+      --neon-pink: #ff0000;
+      --neon-cyan: #ff5500;
+      --bg-dark: #100000;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -50,9 +57,9 @@
       overflow: hidden;
       position: relative;
       cursor: pointer;
+      transition: background-color 0.5s ease;
     }
 
-    /* Sol Retrowave */
     .sun {
       position: absolute;
       top: 10%;
@@ -62,9 +69,9 @@
       border-radius: 50%;
       box-shadow: 0 0 40px var(--neon-pink);
       z-index: 1;
+      transition: all 0.5s ease;
     }
 
-    /* Ecualizador Reactivo */
     .equalizer {
       position: absolute;
       bottom: 0;
@@ -89,7 +96,6 @@
       transition: height 0.05s ease;
     }
 
-    /* Tarjeta Central Cyberpunk */
     .container {
       position: relative;
       z-index: 10;
@@ -102,9 +108,9 @@
       backdrop-filter: blur(8px);
       max-width: 90%;
       width: 520px;
+      transition: all 0.5s ease;
     }
 
-    /* Texto con Glitch Effect */
     h1 {
       font-family: 'Press Start 2P', cursive;
       font-size: 1.8rem;
@@ -127,12 +133,13 @@
       letter-spacing: 2px;
       margin-bottom: 1.5rem;
       min-height: 1.2em;
+      cursor: pointer;
     }
 
     .blink { animation: blinker 0.8s infinite; }
     @keyframes blinker { 50% { opacity: 0; } }
 
-    /* Reproductor Cyberpunk */
+    /* REPRODUCTOR CON SELECTOR DE TRACKS */
     .player-box {
       background: rgba(255, 0, 127, 0.1);
       border: 1px dashed var(--neon-pink);
@@ -141,33 +148,40 @@
       margin-bottom: 1.5rem;
     }
 
-    .player-box p {
-      font-size: 0.9rem;
-      color: #ddd;
+    .track-title {
+      font-size: 0.85rem;
+      color: #fff;
       margin-bottom: 0.8rem;
       letter-spacing: 1px;
+      font-weight: 700;
     }
 
-    button {
+    .player-controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
+
+    button.btn-action {
       background: var(--neon-pink);
       color: #fff;
       border: none;
-      padding: 10px 20px;
+      padding: 10px 15px;
       font-family: 'Press Start 2P', cursive;
-      font-size: 0.7rem;
+      font-size: 0.65rem;
       cursor: pointer;
       box-shadow: 0 0 10px var(--neon-pink);
       transition: all 0.2s ease;
       border-radius: 4px;
     }
 
-    button:hover {
+    button.btn-action:hover {
       background: var(--neon-cyan);
       color: #000;
       box-shadow: 0 0 15px var(--neon-cyan);
     }
 
-    /* Control de Volumen */
     .volume-box {
       display: flex;
       align-items: center;
@@ -198,7 +212,6 @@
       box-shadow: 0 0 8px var(--neon-pink);
     }
 
-    /* Links a Redes */
     .links {
       display: flex;
       flex-wrap: wrap;
@@ -242,7 +255,7 @@
       box-shadow: 0 0 15px var(--neon-pink);
     }
 
-    /* Scanlines CRT */
+    /* SCANLINES CRT Y BOTON TOGGLE */
     .scanlines {
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -250,54 +263,189 @@
       background-size: 100% 4px;
       z-index: 20;
       pointer-events: none;
+      display: block;
     }
+
+    .crt-toggle {
+      position: fixed;
+      bottom: 15px;
+      right: 15px;
+      z-index: 30;
+      background: rgba(0, 0, 0, 0.8);
+      border: 1px solid var(--neon-cyan);
+      color: var(--neon-cyan);
+      font-family: 'Press Start 2P', cursive;
+      font-size: 0.5rem;
+      padding: 6px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    /* NOTIFICACIONES DE TERMINAL */
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 40;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .toast {
+      background: rgba(5, 2, 10, 0.95);
+      border: 1px solid var(--neon-cyan);
+      color: var(--neon-cyan);
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding: 10px 15px;
+      border-radius: 4px;
+      box-shadow: 0 0 10px var(--neon-cyan);
+      animation: slideIn 0.3s ease, fadeOut 0.5s ease 2.5s forwards;
+    }
+
+    @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+    @keyframes fadeOut { to { opacity: 0; transform: translateY(-10px); } }
   </style>
 </head>
 <body>
 
   <div class="sun"></div>
-
-  <!-- Contenedor del ecualizador -->
   <div class="equalizer" id="equalizer"></div>
+  <div class="scanlines" id="scanlinesLayer"></div>
+  <div class="toast-container" id="toastContainer"></div>
 
-  <div class="scanlines"></div>
+  <!-- Botón CRT Toggle -->
+  <button class="crt-toggle" onclick="toggleCRT(event)">CRT: ON</button>
 
   <div class="container">
     <h1>SILICON RIOT</h1>
-    <div class="status">
+    <div class="status" onclick="handleStatusClick()">
       <span id="typewriter"></span><span class="blink">_</span>
     </div>
 
-    <!-- Reproductor -->
+    <!-- Reproductor con Mini Discografía -->
     <div class="player-box">
-      <p>▶ TRANSMISSION // NEON FANTASY</p>
-      <button id="playBtn" onclick="toggleAudio(event)">PLAY TRACK</button>
+      <p class="track-title" id="trackTitle">▶ TRACK 1 // NEON FANTASY</p>
+      
+      <div class="player-controls">
+        <button class="btn-action" onclick="prevTrack(event)"><i class="fa-solid fa-backward"></i></button>
+        <button class="btn-action" id="playBtn" onclick="toggleAudio(event)">PLAY</button>
+        <button class="btn-action" onclick="nextTrack(event)"><i class="fa-solid fa-forward"></i></button>
+      </div>
       
       <div class="volume-box">
         <i class="fa-solid fa-volume-low"></i>
-        <!-- Slider seteado por defecto en 0.08 (8%) -->
         <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.08" onclick="event.stopPropagation()" oninput="changeVolume(this.value)">
         <i class="fa-solid fa-volume-high"></i>
       </div>
 
       <audio id="audioTrack" crossorigin="anonymous" loop>
-        <source src="assets/NF.mp3" type="audio/mpeg">
+        <source id="audioSource" src="assets/NF.mp3" type="audio/mpeg">
       </audio>
     </div>
 
-    <!-- Redes -->
+    <!-- Links con Notificación -->
     <div class="links">
-      <a href="https://open.spotify.com/intl-es/album/6wyKTUwsMbpDZLMLvhr3Gm" target="_blank"><i class="fa-brands fa-spotify"></i> SPOTIFY</a>
-      <a href="https://music.apple.com/artist/silicon-riot/1792440306" target="_blank"><i class="fa-brands fa-apple"></i> APPLE MUSIC</a>
-      <a href="https://music.amazon.com/albums/B0GYBYQX85" target="_blank"><i class="fa-brands fa-amazon"></i> AMAZON MUSIC</a>
-      <a href="https://www.youtube.com/@siliconriot80s" target="_blank"><i class="fa-brands fa-youtube"></i> YOUTUBE</a>
-      <a href="https://www.instagram.com/siliconriot80s" target="_blank"><i class="fa-brands fa-instagram"></i> INSTAGRAM</a>
-      <a href="https://beacons.ai/siliconriot" target="_blank" class="beacons-btn"><i class="fa-solid fa-star"></i> ALL LINKS // BEACONS</a>
+      <a href="https://open.spotify.com/intl-es/album/6wyKTUwsMbpDZLMLvhr3Gm" target="_blank" onclick="notify('CONNECTING TO SPOTIFY...')"><i class="fa-brands fa-spotify"></i> SPOTIFY</a>
+      <a href="https://music.apple.com/artist/silicon-riot/1792440306" target="_blank" onclick="notify('REDIRECTING TO APPLE MUSIC...')"><i class="fa-brands fa-apple"></i> APPLE MUSIC</a>
+      <a href="https://music.amazon.com/albums/B0GYBYQX85" target="_blank" onclick="notify('OPENING AMAZON MUSIC...')"><i class="fa-brands fa-amazon"></i> AMAZON MUSIC</a>
+      <a href="https://www.youtube.com/@siliconriot80s" target="_blank" onclick="notify('LAUNCHING YOUTUBE CHANNEL...')"><i class="fa-brands fa-youtube"></i> YOUTUBE</a>
+      <a href="https://www.instagram.com/siliconriot80s" target="_blank" onclick="notify('OPENING INSTAGRAM PROTOCOL...')"><i class="fa-brands fa-instagram"></i> INSTAGRAM</a>
+      <a href="https://beacons.ai/siliconriot" target="_blank" class="beacons-btn" onclick="notify('ACCESSING ALL BEACONS LINKS...')"><i class="fa-solid fa-star"></i> ALL LINKS // BEACONS</a>
     </div>
   </div>
 
   <script>
-    // --- EFECTO MAQUINA DE ESCRIBIR (TYPEWRITER) ---
+    // --- 1. NOTIFICACIONES DE TERMINAL ---
+    function notify(msg) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.innerText = `> ${msg}`;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+
+    // --- 2. MINI DISCOGRAFÍA / PLAYLIST ---
+    const playlist = [
+      { title: "▶ TRACK 1 // NEON FANTASY", file: "assets/NF.mp3" }
+    ];
+    let currentTrackIndex = 0;
+
+    const audio = document.getElementById('audioTrack');
+    const audioSource = document.getElementById('audioSource');
+    const trackTitle = document.getElementById('trackTitle');
+    const btn = document.getElementById('playBtn');
+    audio.volume = 0.08;
+
+    function loadTrack(index) {
+      currentTrackIndex = index;
+      audioSource.src = playlist[index].file;
+      trackTitle.innerText = playlist[index].title;
+      audio.load();
+      if (!audio.paused) audio.play();
+      notify(`LOADED: ${playlist[index].title}`);
+    }
+
+    function prevTrack(e) {
+      if (e) e.stopPropagation();
+      currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length;
+      loadTrack(currentTrackIndex);
+    }
+
+    function nextTrack(e) {
+      if (e) e.stopPropagation();
+      currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
+      loadTrack(currentTrackIndex);
+    }
+
+    // --- 3. TOGGLE CRT (SCANLINES) ---
+    function toggleCRT(e) {
+      if (e) e.stopPropagation();
+      const scanlines = document.getElementById('scanlinesLayer');
+      const btn = e.target;
+      if (scanlines.style.display === 'none') {
+        scanlines.style.display = 'block';
+        btn.innerText = 'CRT: ON';
+        notify('CRT FILTER ENABLED');
+      } else {
+        scanlines.style.display = 'none';
+        btn.innerText = 'CRT: OFF';
+        notify('CRT FILTER DISABLED');
+      }
+    }
+
+    // --- 4. EASTER EGGS (KONAMI CODE + TRIPLE CLICK) ---
+    let clickCount = 0;
+    function handleStatusClick() {
+      clickCount++;
+      if (clickCount === 3) {
+        notify('SECRET PROMPT: ACCESS GRANTED_');
+        alert("SYSTEM CONSOLE v1.0\n-------------------\nBand: Silicon Riot\nStatus: Active\nType 'OVERDRIVE' via Konami Code for secret mode!");
+        clickCount = 0;
+      }
+      setTimeout(() => clickCount = 0, 1000);
+    }
+
+    const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+    let konamiIndex = 0;
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key.toLowerCase() === konamiCode[konamiIndex].toLowerCase()) {
+        konamiIndex++;
+        if (konamiIndex === konamiCode.length) {
+          document.body.classList.toggle('overdrive');
+          notify('OVERDRIVE MODE ACTIVATED! ⚡');
+          konamiIndex = 0;
+        }
+      } else {
+        konamiIndex = 0;
+      }
+    });
+
+    // --- EFECTO TYPEWRITER ---
     const textToType = "SYSTEM INITIALIZING... AUDIO ONLINE";
     const typewriterElement = document.getElementById('typewriter');
     let typeIndex = 0;
@@ -311,7 +459,7 @@
     }
     window.onload = typeWriter;
 
-    // --- GENERAR BARRAS DE ECUALIZADOR ---
+    // --- ECUALIZADOR Y AUDIO ---
     const eq = document.getElementById('equalizer');
     const NUM_BARS = 32;
     const bars = [];
@@ -323,19 +471,11 @@
       bars.push(bar);
     }
 
-    // --- AUDIO Y ECUALIZADOR REACTIVO EN VIVO ---
-    const audio = document.getElementById('audioTrack');
-    const btn = document.getElementById('playBtn');
-    
-    // VOLUMEN INICIAL AL 8%
-    audio.volume = 0.08;
-
     let audioCtx, analyser, source, dataArray;
     let isAudioContextSetup = false;
 
     function setupAudioContext() {
       if (isAudioContextSetup) return;
-      
       const AudioContext = window.AudioContext || window.webkitAudioContext;
       audioCtx = new AudioContext();
       analyser = audioCtx.createAnalyser();
@@ -379,19 +519,18 @@
 
       if (audio.paused) {
         audio.play().then(() => {
-          btn.innerText = "PAUSE TRANSMISSION";
+          btn.innerText = "PAUSE";
           btn.style.background = "var(--neon-cyan)";
           btn.style.color = "#000";
         }).catch(err => console.log("Autoplay bloqueado:", err));
       } else {
         audio.pause();
-        btn.innerText = "PLAY TRACK";
+        btn.innerText = "PLAY";
         btn.style.background = "var(--neon-pink)";
         btn.style.color = "#fff";
       }
     }
 
-    // Auto-arranque al primer clic global
     document.body.addEventListener('click', function startOnFirstClick() {
       if (audio.paused) {
         toggleAudio();
