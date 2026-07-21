@@ -424,6 +424,15 @@ section { position: relative; }
 .vinyl-disc.spin { animation: spinDisc 2s linear infinite; }
 @keyframes spinDisc { to { transform: rotate(360deg); } }
 
+/* Light reflection — subtle shimmer while disc spins */
+.vinyl-disc.spin::after {
+  animation: shimmerMove 3s ease-in-out infinite;
+}
+@keyframes shimmerMove {
+  0%, 100% { transform: rotate(-3deg); }
+  50%      { transform: rotate(3deg); }
+}
+
 .vinyl-name {
   font-family: 'Bebas Neue', sans-serif;
   font-size: 1.6rem;
