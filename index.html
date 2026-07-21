@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SILICON RIOT // Official Site</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@600;700&display=swap');
+
+    :root {
+      --neon-pink: #ff007f;
+      --neon-cyan: #00f3ff;
+      --bg-dark: #05020a;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-dark);
+      color: #fff;
+      font-family: 'Rajdhani', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Sol Retrowave */
+    .sun {
+      position: absolute;
+      top: 12%;
+      width: 180px;
+      height: 180px;
+      background: linear-gradient(#ffdd00, var(--neon-pink));
+      border-radius: 50%;
+      box-shadow: 0 0 40px var(--neon-pink);
+      z-index: 1;
+    }
+
+    /* Ecualizador Continuo (Sin Espacios) */
+    .equalizer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100vw;
+      height: 70px;
+      display: flex;
+      justify-content: flex-start;
+      align-items: flex-end;
+      gap: 0; /* Cero espacio entre barras */
+      z-index: 2;
+      opacity: 0.8;
+    }
+
+    .bar {
+      width: 30px;
+      flex-shrink: 0;
+      background: linear-gradient(to top, var(--neon-cyan), var(--neon-pink));
+      border-radius: 2px 2px 0 0;
+      box-shadow: inset 0 0 4px rgba(255, 255, 255, 0.3);
+      animation: bounce 1.2s ease-in-out infinite alternate;
+    }
+
+    @keyframes bounce {
+      0% { height: 10%; }
+      100% { height: 100%; }
+    }
+
+    /* Tarjeta Central Cyberpunk */
+    .container {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      padding: 2.5rem 2rem;
+      background: rgba(8, 3, 18, 0.88);
+      border: 2px solid var(--neon-cyan);
+      box-shadow: 0 0 25px var(--neon-cyan), inset 0 0 15px rgba(0,243,255,0.2);
+      border-radius: 12px;
+      backdrop-filter: blur(8px);
+      max-width: 90%;
+      width: 480px;
+    }
+
+    /* Texto con Glitch Effect */
+    h1 {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 1.8rem;
+      color: #fff;
+      text-shadow: 3px 3px var(--neon-pink), -2px -2px var(--neon-cyan);
+      margin-bottom: 1.2rem;
+      letter-spacing: 2px;
+      animation: glitch 2.5s infinite;
+    }
+
+    @keyframes glitch {
+      0%, 100% { text-shadow: 3px 3px var(--neon-pink), -2px -2px var(--neon-cyan); }
+      25% { text-shadow: -3px 2px var(--neon-pink), 3px -2px var(--neon-cyan); }
+      50% { text-shadow: 2px -3px var(--neon-cyan), -3px 2px var(--neon-pink); }
+    }
+
+    .status {
+      font-size: 1.1rem;
+      color: var(--neon-cyan);
+      letter-spacing: 2px;
+      margin-bottom: 1.5rem;
+    }
+
+    .blink { animation: blinker 0.8s infinite; }
+    @keyframes blinker { 50% { opacity: 0; } }
+
+    /* Reproductor Cyber Punk */
+    .player-box {
+      background: rgba(255, 0, 127, 0.1);
+      border: 1px dashed var(--neon-pink);
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+    }
+
+    .player-box p {
+      font-size: 0.9rem;
+      color: #ddd;
+      margin-bottom: 0.8rem;
+      letter-spacing: 1px;
+    }
+
+    button {
+      background: var(--neon-pink);
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      font-family: 'Press Start 2P', cursive;
+      font-size: 0.7rem;
+      cursor: pointer;
+      box-shadow: 0 0 10px var(--neon-pink);
+      transition: all 0.2s ease;
+      border-radius: 4px;
+    }
+
+    button:hover {
+      background: var(--neon-cyan);
+      color: #000;
+      box-shadow: 0 0 15px var(--neon-cyan);
+    }
+
+    /* Links a Redes */
+    .links {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .links a {
+      color: #fff;
+      text-decoration: none;
+      border: 1px solid var(--neon-cyan);
+      padding: 6px 12px;
+      font-size: 0.85rem;
+      border-radius: 4px;
+      transition: 0.3s;
+    }
+
+    .links a:hover {
+      background: var(--neon-cyan);
+      color: #000;
+    }
+
+    /* Scanlines CRT */
+    .scanlines {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.35) 50%);
+      background-size: 100% 4px;
+      z-index: 20;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sun"></div>
+
+  <!-- Contenedor dinámico continuo -->
+  <div class="equalizer" id="equalizer"></div>
+
+  <div class="scanlines"></div>
+
+  <div class="container">
+    <h1>SILICON RIOT</h1>
+    <div class="status">
+      SYSTEM INITIALIZING<span class="blink">_</span>
+    </div>
+
+    <div class="player-box">
+      <p>▶ AUDIO TEST // TRANSMISSION</p>
+      <button id="playBtn" onclick="toggleAudio()">PLAY SAMPLE</button>
+      <audio id="audioTrack" loop>
+        <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a73467.mp3?filename=synthwave-80s-110045.mp3" type="audio/mpeg">
+      </audio>
+    </div>
+
+    <div class="links">
+      <a href="#" target="_blank">SPOTIFY</a>
+      <a href="#" target="_blank">INSTAGRAM</a>
+      <a href="#" target="_blank">YOUTUBE</a>
+    </div>
+  </div>
+
+  <script>
+    // Generar barras automáticamente según el ancho exacto de pantalla
+    const eq = document.getElementById('equalizer');
+    const barWidth = 30;
+    const totalBars = Math.ceil(window.innerWidth / barWidth);
+
+    for (let i = 0; i < totalBars; i++) {
+      const bar = document.createElement('div');
+      bar.className = 'bar';
+      bar.style.animationDelay = `${(Math.random() * 1).toFixed(2)}s`;
+      bar.style.animationDuration = `${(0.8 + Math.random() * 0.8).toFixed(2)}s`;
+      eq.appendChild(bar);
+    }
+
+    // Audio Control
+    const audio = document.getElementById('audioTrack');
+    const btn = document.getElementById('playBtn');
+
+    function toggleAudio() {
+      if (audio.paused) {
+        audio.play();
+        btn.innerText = "PAUSE TRANSMISSION";
+        btn.style.background = "var(--neon-cyan)";
+        btn.style.color = "#000";
+      } else {
+        audio.pause();
+        btn.innerText = "PLAY SAMPLE";
+        btn.style.background = "var(--neon-pink)";
+        btn.style.color = "#fff";
+      }
+    }
+  </script>
+</body>
+</html>
