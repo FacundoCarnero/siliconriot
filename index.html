@@ -29,6 +29,7 @@
       align-items: center;
       overflow: hidden;
       position: relative;
+      cursor: pointer;
     }
 
     /* Sol Retrowave */
@@ -223,7 +224,7 @@
     <!-- Reproductor configurado para NF.mp3 -->
     <div class="player-box">
       <p>▶ TRANSMISSION // NEON FANTASY</p>
-      <button id="playBtn" onclick="toggleAudio()">PLAY TRACK</button>
+      <button id="playBtn" onclick="toggleAudio(event)">PLAY TRACK</button>
       <audio id="audioTrack" loop>
         <source src="assets/audio/NF.mp3" type="audio/mpeg">
       </audio>
@@ -241,7 +242,7 @@
   </div>
 
   <script>
-    // Generar barras del ecualizador automáticamente según el ancho de pantalla
+    // Generar barras del ecualizador
     const eq = document.getElementById('equalizer');
     const barWidth = 30;
     const totalBars = Math.ceil(window.innerWidth / barWidth);
@@ -258,12 +259,15 @@
     const audio = document.getElementById('audioTrack');
     const btn = document.getElementById('playBtn');
 
-    function toggleAudio() {
+    function toggleAudio(e) {
+      if (e) e.stopPropagation(); // Evita conflicto con el click global
+      
       if (audio.paused) {
-        audio.play();
-        btn.innerText = "PAUSE TRANSMISSION";
-        btn.style.background = "var(--neon-cyan)";
-        btn.style.color = "#000";
+        audio.play().then(() => {
+          btn.innerText = "PAUSE TRANSMISSION";
+          btn.style.background = "var(--neon-cyan)";
+          btn.style.color = "#000";
+        }).catch(err => console.log("Autoplay bloqueado:", err));
       } else {
         audio.pause();
         btn.innerText = "PLAY TRACK";
@@ -271,6 +275,14 @@
         btn.style.color = "#fff";
       }
     }
+
+    // Auto-reproducción al primer clic del usuario en cualquier parte
+    document.body.addEventListener('click', function startOnFirstClick() {
+      if (audio.paused) {
+        toggleAudio();
+      }
+      document.body.removeEventListener('click', startOnFirstClick);
+    }, { once: true });
   </script>
 </body>
 </html>
