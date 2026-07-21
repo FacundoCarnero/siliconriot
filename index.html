@@ -11,7 +11,7 @@
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://silicon-riot.com/">
 
-  <!-- Open Graph (WhatsApp, Instagram, Facebook, LinkedIn) -->
+  <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://silicon-riot.com/">
   <meta property="og:title" content="SILICON RIOT // Official Site">
@@ -255,6 +255,15 @@
       box-shadow: 0 0 15px var(--neon-pink);
     }
 
+    /* PISTA DEL EASTER EGG */
+    .hint {
+      margin-top: 1.2rem;
+      font-size: 0.65rem;
+      color: #666;
+      letter-spacing: 1px;
+      font-family: 'Press Start 2P', cursive;
+    }
+
     /* SCANLINES CRT Y BOTON TOGGLE */
     .scanlines {
       position: absolute;
@@ -355,6 +364,9 @@
       <a href="https://www.instagram.com/siliconriot80s" target="_blank" onclick="notify('OPENING INSTAGRAM PROTOCOL...')"><i class="fa-brands fa-instagram"></i> INSTAGRAM</a>
       <a href="https://beacons.ai/siliconriot" target="_blank" class="beacons-btn" onclick="notify('ACCESSING ALL BEACONS LINKS...')"><i class="fa-solid fa-star"></i> ALL LINKS // BEACONS</a>
     </div>
+
+    <!-- Indirecta del Easter Egg -->
+    <div class="hint">[ HACK: ↑ ↑ ↓ ↓ ← → ← → B A ]</div>
   </div>
 
   <script>
@@ -423,7 +435,7 @@
       clickCount++;
       if (clickCount === 3) {
         notify('SECRET PROMPT: ACCESS GRANTED_');
-        alert("SYSTEM CONSOLE v1.0\n-------------------\nBand: Silicon Riot\nStatus: Active\nType 'OVERDRIVE' via Konami Code for secret mode!");
+        alert("SYSTEM CONSOLE v1.0\n-------------------\nBand: Silicon Riot\nStatus: Active\nType the classic Konami Code to unlock Overdrive!");
         clickCount = 0;
       }
       setTimeout(() => clickCount = 0, 1000);
