@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SILICON RIOT // Official Site</title>
+  
+  <!-- Iconos de Redes Sociales (FontAwesome) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@600;700&display=swap');
 
@@ -30,7 +34,7 @@
     /* Sol Retrowave */
     .sun {
       position: absolute;
-      top: 12%;
+      top: 10%;
       width: 180px;
       height: 180px;
       background: linear-gradient(#ffdd00, var(--neon-pink));
@@ -39,7 +43,7 @@
       z-index: 1;
     }
 
-    /* Ecualizador Continuo (Sin Espacios) */
+    /* Ecualizador Continuo */
     .equalizer {
       position: absolute;
       bottom: 0;
@@ -49,7 +53,7 @@
       display: flex;
       justify-content: flex-start;
       align-items: flex-end;
-      gap: 0; /* Cero espacio entre barras */
+      gap: 0;
       z-index: 2;
       opacity: 0.8;
     }
@@ -73,14 +77,14 @@
       position: relative;
       z-index: 10;
       text-align: center;
-      padding: 2.5rem 2rem;
+      padding: 2rem 1.5rem;
       background: rgba(8, 3, 18, 0.88);
       border: 2px solid var(--neon-cyan);
       box-shadow: 0 0 25px var(--neon-cyan), inset 0 0 15px rgba(0,243,255,0.2);
       border-radius: 12px;
       backdrop-filter: blur(8px);
       max-width: 90%;
-      width: 480px;
+      width: 520px;
     }
 
     /* Texto con Glitch Effect */
@@ -148,23 +152,46 @@
     /* Links a Redes */
     .links {
       display: flex;
+      flex-wrap: wrap;
       justify-content: center;
-      gap: 12px;
+      gap: 10px;
     }
 
     .links a {
       color: #fff;
       text-decoration: none;
       border: 1px solid var(--neon-cyan);
-      padding: 6px 12px;
+      padding: 8px 12px;
       font-size: 0.85rem;
+      font-weight: 700;
       border-radius: 4px;
       transition: 0.3s;
+      letter-spacing: 1px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px; /* Espacio entre logo y texto */
     }
 
     .links a:hover {
       background: var(--neon-cyan);
       color: #000;
+      box-shadow: 0 0 10px var(--neon-cyan);
+    }
+
+    /* Botón destacado Beacons */
+    .links a.beacons-btn {
+      border-color: var(--neon-pink);
+      color: #fff;
+      background: rgba(255, 0, 127, 0.2);
+      width: 100%;
+      justify-content: center;
+      margin-top: 5px;
+    }
+
+    .links a.beacons-btn:hover {
+      background: var(--neon-pink);
+      color: #fff;
+      box-shadow: 0 0 15px var(--neon-pink);
     }
 
     /* Scanlines CRT */
@@ -201,15 +228,19 @@
       </audio>
     </div>
 
+    <!-- Enlaces directos con Logos de FontAwesome -->
     <div class="links">
-      <a href="#" target="_blank">SPOTIFY</a>
-      <a href="#" target="_blank">INSTAGRAM</a>
-      <a href="#" target="_blank">YOUTUBE</a>
+      <a href="https://open.spotify.com/intl-es/album/6wyKTUwsMbpDZLMLvhr3Gm" target="_blank"><i class="fa-brands fa-spotify"></i> SPOTIFY</a>
+      <a href="https://music.apple.com/ar/album/a-night-in-neo-city/1895532065" target="_blank"><i class="fa-brands fa-apple"></i> APPLE MUSIC</a>
+      <a href="https://music.amazon.com/albums/B0GYBYQX85" target="_blank"><i class="fa-brands fa-amazon"></i> AMAZON MUSIC</a>
+      <a href="https://www.youtube.com/@siliconriot80s" target="_blank"><i class="fa-brands fa-youtube"></i> YOUTUBE</a>
+      <a href="https://www.instagram.com/siliconriot80s" target="_blank"><i class="fa-brands fa-instagram"></i> INSTAGRAM</a>
+      <a href="https://beacons.ai/siliconriot" target="_blank" class="beacons-btn"><i class="fa-solid fa-star"></i> ALL LINKS // BEACONS</a>
     </div>
   </div>
 
   <script>
-    // Generar barras automáticamente según el ancho exacto de pantalla
+    // Generar barras automáticamente según el ancho de pantalla
     const eq = document.getElementById('equalizer');
     const barWidth = 30;
     const totalBars = Math.ceil(window.innerWidth / barWidth);
