@@ -3,552 +3,1428 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <!-- SEO Básico -->
-  <title>SILICON RIOT // Official Site</title>
-  <meta name="description" content="Official site of Silicon Riot. 80s Synth-Pop, Retrowave & Cyberpunk Music. Listen to Neon Fantasy on Spotify, Apple Music, YouTube and more.">
-  <meta name="keywords" content="Silicon Riot, Synthwave, Retrowave, Cyberpunk, Synth-Pop, Neon Fantasy, 80s Music">
+
+  <title>SILICON RIOT</title>
+  <meta name="description" content="Silicon Riot — 80s Synth-Rock from the future. Listen to Neon Fantasy.">
   <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://silicon-riot.com/">
 
-  <!-- Open Graph -->
+  <link rel="canonical" id="canonicalLink" href="">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://silicon-riot.com/">
-  <meta property="og:title" content="SILICON RIOT // Official Site">
-  <meta property="og:description" content="Official site of Silicon Riot. Listen to Neon Fantasy and connect on streaming platforms.">
-  <meta property="og:image" content="https://silicon-riot.com/assets/cover.jpg">
-
-  <!-- Twitter Cards -->
+  <meta property="og:url" id="ogUrl" content="">
+  <meta property="og:title" content="SILICON RIOT">
+  <meta property="og:description" content="80s Synth-Rock from the future.">
+  <meta property="og:image" id="ogImage" content="">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:url" content="https://silicon-riot.com/">
-  <meta name="twitter:title" content="SILICON RIOT // Official Site">
-  <meta name="twitter:description" content="Official site of Silicon Riot. Listen to Neon Fantasy and connect on streaming platforms.">
-  <meta name="twitter:image" content="https://silicon-riot.com/assets/cover.jpg">
+  <meta name="twitter:url" id="twUrl" content="">
+  <meta name="twitter:title" content="SILICON RIOT">
+  <meta name="twitter:description" content="80s Synth-Rock from the future.">
+  <meta name="twitter:image" id="twImage" content="">
 
-  <!-- FontAwesome -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@600;700&display=swap');
 
-    :root {
-      --neon-pink: #ff007f;
-      --neon-cyan: #00f3ff;
-      --bg-dark: #05020a;
-    }
+<style>
+/* ============================================================
+   ROOT — refined palette
+   ============================================================ */
+:root {
+  --black:     #0a0a0a;
+  --black-2:   #111111;
+  --black-3:   #1a1a1a;
+  --gold:      #d4a843;
+  --gold-dim:  #9a7a30;
+  --gold-dim2: #6a5a30;
+  --white:     #f0ede8;
+  --white-dim: #8a8782;
+  --white-dim2:#555350;
+}
 
-    /* MODO OVERDRIVE (EASTER EGG KONAMI CODE) */
-    body.overdrive {
-      --neon-pink: #ff0000;
-      --neon-cyan: #ff5500;
-      --bg-dark: #100000;
-    }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+html {
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: var(--gold-dim) var(--black);
+}
 
-    body {
-      background-color: var(--bg-dark);
-      color: #fff;
-      font-family: 'Rajdhani', sans-serif;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-      position: relative;
-      cursor: pointer;
-      transition: background-color 0.5s ease;
-    }
+body {
+  background: var(--black);
+  color: var(--white);
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
 
-    .sun {
-      position: absolute;
-      top: 10%;
-      width: 180px;
-      height: 180px;
-      background: linear-gradient(#ffdd00, var(--neon-pink));
-      border-radius: 50%;
-      box-shadow: 0 0 40px var(--neon-pink);
-      z-index: 1;
-      transition: all 0.5s ease;
-    }
+/* ============================================================
+   CRT SCANLINES — default ON
+   ============================================================ */
+.scanlines {
+  position: fixed; inset: 0; z-index: 9990;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0,0,0,0.12) 0px,
+    rgba(0,0,0,0.12) 2px,
+    transparent 2px,
+    transparent 4px
+  );
+  background-size: 100% 4px;
+}
+.scanlines.hidden { display: none; }
 
-    .equalizer {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100vw;
-      height: 90px;
-      display: flex;
-      justify-content: space-around;
-      align-items: flex-end;
-      gap: 2px;
-      z-index: 2;
-      opacity: 0.85;
-      padding: 0 5px;
-    }
+.crt-btn {
+  position: fixed; bottom: 16px; right: 16px; z-index: 9999;
+  background: none; border: none;
+  color: var(--white-dim2); font-size: 0.6rem;
+  font-family: 'Inter', sans-serif; letter-spacing: 2px;
+  text-transform: uppercase; cursor: pointer;
+  transition: color 0.3s ease;
+  padding: 4px 8px;
+}
+.crt-btn:hover { color: var(--gold); }
 
-    .bar {
-      flex: 1;
-      height: 4px;
-      background: linear-gradient(to top, var(--neon-cyan), var(--neon-pink));
-      border-radius: 2px 2px 0 0;
-      box-shadow: 0 0 5px var(--neon-cyan);
-      transition: height 0.05s ease;
-    }
+/* ============================================================
+   NOISE
+   ============================================================ */
+.noise {
+  position: fixed; inset: 0; z-index: 9989;
+  pointer-events: none; opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 128px 128px;
+}
 
-    .container {
-      position: relative;
-      z-index: 10;
-      text-align: center;
-      padding: 2rem 1.5rem;
-      background: rgba(8, 3, 18, 0.88);
-      border: 2px solid var(--neon-cyan);
-      box-shadow: 0 0 25px var(--neon-cyan), inset 0 0 15px rgba(0,243,255,0.2);
-      border-radius: 12px;
-      backdrop-filter: blur(8px);
-      max-width: 90%;
-      width: 520px;
-      transition: all 0.5s ease;
-    }
+/* ============================================================
+   TOAST
+   ============================================================ */
+.toast-container {
+  position: fixed; top: 16px; right: 16px; z-index: 10000;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.toast {
+  background: var(--black-2);
+  border-left: 2px solid var(--gold-dim);
+  color: var(--gold); font-size: 0.75rem;
+  padding: 8px 14px; font-family: 'Inter', sans-serif;
+  font-weight: 400; letter-spacing: 0.3px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  animation: slideIn 0.25s ease, fadeOut 0.4s ease 2.5s forwards;
+}
+@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes fadeOut { to { opacity: 0; transform: translateY(-6px); } }
 
-    h1 {
-      font-family: 'Press Start 2P', cursive;
-      font-size: 1.8rem;
-      color: #fff;
-      text-shadow: 3px 3px var(--neon-pink), -2px -2px var(--neon-cyan);
-      margin-bottom: 1.2rem;
-      letter-spacing: 2px;
-      animation: glitch 2.5s infinite;
-    }
+/* ============================================================
+   NAV
+   ============================================================ */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 1rem 2.5rem;
+  transition: background 0.3s ease;
+}
+nav.scrolled { background: rgba(10,10,10,0.85); backdrop-filter: blur(12px); }
 
-    @keyframes glitch {
-      0%, 100% { text-shadow: 3px 3px var(--neon-pink), -2px -2px var(--neon-cyan); }
-      25% { text-shadow: -3px 2px var(--neon-pink), 3px -2px var(--neon-cyan); }
-      50% { text-shadow: 2px -3px var(--neon-cyan), -3px 2px var(--neon-pink); }
-    }
+.nav-logo { height: 28px; width: auto; display: block; opacity: 0.6; transition: opacity 0.3s; }
+.nav-logo:hover { opacity: 1; }
 
-    .status {
-      font-size: 1rem;
-      color: var(--neon-cyan);
-      letter-spacing: 2px;
-      margin-bottom: 1.5rem;
-      min-height: 1.2em;
-      cursor: pointer;
-    }
+nav ul {
+  display: flex; gap: 2rem; list-style: none;
+}
+nav ul a {
+  color: var(--white-dim); text-decoration: none;
+  font-size: 0.7rem; letter-spacing: 3px;
+  text-transform: uppercase; font-weight: 500;
+  transition: color 0.3s ease;
+}
+nav ul a:hover { color: var(--white); }
 
-    .blink { animation: blinker 0.8s infinite; }
-    @keyframes blinker { 50% { opacity: 0; } }
+.nav-easter {
+  color: var(--white-dim2);
+  font-size: 0.7rem;
+  cursor: pointer; list-style: none;
+  transition: all 0.3s;
+  display: flex; align-items: center;
+  opacity: 0.3;
+}
+.nav-easter:hover { opacity: 1; color: var(--gold); }
 
-    /* REPRODUCTOR CON SELECTOR DE TRACKS */
-    .player-box {
-      background: rgba(255, 0, 127, 0.1);
-      border: 1px dashed var(--neon-pink);
-      padding: 1rem;
-      border-radius: 8px;
-      margin-bottom: 1.5rem;
-    }
+.nav-toggle {
+  display: none; background: none; border: none;
+  color: var(--white); font-size: 1.2rem; cursor: pointer;
+}
 
-    .track-title {
-      font-size: 0.85rem;
-      color: #fff;
-      margin-bottom: 0.8rem;
-      letter-spacing: 1px;
-      font-weight: 700;
-    }
+/* ============================================================
+   SECTIONS — shared
+   ============================================================ */
+section { position: relative; }
 
-    .player-controls {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-    }
+.tag {
+  font-size: 0.6rem; letter-spacing: 4px;
+  color: var(--gold-dim); text-transform: uppercase;
+  font-weight: 500; margin-bottom: 0.5rem;
+}
 
-    button.btn-action {
-      background: var(--neon-pink);
-      color: #fff;
-      border: none;
-      padding: 10px 15px;
-      font-family: 'Press Start 2P', cursive;
-      font-size: 0.65rem;
-      cursor: pointer;
-      box-shadow: 0 0 10px var(--neon-pink);
-      transition: all 0.2s ease;
-      border-radius: 4px;
-    }
+.title-lg {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(3.5rem, 10vw, 7rem);
+  line-height: 0.9;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--white);
+}
 
-    button.btn-action:hover {
-      background: var(--neon-cyan);
-      color: #000;
-      box-shadow: 0 0 15px var(--neon-cyan);
-    }
+.title-md {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  line-height: 1;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--white);
+}
 
-    .volume-box {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      margin-top: 1rem;
-      font-size: 0.8rem;
-      color: var(--neon-cyan);
-    }
+.reveal {
+  opacity: 0; transform: translateY(30px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
 
-    .volume-box input[type="range"] {
-      -webkit-appearance: none;
-      width: 120px;
-      height: 6px;
-      background: #222;
-      border: 1px solid var(--neon-cyan);
-      border-radius: 3px;
-      outline: none;
-    }
+.divider {
+  height: 1px; margin: 0 2.5rem;
+  background: linear-gradient(90deg, transparent, var(--gold-dim2), transparent);
+  opacity: 0.3;
+}
 
-    .volume-box input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 14px;
-      height: 14px;
-      background: var(--neon-pink);
-      border-radius: 50%;
-      cursor: pointer;
-      box-shadow: 0 0 8px var(--neon-pink);
-    }
+/* ============================================================
+   HERO — clean, typographic
+   ============================================================ */
+#hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: center;
+  text-align: center;
+  padding: 6rem 2rem 3rem;
+  position: relative;
+}
 
-    .links {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-    }
+#hero::after {
+  content: '';
+  position: absolute; bottom: 0; left: 2.5rem; right: 2.5rem;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim2), transparent);
+  opacity: 0.3;
+}
 
-    .links a {
-      color: #fff;
-      text-decoration: none;
-      border: 1px solid var(--neon-cyan);
-      padding: 8px 12px;
-      font-size: 0.85rem;
-      font-weight: 700;
-      border-radius: 4px;
-      transition: 0.3s;
-      letter-spacing: 1px;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
+.hero-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(4.5rem, 18vw, 12rem);
+  line-height: 0.85;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--white);
+  margin-bottom: 0.3rem;
+}
 
-    .links a:hover {
-      background: var(--neon-cyan);
-      color: #000;
-      box-shadow: 0 0 10px var(--neon-cyan);
-    }
+.hero-title .gold { color: var(--gold); }
 
-    .links a.beacons-btn {
-      border-color: var(--neon-pink);
-      color: #fff;
-      background: rgba(255, 0, 127, 0.2);
-      width: 100%;
-      justify-content: center;
-      margin-top: 5px;
-    }
+.hero-sub {
+  font-size: clamp(0.8rem, 1.5vw, 1rem);
+  color: var(--white-dim);
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  font-weight: 300;
+  margin-bottom: 2rem;
+}
 
-    .links a.beacons-btn:hover {
-      background: var(--neon-pink);
-      color: #fff;
-      box-shadow: 0 0 15px var(--neon-pink);
-    }
+.hero-logo-main {
+  display: block;
+  max-width: 90%;
+  width: clamp(280px, 60vw, 700px);
+  height: auto;
+  margin: 0 auto 1.8rem;
+  opacity: 0.9;
+  filter: drop-shadow(0 0 30px rgba(212,168,67,0.08));
+  transition: opacity 0.4s ease, filter 0.4s ease;
+}
+.hero-logo-main:hover { opacity: 1; filter: drop-shadow(0 0 40px rgba(212,168,67,0.15)); }
 
-    /* PISTA DEL EASTER EGG */
-    .hint {
-      margin-top: 1.2rem;
-      font-size: 0.65rem;
-      color: #666;
-      letter-spacing: 1px;
-      font-family: 'Press Start 2P', cursive;
-    }
+.hero-logos {
+  display: flex; justify-content: center; gap: 2rem;
+  align-items: center; flex-wrap: wrap;
+  margin-bottom: 2.5rem;
+}
+.hero-logos img {
+  height: clamp(50px, 10vw, 100px);
+  width: auto; opacity: 0.5;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  filter: drop-shadow(0 0 10px rgba(212,168,67,0.05));
+}
+.hero-logos img:hover { opacity: 1; transform: scale(1.04); }
 
-    /* SCANLINES CRT Y BOTON TOGGLE */
-    .scanlines {
-      position: absolute;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.35) 50%);
-      background-size: 100% 4px;
-      z-index: 20;
-      pointer-events: none;
-      display: block;
-    }
+.hero-cta {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 0.7rem 2rem;
+  border: 1px solid var(--gold-dim);
+  color: var(--gold);
+  text-decoration: none;
+  font-size: 0.75rem; letter-spacing: 4px;
+  text-transform: uppercase; font-weight: 500;
+  transition: all 0.3s ease;
+}
+.hero-cta:hover {
+  background: var(--gold);
+  color: var(--black);
+}
 
-    .crt-toggle {
-      position: fixed;
-      bottom: 15px;
-      right: 15px;
-      z-index: 30;
-      background: rgba(0, 0, 0, 0.8);
-      border: 1px solid var(--neon-cyan);
-      color: var(--neon-cyan);
-      font-family: 'Press Start 2P', cursive;
-      font-size: 0.5rem;
-      padding: 6px 10px;
-      border-radius: 4px;
-      cursor: pointer;
-    }
+.hero-socials {
+  display: flex; justify-content: center; gap: 1.5rem;
+  margin-top: 2rem;
+}
+.hero-socials a {
+  color: var(--white-dim2);
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+}
+.hero-socials a:hover {
+  color: var(--gold);
+  transform: translateY(-2px);
+}
 
-    /* NOTIFICACIONES DE TERMINAL */
-    .toast-container {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 40;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
+/* ============================================================
+   THE STORY
+   ============================================================ */
+#story {
+  padding: 7rem 2.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  align-items: center;
+}
 
-    .toast {
-      background: rgba(5, 2, 10, 0.95);
-      border: 1px solid var(--neon-cyan);
-      color: var(--neon-cyan);
-      font-family: 'Rajdhani', sans-serif;
-      font-weight: 700;
-      font-size: 0.9rem;
-      padding: 10px 15px;
-      border-radius: 4px;
-      box-shadow: 0 0 10px var(--neon-cyan);
-      animation: slideIn 0.3s ease, fadeOut 0.5s ease 2.5s forwards;
-    }
+.story-body p {
+  color: var(--white-dim);
+  font-size: 0.95rem;
+  line-height: 1.8;
+  margin-bottom: 1rem;
+  font-weight: 300;
+}
+.story-body p strong { color: var(--white); font-weight: 500; }
 
-    @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
-    @keyframes fadeOut { to { opacity: 0; transform: translateY(-10px); } }
-  </style>
+.story-visual {
+  display: flex; justify-content: center; align-items: center;
+}
+
+/* Decorative vinyl (bio) */
+.deco-vinyl {
+  width: 280px; height: 280px;
+  border-radius: 50%;
+  position: relative;
+  background: repeating-radial-gradient(
+    circle at 50% 50%,
+    #181818 0px, #181818 3px,
+    #0f0f0f 3px, #0f0f0f 6px,
+    #181818 6px, #181818 8px,
+    #121212 8px, #121212 10px
+  );
+  box-shadow:
+    inset 0 0 40px rgba(0,0,0,0.9),
+    0 0 0 2px #222,
+    0 0 0 5px #111,
+    0 0 30px rgba(0,0,0,0.5);
+}
+.deco-vinyl .deco-label {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50%; height: 50%;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0,0,0,0.8);
+  border: 2px solid #1a1a1a;
+}
+.deco-vinyl .deco-label img {
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+}
+.deco-vinyl .deco-hole {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #000;
+  z-index: 1;
+}
+.deco-vinyl.spin { animation: spinSlow 3s linear infinite; }
+@keyframes spinSlow { to { transform: rotate(360deg); } }
+
+/* ============================================================
+   THE SOUND — Player
+   ============================================================ */
+#sound {
+  padding: 7rem 2.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.sound-header { margin-bottom: 3rem; }
+
+.player-wrap {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 3rem;
+  align-items: start;
+}
+
+/* Vinyl player */
+.vinyl {
+  background: var(--black-2);
+  border: 1px solid rgba(255,255,255,0.04);
+  padding: 2.5rem;
+  text-align: center;
+  position: relative;
+}
+
+.vinyl-disc {
+  width: 220px; height: 220px;
+  border-radius: 50%;
+  margin: 0 auto 1.5rem;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+.vinyl-disc:hover { transform: scale(1.02); }
+
+.vinyl-grooves {
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  background: repeating-radial-gradient(
+    circle at 50% 50%,
+    #181818 0px, #181818 2px,
+    #0e0e0e 2px, #0e0e0e 5px,
+    #181818 5px, #181818 7px
+  );
+  box-shadow:
+    inset 0 0 25px rgba(0,0,0,0.8),
+    0 0 0 2px #222,
+    0 0 0 4px #111;
+}
+
+.vinyl-label-ring {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 54%; height: 54%;
+  border-radius: 50%;
+  overflow: hidden;
+  z-index: 1;
+  border: 2px solid #1a1a1a;
+  box-shadow: 0 0 15px rgba(0,0,0,0.9);
+}
+.vinyl-label-ring img {
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+}
+
+.vinyl-label-text {
+  position: absolute;
+  bottom: 13%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.55rem;
+  letter-spacing: 2px;
+  color: var(--gold-dim);
+  text-transform: uppercase;
+  font-weight: 500;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+  white-space: nowrap;
+  z-index: 2;
+  background: rgba(13,11,9,0.7);
+  padding: 1px 8px;
+  border-radius: 2px;
+}
+
+.vinyl-hole {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #000; z-index: 2;
+}
+
+.vinyl-disc.spin .vinyl-grooves { animation: spinVinyl 2s linear infinite; }
+@keyframes spinVinyl { to { transform: rotate(360deg); } }
+.vinyl-disc.spin .vinyl-label-ring,
+.vinyl-disc.spin .vinyl-label-text,
+.vinyl-disc.spin .vinyl-hole { animation: none; }
+
+.vinyl-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.6rem;
+  letter-spacing: 2px;
+  color: var(--white);
+  margin-bottom: 0.2rem;
+}
+
+.vinyl-meta {
+  font-size: 0.75rem;
+  color: var(--white-dim);
+  letter-spacing: 1px;
+  font-weight: 300;
+  margin-bottom: 1.2rem;
+}
+
+.vinyl-ctrls {
+  display: flex; justify-content: center; align-items: center;
+  gap: 12px; margin-bottom: 1rem;
+}
+.vinyl-ctrls button {
+  background: none; border: 1px solid var(--white-dim2);
+  color: var(--white-dim); width: 36px; height: 36px;
+  border-radius: 50%; font-size: 0.8rem;
+  cursor: pointer; transition: all 0.25s ease;
+  display: flex; align-items: center; justify-content: center;
+}
+.vinyl-ctrls button:hover {
+  border-color: var(--gold); color: var(--gold);
+  box-shadow: 0 0 12px rgba(212,168,67,0.1);
+}
+.vinyl-ctrls .play-btn {
+  width: 48px; height: 48px; font-size: 1rem;
+  border-width: 2px; border-color: var(--gold-dim);
+  color: var(--gold);
+}
+.vinyl-ctrls .play-btn.playing {
+  background: var(--gold); color: var(--black);
+  border-color: var(--gold);
+}
+
+.vinyl-vol {
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px; color: var(--white-dim2); font-size: 0.7rem;
+  margin-bottom: 1rem;
+}
+.vinyl-vol input[type="range"] {
+  -webkit-appearance: none;
+  width: 100px; height: 2px;
+  background: var(--black-3);
+  border-radius: 1px; outline: none;
+}
+.vinyl-vol input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 10px; height: 10px;
+  background: var(--gold-dim);
+  border-radius: 50%; cursor: pointer;
+}
+.vinyl-vol input[type="range"]::-moz-range-thumb {
+  width: 10px; height: 10px;
+  background: var(--gold-dim);
+  border-radius: 50%; cursor: pointer; border: none;
+}
+
+/* Equalizer */
+.eq {
+  display: flex; align-items: flex-end;
+  justify-content: center; gap: 2px;
+  height: 40px; margin-top: 0.3rem;
+}
+.eq .eq-bar {
+  flex: 1; max-width: 5px;
+  height: 2px; min-height: 2px;
+  background: linear-gradient(to top, var(--gold-dim2), var(--gold));
+  border-radius: 1px 1px 0 0;
+  transition: height 0.04s ease;
+}
+
+/* Tracklist */
+.track-header {
+  font-size: 0.65rem; letter-spacing: 4px;
+  color: var(--gold-dim); text-transform: uppercase;
+  font-weight: 500; margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.album-tabs {
+  display: flex; gap: 2px; margin-bottom: 0.8rem;
+}
+.album-tab {
+  flex: 1;
+  background: none; border: none;
+  color: var(--white-dim2);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.6rem; letter-spacing: 1px;
+  text-transform: uppercase; font-weight: 500;
+  padding: 0.4rem 0.3rem;
+  cursor: pointer;
+  border-bottom: 1px solid var(--black-3);
+  transition: all 0.25s ease;
+}
+.album-tab:hover { color: var(--white-dim); }
+.album-tab.active {
+  color: var(--gold);
+  border-bottom-color: var(--gold-dim);
+}
+
+.track-item {
+  display: flex; align-items: center; gap: 1rem;
+  padding: 0.7rem 1rem;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  margin-bottom: 0.3rem;
+}
+.track-item:hover {
+  border-color: rgba(212,168,67,0.08);
+  background: rgba(255,255,255,0.01);
+}
+.track-item.active {
+  border-color: rgba(212,168,67,0.15);
+  background: rgba(212,168,67,0.03);
+}
+
+.track-idx {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.2rem; color: var(--white-dim2);
+  width: 24px; text-align: right;
+  transition: color 0.3s;
+}
+.track-item.active .track-idx { color: var(--gold); }
+
+.track-name {
+  flex: 1; font-size: 0.85rem;
+  font-weight: 400; letter-spacing: 0.5px;
+}
+
+.track-time {
+  font-size: 0.7rem; color: var(--white-dim2);
+  font-weight: 300; font-variant-numeric: tabular-nums;
+}
+
+.track-yt {
+  color: var(--white-dim2);
+  font-size: 0.75rem;
+  margin-left: 4px;
+  transition: color 0.3s ease;
+  text-decoration: none;
+}
+.track-yt:hover { color: var(--gold); }
+
+.track-icon {
+  color: var(--gold-dim); opacity: 0;
+  font-size: 0.7rem; transition: opacity 0.3s;
+}
+.track-item.active .track-icon,
+.track-item:hover .track-icon { opacity: 1; }
+
+
+/* ============================================================
+   DISCOGRAPHY
+   ============================================================ */
+#discography {
+  padding: 7rem 2.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.discography-header { margin-bottom: 3rem; }
+
+.disco-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+}
+
+.disco-card {
+  background: var(--black-2);
+  border: 1px solid rgba(255,255,255,0.04);
+  padding: 2rem;
+  transition: border-color 0.3s ease;
+}
+.disco-card:hover { border-color: rgba(212,168,67,0.1); }
+
+.disco-cover {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  display: block;
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(255,255,255,0.04);
+}
+
+.disco-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.6rem;
+  letter-spacing: 2px;
+  color: var(--white);
+  margin-bottom: 0.15rem;
+}
+.disco-meta {
+  font-size: 0.7rem;
+  color: var(--white-dim2);
+  letter-spacing: 1px;
+  font-weight: 300;
+  margin-bottom: 1rem;
+}
+
+.disco-tracks {
+  list-style: none;
+  margin-bottom: 1.2rem;
+}
+.disco-tracks li {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.35rem 0;
+  font-size: 0.8rem;
+  color: var(--white-dim);
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  letter-spacing: 0.3px;
+}
+.disco-tracks li:last-child { border-bottom: none; }
+.disco-tracks .track-num {
+  color: var(--white-dim2);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 0.9rem;
+  width: 24px;
+  text-align: right;
+  margin-right: 0.6rem;
+}
+.disco-tracks .track-name { flex: 1; }
+.disco-tracks .track-len {
+  color: var(--white-dim2);
+  font-variant-numeric: tabular-nums;
+}
+
+.disco-links {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.8rem;
+}
+.disco-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid rgba(255,255,255,0.06);
+  color: var(--white-dim);
+  text-decoration: none;
+  font-size: 0.6rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-weight: 500;
+  transition: all 0.25s ease;
+  border-radius: 3px;
+}
+.disco-links a:hover {
+  border-color: var(--gold-dim);
+  color: var(--gold);
+  background: rgba(212,168,67,0.03);
+}
+
+@media (max-width: 860px) {
+  .disco-grid { grid-template-columns: 1fr; gap: 2rem; }
+}
+
+@media (max-width: 640px) {
+  #discography { padding: 4rem 1.5rem; }
+  .disco-card { padding: 1.5rem; }
+}
+
+/* ============================================================
+   CONNECT
+   ============================================================ */
+#connect {
+  padding: 6rem 2.5rem;
+  text-align: center;
+  position: relative;
+}
+#connect::before {
+  content: '';
+  position: absolute; top: 0; left: 2.5rem; right: 2.5rem;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim2), transparent);
+  opacity: 0.2;
+}
+
+.connect-intro { margin-bottom: 2.5rem; }
+
+.connect-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.8rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+.connect-grid.social {
+  grid-template-columns: repeat(2, 1fr);
+  max-width: 400px;
+  margin-top: 0.8rem;
+}
+
+.connect-link {
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px;
+  padding: 0.8rem 1rem;
+  border: 1px solid rgba(255,255,255,0.06);
+  color: var(--white-dim);
+  text-decoration: none;
+  font-size: 0.7rem; letter-spacing: 2px;
+  text-transform: uppercase; font-weight: 500;
+  transition: all 0.25s ease;
+  border-radius: 4px;
+}
+.connect-link i { font-size: 0.9rem; }
+.connect-link:hover {
+  border-color: var(--gold-dim);
+  color: var(--gold);
+  background: rgba(212,168,67,0.03);
+}
+
+.connect-link.beacons {
+  grid-column: 1 / -1;
+  border-color: rgba(212,168,67,0.1);
+  color: var(--gold);
+  max-width: 300px; margin: 0.5rem auto 0;
+}
+
+.connect-label {
+  font-size: 0.55rem; letter-spacing: 4px;
+  color: var(--white-dim2); text-transform: uppercase;
+  margin: 1rem 0 0.5rem; font-weight: 500;
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+footer {
+  padding: 3rem 2.5rem 2rem;
+  text-align: center;
+}
+footer img {
+  height: 24px; width: auto;
+  opacity: 0.15; margin-bottom: 0.6rem;
+  transition: opacity 0.3s;
+}
+footer img:hover { opacity: 0.3; }
+footer p {
+  font-size: 0.55rem; color: rgba(255,255,255,0.08);
+  letter-spacing: 3px; text-transform: uppercase;
+}
+
+/* ============================================================
+   OVERDRIVE (Konami)
+   ============================================================ */
+body.overdrive {
+  --gold:      #ff4400;
+  --gold-dim:  #cc3300;
+  --gold-dim2: #883300;
+}
+body.overdrive .crt-btn,
+body.overdrive .hero-cta { border-color: var(--gold-dim); color: var(--gold); }
+body.overdrive .hero-cta:hover { background: var(--gold); color: #000; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 860px) {
+  #story {
+    grid-template-columns: 1fr; gap: 2.5rem;
+    padding: 4rem 2rem;
+  }
+  .story-visual { order: -1; }
+  .deco-vinyl { width: 200px; height: 200px; }
+
+  .player-wrap {
+    grid-template-columns: 1fr; gap: 2rem;
+  }
+
+  .connect-grid { grid-template-columns: repeat(2, 1fr); max-width: 400px; }
+  .connect-grid.social { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 640px) {
+  nav { padding: 0.8rem 1.5rem; }
+  nav ul { display: none; }
+  nav ul.open { display: flex; flex-direction: column; position: absolute; top: 100%; left: 0; right: 0; background: rgba(10,10,10,0.98); padding: 1rem 1.5rem; gap: 1rem; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .nav-toggle { display: block; }
+
+  #hero { padding: 5rem 1.5rem 2rem; }
+  .hero-logos img { height: 40px; }
+
+  #sound { padding: 4rem 1.5rem; }
+  #connect { padding: 4rem 1.5rem; }
+  footer { padding: 2rem 1.5rem; }
+
+  .vinyl-disc { width: 160px; height: 160px; }
+  .vinyl { padding: 1.5rem; }
+
+  .connect-grid { grid-template-columns: 1fr 1fr; max-width: 100%; }
+  .connect-grid.social { max-width: 100%; }
+  .connect-link.beacons { max-width: 100%; }
+
+  .divider { margin: 0 1.5rem; }
+  #hero::after { left: 1.5rem; right: 1.5rem; }
+  #connect::before { left: 1.5rem; right: 1.5rem; }
+}
+
+@media (max-width: 400px) {
+  .connect-grid { grid-template-columns: 1fr; }
+  .connect-grid.social { grid-template-columns: 1fr; }
+  .vinyl-vol input[type="range"] { width: 70px; }
+}
+</style>
 </head>
 <body>
 
-  <div class="sun"></div>
-  <div class="equalizer" id="equalizer"></div>
-  <div class="scanlines" id="scanlinesLayer"></div>
-  <div class="toast-container" id="toastContainer"></div>
+<div class="noise"></div>
+<div class="scanlines" id="scanlinesLayer"></div>
+<div class="toast-container" id="toastContainer"></div>
+<button class="crt-btn" id="crtBtn" onclick="toggleCRT()">CRT: ON</button>
 
-  <!-- Botón CRT Toggle -->
-  <button class="crt-toggle" onclick="toggleCRT(event)">CRT: ON</button>
+<!-- NAV -->
+<nav id="navbar">
+  <img src="assets/Logo%20Limpio%20HD.png" alt="Silicon Riot" class="nav-logo">
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Menu">
+    <i class="fa-solid fa-bars"></i>
+  </button>
+  <ul id="navList">
+    <li><a href="#story" onclick="closeNav()">Story</a></li>
+    <li><a href="#sound" onclick="closeNav()">Sound</a></li>
+    <li><a href="#connect" onclick="closeNav()">Connect</a></li>
+    <li class="nav-easter" onclick="handleEaster()" title="↑↑↓↓←→←→BA"><i class="fa-solid fa-gamepad"></i></li>
+  </ul>
+</nav>
 
-  <div class="container">
-    <h1>SILICON RIOT</h1>
-    <div class="status" onclick="handleStatusClick()">
-      <span id="typewriter"></span><span class="blink">_</span>
-    </div>
+<!-- HERO -->
+<section id="hero">
+  <p class="hero-sub">Loud. Raw. Proud.</p>
 
-    <!-- Reproductor con Mini Discografía -->
-    <div class="player-box">
-      <p class="track-title" id="trackTitle">▶ TRACK 1 // NEON FANTASY</p>
-      
-      <div class="player-controls">
-        <button class="btn-action" onclick="prevTrack(event)"><i class="fa-solid fa-backward"></i></button>
-        <button class="btn-action" id="playBtn" onclick="toggleAudio(event)">PLAY</button>
-        <button class="btn-action" onclick="nextTrack(event)"><i class="fa-solid fa-forward"></i></button>
+  <img src="assets/Silicon%20Riot%20Dorado.png" alt="SILICON RIOT" class="hero-logo-main">
+
+  <p style="color: var(--white-dim); font-size: clamp(0.7rem, 1.2vw, 0.85rem); letter-spacing: 5px; text-transform: uppercase; font-weight: 300; margin-bottom: 1.8rem;">80s Stadium Grandeur &amp; AI Innovation</p>
+
+  <a href="#sound" class="hero-cta">
+    <i class="fa-solid fa-play"></i> Play
+  </a>
+
+  <div class="hero-socials">
+    <a href="https://www.instagram.com/siliconriot80s" target="_blank" title="Instagram" onclick="notify('Instagram')">
+      <i class="fa-brands fa-instagram"></i>
+    </a>
+    <a href="https://www.youtube.com/@siliconriot80s" target="_blank" title="YouTube" onclick="notify('YouTube')">
+      <i class="fa-brands fa-youtube"></i>
+    </a>
+    <a href="https://open.spotify.com/intl-es/album/6wyKTUwsMbpDZLMLvhr3Gm" target="_blank" title="Spotify" onclick="notify('Spotify')">
+      <i class="fa-brands fa-spotify"></i>
+    </a>
+    <a href="https://beacons.ai/siliconriot" target="_blank" title="Beacons" onclick="notify('All Links')">
+      <i class="fa-solid fa-star"></i>
+    </a>
+  </div>
+</section>
+
+<!-- STORY -->
+<section id="story">
+  <div class="story-visual reveal">
+    <div class="deco-vinyl" id="decoVinyl">
+      <div class="deco-label">
+        <img src="assets/album-cover.jpg" alt="A Night in Neo-City">
       </div>
-      
-      <div class="volume-box">
+      <div class="deco-hole"></div>
+    </div>
+  </div>
+
+  <div class="story-body reveal">
+    <p class="tag">// The Story</p>
+    <h2 class="title-md">Stadium<br>Grandeur</h2>
+    <p style="margin-top: 1.5rem;">
+      <strong>Silicon Riot</strong> is the high-octane fusion of 80s arena rock and cyberpunk aesthetics. 
+      Born in the heart of a digital metropolis, the debut album <strong>A Night in Neo-City</strong> 
+      serves as the ultimate soundtrack for a world of neon lights and high-speed chrome.
+    </p>
+    <p>
+      Fusing glam metal energy with synthwave grit, Silicon Riot brings the spirit of the legends 
+      into a rain-soaked, high-tech future.
+    </p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SOUND -->
+<section id="sound">
+  <div class="sound-header reveal">
+    <p class="tag">// The Sound</p>
+    <h2 class="title-lg">Now Spinning</h2>
+  </div>
+
+  <div class="player-wrap">
+    <!-- Vinyl -->
+    <div class="vinyl reveal">
+      <div class="vinyl-disc" id="vinylDisc">
+        <div class="vinyl-grooves"></div>
+        <div class="vinyl-label-ring">
+          <img src="assets/album-cover.jpg" alt="A Night in Neo-City" id="vinylArt">
+        </div>
+        <span class="vinyl-label-text" id="labelText">Side A · Neon Fantasy</span>
+        <div class="vinyl-hole"></div>
+      </div>
+
+      <p class="vinyl-name" id="trackTitle">NEON FANTASY</p>
+      <p class="vinyl-meta"><span id="trackDuration">3:42</span> · from <em>A Night in Neo-City</em></p>
+
+      <div class="vinyl-ctrls">
+        <button onclick="prevTrack(event)" title="Prev"><i class="fa-solid fa-backward-step"></i></button>
+        <button class="play-btn" id="playBtn" onclick="toggleAudio(event)">
+          <i class="fa-solid fa-play" id="playIcon"></i>
+        </button>
+        <button onclick="nextTrack(event)" title="Next"><i class="fa-solid fa-forward-step"></i></button>
+      </div>
+
+      <div class="vinyl-vol">
         <i class="fa-solid fa-volume-low"></i>
-        <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.08" onclick="event.stopPropagation()" oninput="changeVolume(this.value)">
+        <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.08" oninput="changeVolume(this.value)">
         <i class="fa-solid fa-volume-high"></i>
       </div>
 
-      <audio id="audioTrack" crossorigin="anonymous" loop>
-        <source id="audioSource" src="assets/NF.mp3" type="audio/mpeg">
-      </audio>
+      <div class="eq" id="equalizer"></div>
+
+      <!-- YouTube embed (hidden, API-driven) -->
+      <div id="ytPlayer" style="display:none;"></div>
     </div>
 
-    <!-- Links con Notificación -->
-    <div class="links">
-      <a href="https://open.spotify.com/intl-es/album/6wyKTUwsMbpDZLMLvhr3Gm" target="_blank" onclick="notify('CONNECTING TO SPOTIFY...')"><i class="fa-brands fa-spotify"></i> SPOTIFY</a>
-      <a href="https://music.apple.com/artist/silicon-riot/1792440306" target="_blank" onclick="notify('REDIRECTING TO APPLE MUSIC...')"><i class="fa-brands fa-apple"></i> APPLE MUSIC</a>
-      <a href="https://music.amazon.com/albums/B0GYBYQX85" target="_blank" onclick="notify('OPENING AMAZON MUSIC...')"><i class="fa-brands fa-amazon"></i> AMAZON MUSIC</a>
-      <a href="https://www.youtube.com/@siliconriot80s" target="_blank" onclick="notify('LAUNCHING YOUTUBE CHANNEL...')"><i class="fa-brands fa-youtube"></i> YOUTUBE</a>
-      <a href="https://www.instagram.com/siliconriot80s" target="_blank" onclick="notify('OPENING INSTAGRAM PROTOCOL...')"><i class="fa-brands fa-instagram"></i> INSTAGRAM</a>
-      <a href="https://beacons.ai/siliconriot" target="_blank" class="beacons-btn" onclick="notify('ACCESSING ALL BEACONS LINKS...')"><i class="fa-solid fa-star"></i> ALL LINKS // BEACONS</a>
-    </div>
+    <!-- Tracklist -->
+    <div class="reveal" style="align-self: center;">
+      <p class="track-header"><i class="fa-solid fa-waveform"></i> Tracks</p>
 
-    <!-- Indirecta del Easter Egg -->
-    <div class="hint">[ HACK: ↑ ↑ ↓ ↓ ← → ← → B A ]</div>
+      <!-- Album selector tabs -->
+      <div class="album-tabs">
+        <button class="album-tab active" data-album="0" onclick="switchAlbum(0)">A Night in Neo-City</button>
+        <button class="album-tab" data-album="1" onclick="switchAlbum(1)">Neon Ghosts &amp; Iron Dreams</button>
+      </div>
+
+      <div id="trackList"></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- DISCOGRAPHY -->
+<section id="discography">
+  <div class="discography-header reveal">
+    <p class="tag">// Discography</p>
+    <h2 class="title-lg">The Collection</h2>
   </div>
 
-  <script>
-    // --- 1. NOTIFICACIONES DE TERMINAL ---
-    function notify(msg) {
-      const container = document.getElementById('toastContainer');
-      const toast = document.createElement('div');
-      toast.className = 'toast';
-      toast.innerText = `> ${msg}`;
-      container.appendChild(toast);
-      setTimeout(() => toast.remove(), 3000);
+  <div class="disco-grid">
+    <!-- Album 1 -->
+    <div class="disco-card reveal">
+      <img src="assets/album-cover.jpg" alt="A Night in Neo-City" class="disco-cover">
+      <h3 class="disco-title">A Night in Neo-City</h3>
+      <p class="disco-meta">2026 · 7 tracks · 24:27</p>
+      <ul class="disco-tracks">
+        <li><span class="track-num">01</span><span class="track-name">Neon Fantasy</span><span class="track-len">2:44</span></li>
+        <li><span class="track-num">02</span><span class="track-name">Midnight Rider</span><span class="track-len">3:01</span></li>
+        <li><span class="track-num">03</span><span class="track-name">Digital Tears</span><span class="track-len">3:59</span></li>
+        <li><span class="track-num">04</span><span class="track-name">Velvet Thunder</span><span class="track-len">3:35</span></li>
+        <li><span class="track-num">05</span><span class="track-name">Streets of Chrome</span><span class="track-len">3:37</span></li>
+        <li><span class="track-num">06</span><span class="track-name">Razor Edge</span><span class="track-len">3:08</span></li>
+        <li><span class="track-num">07</span><span class="track-name">Final Frontier</span><span class="track-len">4:23</span></li>
+      </ul>
+      <div class="disco-links">
+        <a href="https://open.spotify.com/intl-es/album/6wyKTUwsMbpDZLMLvhr3Gm" target="_blank" onclick="notify('Opening Spotify...')"><i class="fa-brands fa-spotify"></i> Spotify</a>
+        <a href="https://music.apple.com/artist/silicon-riot/1792440306" target="_blank" onclick="notify('Opening Apple Music...')"><i class="fa-brands fa-apple"></i> Apple Music</a>
+        <a href="https://music.amazon.com/albums/B0GYBYQX85" target="_blank" onclick="notify('Opening Amazon Music...')"><i class="fa-brands fa-amazon"></i> Amazon</a>
+        <a href="https://www.youtube.com/playlist?list=PLSGcMQLYdKYEQ_3Iku1i0wSFgvzLQq0Pj" target="_blank" onclick="notify('Opening YouTube...')"><i class="fa-brands fa-youtube"></i> YouTube</a>
+      </div>
+    </div>
+
+    <!-- Album 2 -->
+    <div class="disco-card reveal">
+      <img src="assets/neon-ghosts-cover.jpg" alt="Neon Ghosts &amp; Iron Dreams" class="disco-cover">
+      <h3 class="disco-title">Neon Ghosts &amp; Iron Dreams</h3>
+      <p class="disco-meta">2026 · 9 tracks · 31:47</p>
+      <ul class="disco-tracks">
+        <li><span class="track-num">01</span><span class="track-name">Circuit Breaker</span><span class="track-len">2:59</span></li>
+        <li><span class="track-num">02</span><span class="track-name">Iron Dreams</span><span class="track-len">3:32</span></li>
+        <li><span class="track-num">03</span><span class="track-name">Blackout Love</span><span class="track-len">3:10</span></li>
+        <li><span class="track-num">04</span><span class="track-name">Underground Empire</span><span class="track-len">2:25</span></li>
+        <li><span class="track-num">05</span><span class="track-name">The Ghost in the Machine</span><span class="track-len">4:22</span></li>
+        <li><span class="track-num">06</span><span class="track-name">Static Rain</span><span class="track-len">4:41</span></li>
+        <li><span class="track-num">07</span><span class="track-name">Radio Rebel</span><span class="track-len">2:19</span></li>
+        <li><span class="track-num">08</span><span class="track-name">Laser Scars</span><span class="track-len">4:02</span></li>
+        <li><span class="track-num">09</span><span class="track-name">One Last Spark</span><span class="track-len">4:17</span></li>
+      </ul>
+      <div class="disco-links">
+        <a href="https://www.youtube.com/playlist?list=PLSGcMQLYdKYEQ_3Iku1i0wSFgvzLQq0Pj" target="_blank" onclick="notify('Opening YouTube...')"><i class="fa-brands fa-youtube"></i> YouTube</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CONNECT -->
+<section id="connect">
+  <div class="connect-intro reveal">
+    <p class="tag">// Connect</p>
+    <h2 class="title-lg">Tune In</h2>
+  </div>
+
+  <div class="reveal">
+    <p class="connect-label">Stream</p>
+    <div class="connect-grid">
+      <a href="https://open.spotify.com/intl-es/album/6wyKTUwsMbpDZLMLvhr3Gm" target="_blank" class="connect-link" onclick="notify('Opening Spotify...')">
+        <i class="fa-brands fa-spotify"></i> Spotify
+      </a>
+      <a href="https://music.apple.com/artist/silicon-riot/1792440306" target="_blank" class="connect-link" onclick="notify('Opening Apple Music...')">
+        <i class="fa-brands fa-apple"></i> Apple Music
+      </a>
+      <a href="https://music.amazon.com/albums/B0GYBYQX85" target="_blank" class="connect-link" onclick="notify('Opening Amazon Music...')">
+        <i class="fa-brands fa-amazon"></i> Amazon Music
+      </a>
+    </div>
+
+    <p class="connect-label" style="margin-top: 1.2rem;">Follow</p>
+    <div class="connect-grid social">
+      <a href="https://www.youtube.com/@siliconriot80s" target="_blank" class="connect-link" onclick="notify('Opening YouTube...')">
+        <i class="fa-brands fa-youtube"></i> YouTube
+      </a>
+      <a href="https://www.instagram.com/siliconriot80s" target="_blank" class="connect-link" onclick="notify('Opening Instagram...')">
+        <i class="fa-brands fa-instagram"></i> Instagram
+      </a>
+    </div>
+
+    <a href="https://beacons.ai/siliconriot" target="_blank" class="connect-link beacons" onclick="notify('All Links → Beacons')">
+      <i class="fa-solid fa-star"></i> All Links // Beacons
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <img src="assets/Logo%20Limpio%20HD.png" alt="Silicon Riot">
+  <p>&copy; 2026 Silicon Riot</p>
+</footer>
+
+<!-- JS -->
+<script>
+// ==========================================
+// 1. NOTIFICATIONS
+// ==========================================
+function notify(msg) {
+  const c = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerText = '> ' + msg;
+  c.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+// ==========================================
+// 2. NAV
+// ==========================================
+function toggleNav() { document.getElementById('navList').classList.toggle('open'); }
+function closeNav() { document.getElementById('navList').classList.remove('open'); }
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 60);
+});
+
+// ==========================================
+// 3. SCROLL REVEAL
+// ==========================================
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+// ==========================================
+// 4. ALBUMS & TRACK DATA
+// ==========================================
+const albums = [
+  {
+    name: 'A Night in Neo-City',
+    cover: 'assets/album-cover.jpg',
+    tracks: [
+      { title: 'NEON FANTASY',      yt: 'bTm1gv7oBus',  duration: '2:44' },
+      { title: 'MIDNIGHT RIDER',    yt: 'GnCEnjhkh4I', duration: '3:01' },
+      { title: 'DIGITAL TEARS',     yt: 'xrrsMDefDmc', duration: '3:59' },
+      { title: 'VELVET THUNDER',    yt: 's4fPTk1KehA', duration: '3:35' },
+      { title: 'STREETS OF CHROME', yt: 'az4ap9t9I1w', duration: '3:37' },
+      { title: 'RAZOR EDGE',        yt: '71fQ80bfQCI', duration: '3:08' },
+      { title: 'FINAL FRONTIER',    yt: '9MPv6ctwRDY', duration: '4:23' },
+    ],
+  },
+  {
+    name: 'Neon Ghosts & Iron Dreams',
+    cover: 'assets/neon-ghosts-cover.jpg',
+    tracks: [
+      { title: 'CIRCUIT BREAKER',       yt: 'y8jb6WOFd4M', duration: '2:59' },
+      { title: 'IRON DREAMS',           yt: 'ddoMhzIPbP0', duration: '3:32' },
+      { title: 'BLACKOUT LOVE',         yt: 'P2X8W0ADvnE', duration: '3:10' },
+      { title: 'UNDERGROUND EMPIRE',    yt: 'nGsqftWuD_Q', duration: '2:25' },
+      { title: 'THE GHOST IN THE MACHINE', yt: 'yY1kV4AM8u8', duration: '4:22' },
+      { title: 'STATIC RAIN',           yt: 'eYzu69tW8lA', duration: '4:41' },
+      { title: 'RADIO REBEL',           yt: 'UcEayB5cWKo', duration: '2:19' },
+      { title: 'LASER SCARS',           yt: 'V1heaEvlYCk', duration: '4:02' },
+      { title: 'ONE LAST SPARK',        yt: 'VUVyr5OPKMw', duration: '4:17' },
+    ],
+  },
+];
+
+let albumIdx = 0;
+let trackIdx = 0;
+const trackTitle = document.getElementById('trackTitle');
+const trackDur   = document.getElementById('trackDuration');
+const playBtn    = document.getElementById('playBtn');
+const playIcon   = document.getElementById('playIcon');
+const labelText  = document.getElementById('labelText');
+const vDisc      = document.getElementById('vinylDisc');
+const dVinyl     = document.getElementById('decoVinyl');
+const trackList  = document.getElementById('trackList');
+const vinylArt   = document.getElementById('vinylArt');
+
+let ytPlayer = null;
+
+function playlist() { return albums[albumIdx].tracks; }
+function currentTrack() { return playlist()[trackIdx]; }
+
+// ==========================================
+// 5. YOUTUBE IFRAME API — lazy load
+// ==========================================
+function initYT(cb) {
+  if (typeof YT !== 'undefined' && YT.Player) { cb(); return; }
+  window.onYouTubeIframeAPIReady = cb;
+  const s = document.createElement('script');
+  s.src = 'https://www.youtube.com/iframe_api';
+  s.async = true;
+  document.head.appendChild(s);
+}
+
+function buildYT() {
+  if (ytPlayer) return;
+  // Move the YT embed off-screen so it never steals focus
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;';
+  wrap.appendChild(document.getElementById('ytPlayer'));
+  document.body.appendChild(wrap);
+
+  ytPlayer = new YT.Player('ytPlayer', {
+    height: '1', width: '1',
+    playerVars: {
+      autoplay: 0, controls: 0, rel: 0,
+      iv_load_policy: 3, modestbranding: 1,
+      fs: 0, playsinline: 1,
+    },
+    events: { onStateChange: onYTState },
+  });
+}
+
+function onYTState(e) {
+  if (e.data === YT.PlayerState.PLAYING) {
+    playBtn.classList.add('playing');
+    playIcon.className = 'fa-solid fa-pause';
+    vDisc.classList.add('spin');
+    dVinyl.classList.add('spin');
+  } else if (e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.ENDED) {
+    playBtn.classList.remove('playing');
+    playIcon.className = 'fa-solid fa-play';
+    vDisc.classList.remove('spin');
+    dVinyl.classList.remove('spin');
+  }
+}
+
+// ==========================================
+// 6. TRACK LIST RENDERER
+// ==========================================
+function renderTrackList() {
+  const p = playlist();
+  trackList.innerHTML = '';
+  p.forEach((t, i) => {
+    const div = document.createElement('div');
+    div.className = 'track-item' + (i === trackIdx ? ' active' : '');
+    div.dataset.track = i;
+    div.onclick = () => selectTrack(i);
+    div.innerHTML = `
+      <span class="track-icon"><i class="fa-solid fa-play"></i></span>
+      <span class="track-idx">${String(i+1).padStart(2,'0')}</span>
+      <span class="track-name">${t.title.charAt(0) + t.title.slice(1).toLowerCase()}</span>
+      <span class="track-time">${t.duration}</span>
+    `;
+    trackList.appendChild(div);
+  });
+}
+
+// ==========================================
+// 7. ALBUM SWITCHING
+// ==========================================
+function switchAlbum(i) {
+  if (i === albumIdx) return;
+  albumIdx = i;
+  trackIdx = 0;
+  if (ytPlayer && ytPlayer.stopVideo) ytPlayer.stopVideo();
+  playBtn.classList.remove('playing');
+  playIcon.className = 'fa-solid fa-play';
+  vDisc.classList.remove('spin');
+  dVinyl.classList.remove('spin');
+
+  // Update cover art
+  vinylArt.src = albums[i].cover;
+  vinylArt.alt = albums[i].name;
+
+  // Update tabs
+  document.querySelectorAll('.album-tab').forEach((tab, idx) => {
+    tab.classList.toggle('active', idx === i);
+  });
+
+  // Update initial text
+  labelText.innerText = 'Side A · ' + albums[i].name;
+  renderTrackList();
+  loadTrack(0);
+}
+
+// ==========================================
+// 8. TRACK LOADING
+// ==========================================
+function loadTrack(i) {
+  trackIdx = i;
+  const t = currentTrack();
+  trackTitle.innerText = t.title;
+  trackDur.innerText   = t.duration;
+  labelText.innerText  = 'Side A · ' + t.title;
+  notify('▶ ' + t.title);
+
+  if (ytPlayer && ytPlayer.stopVideo) ytPlayer.stopVideo();
+  playBtn.classList.remove('playing');
+  playIcon.className = 'fa-solid fa-play';
+  vDisc.classList.remove('spin');
+  dVinyl.classList.remove('spin');
+  renderTrackList();
+}
+
+function selectTrack(i) {
+  if (i === trackIdx) return;
+  loadTrack(i);
+}
+
+function prevTrack(e) { if (e) e.stopPropagation(); const p = playlist(); loadTrack((trackIdx - 1 + p.length) % p.length); }
+function nextTrack(e) { if (e) e.stopPropagation(); const p = playlist(); loadTrack((trackIdx + 1) % p.length); }
+
+// ==========================================
+// 9. PLAY / PAUSE
+// ==========================================
+function toggleAudio(e) {
+  if (e) e.stopPropagation();
+  const t = currentTrack();
+
+  initYT(() => {
+    buildYT();
+    if (!ytPlayer || !ytPlayer.getPlayerState) return;
+
+    const state = ytPlayer.getPlayerState();
+    const vid = ytPlayer.getVideoData ? ytPlayer.getVideoData().video_id : null;
+    const same = vid === t.yt;
+
+    if (same && state === YT.PlayerState.PLAYING) {
+      ytPlayer.pauseVideo();
+    } else if (same && state === YT.PlayerState.PAUSED) {
+      ytPlayer.playVideo();
+    } else {
+      ytPlayer.loadVideoById({ videoId: t.yt, suggestedQuality: 'small' });
     }
+  });
+}
 
-    // --- 2. MINI DISCOGRAFÍA / PLAYLIST ---
-    const playlist = [
-      { title: "▶ TRACK 1 // NEON FANTASY", file: "assets/NF.mp3" }
-    ];
-    let currentTrackIndex = 0;
+// ==========================================
+// 10. VOLUME
+// ==========================================
+function changeVolume(v) {
+  if (ytPlayer && ytPlayer.setVolume) ytPlayer.setVolume(Math.round(v * 100));
+}
 
-    const audio = document.getElementById('audioTrack');
-    const audioSource = document.getElementById('audioSource');
-    const trackTitle = document.getElementById('trackTitle');
-    const btn = document.getElementById('playBtn');
-    audio.volume = 0.08;
+// ==========================================
+// 9. EQUALIZER (decorative ambient)
+// ==========================================
+const eq = document.getElementById('equalizer');
+const N  = 24;
+const bars = [];
+for (let i = 0; i < N; i++) {
+  const b = document.createElement('div');
+  b.className = 'eq-bar';
+  eq.appendChild(b);
+  bars.push(b);
+}
+(function loop() {
+  requestAnimationFrame(loop);
+  for (let i = 0; i < N; i++) {
+    const p = Math.sin(Date.now() / 400 + i * 0.5) * 0.4 + 0.6;
+    bars[i].style.height = Math.max(2, p * 36) + 'px';
+  }
+})();
 
-    function loadTrack(index) {
-      currentTrackIndex = index;
-      audioSource.src = playlist[index].file;
-      trackTitle.innerText = playlist[index].title;
-      audio.load();
-      if (!audio.paused) audio.play();
-      notify(`LOADED: ${playlist[index].title}`);
+// ==========================================
+// 10. CRT TOGGLE
+// ==========================================
+function toggleCRT() {
+  const l = document.getElementById('scanlinesLayer');
+  const b = document.getElementById('crtBtn');
+  l.classList.toggle('hidden');
+  b.innerText = l.classList.contains('hidden') ? 'CRT: OFF' : 'CRT: ON';
+  notify(b.innerText);
+}
+
+// ==========================================
+// 11. EASTER EGG
+// ==========================================
+function handleEaster() {
+  notify('SYSTEM: ↑↑↓↓←→←→BA');
+}
+
+const konami = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+let ki = 0;
+document.addEventListener('keydown', (e) => {
+  const k = e.key.toLowerCase();
+  const t = konami[ki].toLowerCase();
+  if (k === t) {
+    ki++;
+    if (ki === konami.length) {
+      document.body.classList.toggle('overdrive');
+      notify(document.body.classList.contains('overdrive') ? '⚡ OVERDRIVE' : 'OVERDRIVE OFF');
+      ki = 0;
     }
+  } else { ki = 0; }
+});
 
-    function prevTrack(e) {
-      if (e) e.stopPropagation();
-      currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length;
-      loadTrack(currentTrackIndex);
-    }
+// ==========================================
+// 12. FIRST CLICK AUTO-START
+// ==========================================
+document.body.addEventListener('click', function first() {
+  toggleAudio();
+  document.body.removeEventListener('click', first);
+}, { once: true });
 
-    function nextTrack(e) {
-      if (e) e.stopPropagation();
-      currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
-      loadTrack(currentTrackIndex);
-    }
+// ==========================================
+// 13. GITHUB PAGES META
+// ==========================================
+(function() {
+  const origin = window.location.origin;
+  const path = window.location.pathname.replace(/\/$/, '') + '/';
+  const base = origin + path;
+  const img  = base + 'assets/Silicon%20Riot%20Dorado.png';
+  document.getElementById('canonicalLink')?.setAttribute('href', base);
+  document.getElementById('ogUrl')?.setAttribute('content', base);
+  document.getElementById('ogImage')?.setAttribute('content', img);
+  document.getElementById('twUrl')?.setAttribute('content', base);
+  document.getElementById('twImage')?.setAttribute('content', img);
+})();
 
-    // --- 3. TOGGLE CRT (SCANLINES) ---
-    function toggleCRT(e) {
-      if (e) e.stopPropagation();
-      const scanlines = document.getElementById('scanlinesLayer');
-      const btn = e.target;
-      if (scanlines.style.display === 'none') {
-        scanlines.style.display = 'block';
-        btn.innerText = 'CRT: ON';
-        notify('CRT FILTER ENABLED');
-      } else {
-        scanlines.style.display = 'none';
-        btn.innerText = 'CRT: OFF';
-        notify('CRT FILTER DISABLED');
-      }
-    }
-
-    // --- 4. EASTER EGGS (KONAMI CODE + TRIPLE CLICK) ---
-    let clickCount = 0;
-    function handleStatusClick() {
-      clickCount++;
-      if (clickCount === 3) {
-        notify('SECRET PROMPT: ACCESS GRANTED_');
-        alert("SYSTEM CONSOLE v1.0\n-------------------\nBand: Silicon Riot\nStatus: Active\nType the classic Konami Code to unlock Overdrive!");
-        clickCount = 0;
-      }
-      setTimeout(() => clickCount = 0, 1000);
-    }
-
-    const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
-    let konamiIndex = 0;
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key.toLowerCase() === konamiCode[konamiIndex].toLowerCase()) {
-        konamiIndex++;
-        if (konamiIndex === konamiCode.length) {
-          document.body.classList.toggle('overdrive');
-          notify('OVERDRIVE MODE ACTIVATED! ⚡');
-          konamiIndex = 0;
-        }
-      } else {
-        konamiIndex = 0;
-      }
-    });
-
-    // --- EFECTO TYPEWRITER ---
-    const textToType = "SYSTEM INITIALIZING... AUDIO ONLINE";
-    const typewriterElement = document.getElementById('typewriter');
-    let typeIndex = 0;
-
-    function typeWriter() {
-      if (typeIndex < textToType.length) {
-        typewriterElement.innerHTML += textToType.charAt(typeIndex);
-        typeIndex++;
-        setTimeout(typeWriter, 80);
-      }
-    }
-    window.onload = typeWriter;
-
-    // --- ECUALIZADOR Y AUDIO ---
-    const eq = document.getElementById('equalizer');
-    const NUM_BARS = 32;
-    const bars = [];
-
-    for (let i = 0; i < NUM_BARS; i++) {
-      const bar = document.createElement('div');
-      bar.className = 'bar';
-      eq.appendChild(bar);
-      bars.push(bar);
-    }
-
-    let audioCtx, analyser, source, dataArray;
-    let isAudioContextSetup = false;
-
-    function setupAudioContext() {
-      if (isAudioContextSetup) return;
-      const AudioContext = window.AudioContext || window.webkitAudioContext;
-      audioCtx = new AudioContext();
-      analyser = audioCtx.createAnalyser();
-      analyser.fftSize = 64;
-
-      source = audioCtx.createMediaElementSource(audio);
-      source.connect(analyser);
-      analyser.connect(audioCtx.destination);
-
-      dataArray = new Uint8Array(analyser.frequencyBinCount);
-      isAudioContextSetup = true;
-
-      renderFrame();
-    }
-
-    function renderFrame() {
-      requestAnimationFrame(renderFrame);
-      if (!analyser) return;
-
-      analyser.getByteFrequencyData(dataArray);
-
-      for (let i = 0; i < NUM_BARS; i++) {
-        const value = dataArray[i] || 0;
-        const percent = value / 255;
-        const height = Math.max(4, percent * 85);
-        bars[i].style.height = `${height}px`;
-      }
-    }
-
-    function changeVolume(val) {
-      audio.volume = val;
-    }
-
-    function toggleAudio(e) {
-      if (e) e.stopPropagation();
-      
-      setupAudioContext();
-      if (audioCtx && audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
-
-      if (audio.paused) {
-        audio.play().then(() => {
-          btn.innerText = "PAUSE";
-          btn.style.background = "var(--neon-cyan)";
-          btn.style.color = "#000";
-        }).catch(err => console.log("Autoplay bloqueado:", err));
-      } else {
-        audio.pause();
-        btn.innerText = "PLAY";
-        btn.style.background = "var(--neon-pink)";
-        btn.style.color = "#fff";
-      }
-    }
-
-    document.body.addEventListener('click', function startOnFirstClick() {
-      if (audio.paused) {
-        toggleAudio();
-      }
-      document.body.removeEventListener('click', startOnFirstClick);
-    }, { once: true });
-  </script>
+renderTrackList();
+loadTrack(0);
+</script>
 </body>
 </html>
