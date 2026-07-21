@@ -150,6 +150,37 @@
       box-shadow: 0 0 15px var(--neon-cyan);
     }
 
+    /* Control de Volumen */
+    .volume-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 1rem;
+      font-size: 0.8rem;
+      color: var(--neon-cyan);
+    }
+
+    .volume-box input[type="range"] {
+      -webkit-appearance: none;
+      width: 120px;
+      height: 6px;
+      background: #222;
+      border: 1px solid var(--neon-cyan);
+      border-radius: 3px;
+      outline: none;
+    }
+
+    .volume-box input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px;
+      height: 14px;
+      background: var(--neon-pink);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 8px var(--neon-pink);
+    }
+
     /* Links a Redes */
     .links {
       display: flex;
@@ -225,6 +256,13 @@
     <div class="player-box">
       <p>▶ TRANSMISSION // NEON FANTASY</p>
       <button id="playBtn" onclick="toggleAudio(event)">PLAY TRACK</button>
+      
+      <div class="volume-box">
+        <i class="fa-solid fa-volume-low"></i>
+        <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.3" onclick="event.stopPropagation()" oninput="changeVolume(this.value)">
+        <i class="fa-solid fa-volume-high"></i>
+      </div>
+
       <audio id="audioTrack" loop>
         <source src="assets/NF.mp3" type="audio/mpeg">
       </audio>
@@ -258,6 +296,14 @@
     // Control del Reproductor de Audio
     const audio = document.getElementById('audioTrack');
     const btn = document.getElementById('playBtn');
+    const volumeSlider = document.getElementById('volumeSlider');
+
+    // Inicializar volumen por defecto al 30%
+    audio.volume = 0.3;
+
+    function changeVolume(val) {
+      audio.volume = val;
+    }
 
     function toggleAudio(e) {
       if (e) e.stopPropagation(); // Evita conflicto con el click global
