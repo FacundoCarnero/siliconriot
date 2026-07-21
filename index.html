@@ -44,33 +44,29 @@
       z-index: 1;
     }
 
-    /* Ecualizador Continuo */
+    /* Ecualizador Reactivo */
     .equalizer {
       position: absolute;
       bottom: 0;
       left: 0;
       width: 100vw;
-      height: 70px;
+      height: 90px;
       display: flex;
-      justify-content: flex-start;
+      justify-content: space-around;
       align-items: flex-end;
-      gap: 0;
+      gap: 2px;
       z-index: 2;
-      opacity: 0.8;
+      opacity: 0.85;
+      padding: 0 5px;
     }
 
     .bar {
-      width: 30px;
-      flex-shrink: 0;
+      flex: 1;
+      height: 4px; /* Altura inicial base */
       background: linear-gradient(to top, var(--neon-cyan), var(--neon-pink));
       border-radius: 2px 2px 0 0;
-      box-shadow: inset 0 0 4px rgba(255, 255, 255, 0.3);
-      animation: bounce 1.2s ease-in-out infinite alternate;
-    }
-
-    @keyframes bounce {
-      0% { height: 10%; }
-      100% { height: 100%; }
+      box-shadow: 0 0 5px var(--neon-cyan);
+      transition: height 0.05s ease; /* Transición suave para el audio real */
     }
 
     /* Tarjeta Central Cyberpunk */
@@ -106,16 +102,17 @@
     }
 
     .status {
-      font-size: 1.1rem;
+      font-size: 1rem;
       color: var(--neon-cyan);
       letter-spacing: 2px;
       margin-bottom: 1.5rem;
+      min-height: 1.2em;
     }
 
     .blink { animation: blinker 0.8s infinite; }
     @keyframes blinker { 50% { opacity: 0; } }
 
-    /* Reproductor Cyber Punk */
+    /* Reproductor Cyberpunk */
     .player-box {
       background: rgba(255, 0, 127, 0.1);
       border: 1px dashed var(--neon-pink);
@@ -210,7 +207,6 @@
       box-shadow: 0 0 10px var(--neon-cyan);
     }
 
-    /* Botón destacado Beacons */
     .links a.beacons-btn {
       border-color: var(--neon-pink);
       color: #fff;
@@ -241,7 +237,7 @@
 
   <div class="sun"></div>
 
-  <!-- Contenedor dinámico continuo -->
+  <!-- Contenedor del ecualizador -->
   <div class="equalizer" id="equalizer"></div>
 
   <div class="scanlines"></div>
@@ -249,10 +245,10 @@
   <div class="container">
     <h1>SILICON RIOT</h1>
     <div class="status">
-      SYSTEM INITIALIZING<span class="blink">_</span>
+      <span id="typewriter"></span><span class="blink">_</span>
     </div>
 
-    <!-- Reproductor configurado para NF.mp3 -->
+    <!-- Reproductor -->
     <div class="player-box">
       <p>▶ TRANSMISSION // NEON FANTASY</p>
       <button id="playBtn" onclick="toggleAudio(event)">PLAY TRACK</button>
@@ -263,12 +259,12 @@
         <i class="fa-solid fa-volume-high"></i>
       </div>
 
-      <audio id="audioTrack" loop>
+      <audio id="audioTrack" crossorigin="anonymous" loop>
         <source src="assets/NF.mp3" type="audio/mpeg">
       </audio>
     </div>
 
-    <!-- Enlaces directos reales -->
+    <!-- Redes -->
     <div class="links">
       <a href="https://open.spotify.com/intl-es/album/6wyKTUwsMbpDZLMLvhr3Gm" target="_blank"><i class="fa-brands fa-spotify"></i> SPOTIFY</a>
       <a href="https://music.apple.com/artist/silicon-riot/1792440306" target="_blank"><i class="fa-brands fa-apple"></i> APPLE MUSIC</a>
@@ -280,34 +276,86 @@
   </div>
 
   <script>
-    // Generar barras del ecualizador
-    const eq = document.getElementById('equalizer');
-    const barWidth = 30;
-    const totalBars = Math.ceil(window.innerWidth / barWidth);
+    // --- EFECTO MAQUINA DE ESCRIBIR (TYPEWRITER) ---
+    const textToType = "SYSTEM INITIALIZING... AUDIO ONLINE";
+    const typewriterElement = document.getElementById('typewriter');
+    let typeIndex = 0;
 
-    for (let i = 0; i < totalBars; i++) {
+    function typeWriter() {
+      if (typeIndex < textToType.length) {
+        typewriterElement.innerHTML += textToType.charAt(typeIndex);
+        typeIndex++;
+        setTimeout(typeWriter, 80);
+      }
+    }
+    window.onload = typeWriter;
+
+    // --- GENERAR BARRAS DE ECUALIZADOR ---
+    const eq = document.getElementById('equalizer');
+    const NUM_BARS = 32; // Cantidad de bandas de frecuencia
+    const bars = [];
+
+    for (let i = 0; i < NUM_BARS; i++) {
       const bar = document.createElement('div');
       bar.className = 'bar';
-      bar.style.animationDelay = `${(Math.random() * 1).toFixed(2)}s`;
-      bar.style.animationDuration = `${(0.8 + Math.random() * 0.8).toFixed(2)}s`;
       eq.appendChild(bar);
+      bars.push(bar);
     }
 
-    // Control del Reproductor de Audio
+    // --- AUDIO Y ECUALIZADOR REACTIVO EN VIVO ---
     const audio = document.getElementById('audioTrack');
     const btn = document.getElementById('playBtn');
-    const volumeSlider = document.getElementById('volumeSlider');
-
-    // Inicializar volumen por defecto al 30%
     audio.volume = 0.3;
+
+    let audioCtx, analyser, source, dataArray;
+    let isAudioContextSetup = false;
+
+    function setupAudioContext() {
+      if (isAudioContextSetup) return;
+      
+      // Crear contexto de audio web
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      audioCtx = new AudioContext();
+      analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 64; // Calibra la resolución de frecuencias
+
+      source = audioCtx.createMediaElementSource(audio);
+      source.connect(analyser);
+      analyser.connect(audioCtx.destination);
+
+      dataArray = new Uint8Array(analyser.frequencyBinCount);
+      isAudioContextSetup = true;
+
+      renderFrame();
+    }
+
+    function renderFrame() {
+      requestAnimationFrame(renderFrame);
+      if (!analyser) return;
+
+      analyser.getByteFrequencyData(dataArray);
+
+      // Actualizar la altura de cada barra con los datos del MP3 en vivo
+      for (let i = 0; i < NUM_BARS; i++) {
+        const value = dataArray[i] || 0;
+        const percent = value / 255;
+        const height = Math.max(4, percent * 85); // Mínimo 4px, máximo 85px
+        bars[i].style.height = `${height}px`;
+      }
+    }
 
     function changeVolume(val) {
       audio.volume = val;
     }
 
     function toggleAudio(e) {
-      if (e) e.stopPropagation(); // Evita conflicto con el click global
+      if (e) e.stopPropagation();
       
+      setupAudioContext();
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+
       if (audio.paused) {
         audio.play().then(() => {
           btn.innerText = "PAUSE TRANSMISSION";
@@ -322,7 +370,7 @@
       }
     }
 
-    // Auto-reproducción al primer clic del usuario en cualquier parte
+    // Auto-arranque al primer clic global
     document.body.addEventListener('click', function startOnFirstClick() {
       if (audio.paused) {
         toggleAudio();
