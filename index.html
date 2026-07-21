@@ -169,7 +169,7 @@
       letter-spacing: 1px;
       display: inline-flex;
       align-items: center;
-      gap: 8px; /* Espacio entre logo y texto */
+      gap: 8px;
     }
 
     .links a:hover {
@@ -220,18 +220,19 @@
       SYSTEM INITIALIZING<span class="blink">_</span>
     </div>
 
+    <!-- Reproductor configurado para NF.mp3 -->
     <div class="player-box">
-      <p>▶ AUDIO TEST // TRANSMISSION</p>
-      <button id="playBtn" onclick="toggleAudio()">PLAY SAMPLE</button>
+      <p>▶ TRANSMISSION // NEON FANTASY</p>
+      <button id="playBtn" onclick="toggleAudio()">PLAY TRACK</button>
       <audio id="audioTrack" loop>
-        <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a73467.mp3?filename=synthwave-80s-110045.mp3" type="audio/mpeg">
+        <source src="assets/audio/NF.mp3" type="audio/mpeg">
       </audio>
     </div>
 
-    <!-- Enlaces directos con Logos de FontAwesome -->
+    <!-- Enlaces directos reales -->
     <div class="links">
       <a href="https://open.spotify.com/intl-es/album/6wyKTUwsMbpDZLMLvhr3Gm" target="_blank"><i class="fa-brands fa-spotify"></i> SPOTIFY</a>
-      <a href="https://music.apple.com/ar/album/a-night-in-neo-city/1895532065" target="_blank"><i class="fa-brands fa-apple"></i> APPLE MUSIC</a>
+      <a href="https://music.apple.com/artist/silicon-riot/1792440306" target="_blank"><i class="fa-brands fa-apple"></i> APPLE MUSIC</a>
       <a href="https://music.amazon.com/albums/B0GYBYQX85" target="_blank"><i class="fa-brands fa-amazon"></i> AMAZON MUSIC</a>
       <a href="https://www.youtube.com/@siliconriot80s" target="_blank"><i class="fa-brands fa-youtube"></i> YOUTUBE</a>
       <a href="https://www.instagram.com/siliconriot80s" target="_blank"><i class="fa-brands fa-instagram"></i> INSTAGRAM</a>
@@ -240,7 +241,7 @@
   </div>
 
   <script>
-    // Generar barras automáticamente según el ancho de pantalla
+    // Generar barras del ecualizador automáticamente según el ancho de pantalla
     const eq = document.getElementById('equalizer');
     const barWidth = 30;
     const totalBars = Math.ceil(window.innerWidth / barWidth);
@@ -253,7 +254,7 @@
       eq.appendChild(bar);
     }
 
-    // Audio Control
+    // Control del Reproductor de Audio
     const audio = document.getElementById('audioTrack');
     const btn = document.getElementById('playBtn');
 
@@ -265,7 +266,7 @@
         btn.style.color = "#000";
       } else {
         audio.pause();
-        btn.innerText = "PLAY SAMPLE";
+        btn.innerText = "PLAY TRACK";
         btn.style.background = "var(--neon-pink)";
         btn.style.color = "#fff";
       }
