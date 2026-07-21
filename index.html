@@ -1433,10 +1433,26 @@ function toggleCRT() {
 }
 
 // ==========================================
-// 11. EASTER EGG
+// 11. EASTER EGG — OVERDRIVE TOGGLE
 // ==========================================
+function toggleOverdrive() {
+  const on = !document.body.classList.contains('overdrive');
+  document.body.classList.toggle('overdrive');
+  if (on) {
+    notify('⚡ OVERDRIVE — SYSTEM OVERLOAD');
+    const flash = document.createElement('div');
+    flash.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#ff4400;pointer-events:none;opacity:0;transition:opacity 0.1s';
+    document.body.appendChild(flash);
+    requestAnimationFrame(() => { flash.style.opacity = '0.4'; });
+    setTimeout(() => { flash.style.opacity = '0'; }, 100);
+    setTimeout(() => flash.remove(), 300);
+  } else {
+    notify('OVERDRIVE OFF');
+  }
+}
+
 function handleEaster() {
-  notify('SYSTEM: ↑↑↓↓←→←→BA');
+  toggleOverdrive();
 }
 
 const konami = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
@@ -1447,20 +1463,7 @@ document.addEventListener('keydown', (e) => {
   if (k === t) {
     ki++;
     if (ki === konami.length) {
-      const on = !document.body.classList.contains('overdrive');
-      document.body.classList.toggle('overdrive');
-      if (on) {
-        notify('⚡ OVERDRIVE — SYSTEM OVERLOAD');
-        // Activation flash
-        const flash = document.createElement('div');
-        flash.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#ff4400;pointer-events:none;opacity:0;transition:opacity 0.1s';
-        document.body.appendChild(flash);
-        requestAnimationFrame(() => { flash.style.opacity = '0.4'; });
-        setTimeout(() => { flash.style.opacity = '0'; }, 100);
-        setTimeout(() => flash.remove(), 300);
-      } else {
-        notify('OVERDRIVE OFF');
-      }
+      toggleOverdrive();
       ki = 0;
     }
   } else { ki = 0; }
