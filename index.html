@@ -62,11 +62,11 @@
 
     .bar {
       flex: 1;
-      height: 4px; /* Altura inicial base */
+      height: 4px;
       background: linear-gradient(to top, var(--neon-cyan), var(--neon-pink));
       border-radius: 2px 2px 0 0;
       box-shadow: 0 0 5px var(--neon-cyan);
-      transition: height 0.05s ease; /* Transición suave para el audio real */
+      transition: height 0.05s ease;
     }
 
     /* Tarjeta Central Cyberpunk */
@@ -255,7 +255,8 @@
       
       <div class="volume-box">
         <i class="fa-solid fa-volume-low"></i>
-        <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.3" onclick="event.stopPropagation()" oninput="changeVolume(this.value)">
+        <!-- Slider seteado por defecto en 0.08 (8%) -->
+        <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.08" onclick="event.stopPropagation()" oninput="changeVolume(this.value)">
         <i class="fa-solid fa-volume-high"></i>
       </div>
 
@@ -292,7 +293,7 @@
 
     // --- GENERAR BARRAS DE ECUALIZADOR ---
     const eq = document.getElementById('equalizer');
-    const NUM_BARS = 32; // Cantidad de bandas de frecuencia
+    const NUM_BARS = 32;
     const bars = [];
 
     for (let i = 0; i < NUM_BARS; i++) {
@@ -305,7 +306,9 @@
     // --- AUDIO Y ECUALIZADOR REACTIVO EN VIVO ---
     const audio = document.getElementById('audioTrack');
     const btn = document.getElementById('playBtn');
-    audio.volume = 0.3;
+    
+    // VOLUMEN INICIAL AL 8%
+    audio.volume = 0.08;
 
     let audioCtx, analyser, source, dataArray;
     let isAudioContextSetup = false;
@@ -313,11 +316,10 @@
     function setupAudioContext() {
       if (isAudioContextSetup) return;
       
-      // Crear contexto de audio web
       const AudioContext = window.AudioContext || window.webkitAudioContext;
       audioCtx = new AudioContext();
       analyser = audioCtx.createAnalyser();
-      analyser.fftSize = 64; // Calibra la resolución de frecuencias
+      analyser.fftSize = 64;
 
       source = audioCtx.createMediaElementSource(audio);
       source.connect(analyser);
@@ -335,11 +337,10 @@
 
       analyser.getByteFrequencyData(dataArray);
 
-      // Actualizar la altura de cada barra con los datos del MP3 en vivo
       for (let i = 0; i < NUM_BARS; i++) {
         const value = dataArray[i] || 0;
         const percent = value / 255;
-        const height = Math.max(4, percent * 85); // Mínimo 4px, máximo 85px
+        const height = Math.max(4, percent * 85);
         bars[i].style.height = `${height}px`;
       }
     }
