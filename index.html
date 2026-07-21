@@ -352,14 +352,15 @@ section { position: relative; }
   margin: 0 auto 1.5rem;
   position: relative;
   cursor: pointer;
-  transition: transform 0.3s ease;
+  transform-origin: center;
+  transition: box-shadow 0.3s ease;
   /* Subtle rim highlight */
   box-shadow:
     0 0 0 1.5px #333,
     0 0 0 3px #111,
     0 6px 25px rgba(0,0,0,0.7);
 }
-.vinyl-disc:hover { transform: scale(1.02); }
+.vinyl-disc:hover { box-shadow: 0 0 0 1.5px #555, 0 0 0 3px #111, 0 6px 30px rgba(0,0,0,0.8); }
 
 /* Light reflection sweep — makes the vinyl look glossy */
 .vinyl-disc::after {
