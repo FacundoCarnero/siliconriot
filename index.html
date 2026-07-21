@@ -420,14 +420,9 @@ section { position: relative; }
   background: #000; z-index: 2;
 }
 
-/* Whole disc spins, label ring + text counter-rotate so cover art stays readable */
+/* Whole disc spins — label ring and cover art spin with it */
 .vinyl-disc.spin { animation: spinDisc 2s linear infinite; }
 @keyframes spinDisc { to { transform: rotate(360deg); } }
-
-.vinyl-disc.spin .vinyl-label-ring {
-  animation: spinCounter 2s linear infinite;
-}
-@keyframes spinCounter { to { transform: translate(-50%,-50%) rotate(-360deg); } }
 
 .vinyl-name {
   font-family: 'Bebas Neue', sans-serif;
