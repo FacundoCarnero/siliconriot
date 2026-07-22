@@ -1699,7 +1699,7 @@ document.body.addEventListener('click', function first() {
 })();
 
 // ==========================================
-// 14. VIP PRESS PASS GENERATOR (Canvas + Unique ID)
+// 14. VIP PRESS PASS GENERATOR (Con Imagen Real)
 // ==========================================
 function openVipModal() {
   document.getElementById('vipModal').style.display = 'flex';
@@ -1724,81 +1724,88 @@ function generatePass() {
   const timeHex = now.getTime().toString(16).slice(-4).toUpperCase();
   const passID = `SR-${dateStr}-${timeHex}`;
 
-  // 1. Fondo principal
-  ctx.fillStyle = '#0a0a0a';
-  ctx.fillRect(0, 0, 800, 420);
+  // Cargar el logo dorado oficial
+  const logoImg = new Image();
+  logoImg.src = 'assets/Silicon%20Riot%20Dorado.png';
 
-  // 2. Borde dorado elegante
-  ctx.strokeStyle = '#d4a843';
-  ctx.lineWidth = 6;
-  ctx.strokeRect(12, 12, 776, 396);
+  logoImg.onload = () => {
+    // 1. Fondo principal
+    ctx.fillStyle = '#0a0a0a';
+    ctx.fillRect(0, 0, 800, 420);
 
-  ctx.strokeStyle = '#9a7a30';
-  ctx.lineWidth = 1;
-  ctx.strokeRect(20, 20, 760, 380);
+    // 2. Bordes dorados
+    ctx.strokeStyle = '#d4a843';
+    ctx.lineWidth = 6;
+    ctx.strokeRect(12, 12, 776, 396);
 
-  // 3. Franja superior VIP
-  ctx.fillStyle = '#d4a843';
-  ctx.fillRect(20, 20, 760, 50);
+    ctx.strokeStyle = '#9a7a30';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(20, 20, 760, 380);
 
-  ctx.fillStyle = '#0a0a0a';
-  ctx.font = 'bold 24px "Inter", sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText('★ OFFICIAL VIP PRESS PASS ★', 400, 53);
+    // 3. Franja superior VIP
+    ctx.fillStyle = '#d4a843';
+    ctx.fillRect(20, 20, 760, 50);
 
-  // 4. Nombre de la banda
-  ctx.fillStyle = '#f0ede8';
-  ctx.font = '900 64px "Bebas Neue", sans-serif, Arial';
-  ctx.textAlign = 'left';
-  ctx.fillText('SILICON RIOT', 50, 150);
+    ctx.fillStyle = '#0a0a0a';
+    ctx.font = 'bold 24px "Inter", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('★ OFFICIAL VIP PRESS PASS ★', 400, 53);
 
-  ctx.fillStyle = '#9a7a30';
-  ctx.font = '13px "Inter", sans-serif';
-  ctx.fillText('NEO-CITY WORLD TOUR // ACCESS ALL AREAS', 50, 175);
+    // 4. Dibujar Logo Oficial de Silicon Riot
+    // Ajustamos la escala manteniendo la proporción
+    const logoWidth = 360;
+    const logoHeight = (logoImg.height / logoImg.width) * logoWidth;
+    ctx.drawImage(logoImg, 45, 95, logoWidth, logoHeight);
 
-  // 5. Nombre del titular
-  ctx.fillStyle = '#8a8782';
-  ctx.font = '12px "Inter", sans-serif';
-  ctx.fillText('PASSHOLDER / MEDIA:', 50, 230);
+    ctx.fillStyle = '#9a7a30';
+    ctx.font = '13px "Inter", sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText('NEO-CITY WORLD TOUR // ACCESS ALL AREAS', 50, 190);
 
-  ctx.fillStyle = '#d4a843';
-  ctx.font = 'bold 34px "Inter", sans-serif';
-  ctx.fillText(name, 50, 275);
+    // 5. Nombre del titular
+    ctx.fillStyle = '#8a8782';
+    ctx.font = '12px "Inter", sans-serif';
+    ctx.fillText('PASSHOLDER / MEDIA:', 50, 240);
 
-  // 6. Serial / Pass ID con Fecha-Hora
-  ctx.fillStyle = '#555350';
-  ctx.font = '12px monospace';
-  ctx.fillText(`SERIAL: ${passID}`, 50, 330);
-  ctx.fillText(`ISSUED: ${now.toLocaleDateString()} ${now.toLocaleTimeString()}`, 50, 350);
+    ctx.fillStyle = '#d4a843';
+    ctx.font = 'bold 34px "Inter", sans-serif';
+    ctx.fillText(name, 50, 280);
 
-  // 7. Simulación de Chip + Barcode retro a la derecha
-  // Chip
-  ctx.fillStyle = '#6a5a30';
-  ctx.fillRect(650, 120, 90, 65);
-  ctx.strokeStyle = '#d4a843';
-  ctx.strokeRect(650, 120, 90, 65);
+    // 6. Serial / Pass ID con Fecha-Hora
+    ctx.fillStyle = '#555350';
+    ctx.font = '12px monospace';
+    ctx.fillText(`SERIAL: ${passID}`, 50, 335);
+    ctx.fillText(`ISSUED: ${now.toLocaleDateString()} ${now.toLocaleTimeString()}`, 50, 355);
 
-  // Barcode
-  ctx.fillStyle = '#f0ede8';
-  ctx.fillRect(620, 230, 130, 110);
-  ctx.fillStyle = '#0a0a0a';
-  for (let i = 0; i < 22; i++) {
-    const w = Math.random() > 0.5 ? 4 : 2;
-    ctx.fillRect(630 + (i * 5), 240, w, 80);
-  }
+    // 7. Simulación de Chip + Barcode retro a la derecha
+    // Chip
+    ctx.fillStyle = '#6a5a30';
+    ctx.fillRect(650, 110, 90, 65);
+    ctx.strokeStyle = '#d4a843';
+    ctx.strokeRect(650, 110, 90, 65);
 
-  // Convertir a Data URL para preview y descarga
-  const dataURL = canvas.toDataURL('image/png');
-  const imgPreview = document.getElementById('vipPreviewImg');
-  const downloadBtn = document.getElementById('downloadPassBtn');
+    // Barcode
+    ctx.fillStyle = '#f0ede8';
+    ctx.fillRect(620, 220, 130, 110);
+    ctx.fillStyle = '#0a0a0a';
+    for (let i = 0; i < 22; i++) {
+      const w = Math.random() > 0.5 ? 4 : 2;
+      ctx.fillRect(630 + (i * 5), 230, w, 80);
+    }
 
-  imgPreview.src = dataURL;
-  imgPreview.style.display = 'block';
-  downloadBtn.href = dataURL;
-  downloadBtn.download = `SiliconRiot_VIP_${name.replace(/\s+/g, '_')}.png`;
-  downloadBtn.style.display = 'inline-flex';
+    // Convertir a Data URL para preview y descarga
+    const dataURL = canvas.toDataURL('image/png');
+    const imgPreview = document.getElementById('vipPreviewImg');
+    const downloadBtn = document.getElementById('downloadPassBtn');
 
-  notify('🎟️ VIP PASS GENERADO');
+    imgPreview.src = dataURL;
+    imgPreview.style.display = 'block';
+    downloadBtn.href = dataURL;
+    downloadBtn.download = `SiliconRiot_VIP_${name.replace(/\s+/g, '_')}.png`;
+    downloadBtn.style.display = 'inline-flex';
+
+    notify('🎟️ VIP PASS GENERADO');
+  };
 }
 
 renderTrackList();
