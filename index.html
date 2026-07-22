@@ -1244,16 +1244,20 @@ body.overdrive .track-item.active {
 <!-- JS -->
 <script>
 // ==========================================
-// 0. VISITOR COUNTER (CountAPI - 100% Gratis y Seguro)
+// 0. VISITOR COUNTER (CounterAPI v1 - Público)
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
   const visitorElement = document.getElementById('visitorCount');
 
-  fetch('https://api.countapi.xyz/hit/silicon-riot/visits')
-    .then(res => res.json())
+  fetch('https://api.counterapi.dev/v1/silicon-riot-official/visits/up')
+    .then(res => {
+      if (!res.ok) throw new Error('Error al conectar con la API');
+      return res.json();
+    })
     .then(data => {
-      if (data && data.value !== undefined) {
-        visitorElement.innerText = String(data.value).padStart(5, '0');
+      const count = data.count ?? data.value;
+      if (count !== undefined && !isNaN(count)) {
+        visitorElement.innerText = String(count).padStart(5, '0');
       } else {
         visitorElement.innerText = 'ONLINE';
       }
