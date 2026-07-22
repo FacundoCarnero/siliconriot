@@ -1258,7 +1258,7 @@ function startPreviewTimer() {
   previewTimer = setInterval(() => {
     try {
       if (ytPlayer && ytPlayer.getCurrentTime && ytPlayer.getCurrentTime() >= PREVIEW_SEC) {
-        notify('▶ Preview — full track on Spotify/YouTube');
+        notify('▶ Preview — full track on streams');
         nextTrack();
       }
     } catch(_) {}
