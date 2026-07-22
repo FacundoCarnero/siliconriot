@@ -1248,17 +1248,22 @@ body.overdrive .track-item.active {
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
   const visitorElement = document.getElementById('visitorCount');
-  fetch('https://counterapi.dev/v1/silicon-riot/visits/up')
-    .then(res => res.json())
+
+  fetch('https://counterapi.dev/v1/silicon-riot/up')
+    .then(res => {
+      if (!res.ok) throw new Error('HTTP status ' + res.status);
+      return res.json();
+    })
     .then(data => {
-      const count = data.count ?? data.value;
-      if (count !== undefined) {
+      const count = data.count ?? data.value ?? data.up;
+      if (count !== undefined && !isNaN(count)) {
         visitorElement.innerText = String(count).padStart(5, '0');
       } else {
         visitorElement.innerText = 'ONLINE';
       }
     })
-    .catch(() => {
+    .catch(err => {
+      console.error('CounterAPI Error:', err);
       visitorElement.innerText = 'ONLINE';
     });
 });
