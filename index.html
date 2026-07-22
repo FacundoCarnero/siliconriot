@@ -1699,7 +1699,7 @@ document.body.addEventListener('click', function first() {
 })();
 
 // ==========================================
-// 14. VIP PRESS PASS GENERATOR (Con Imagen Real)
+// 14. VIP PRESS PASS GENERATOR (Fix Overlap & Logo Redondo)
 // ==========================================
 function openVipModal() {
   document.getElementById('vipModal').style.display = 'flex';
@@ -1716,7 +1716,7 @@ function generatePass() {
   const canvas = document.getElementById('vipCanvas');
   const ctx = canvas.getContext('2d');
 
-  // Generar ID único usando Timestamp + Hexadecimal
+  // Generar ID único
   const now = new Date();
   const dateStr = now.getFullYear().toString() +
     String(now.getMonth() + 1).padStart(2, '0') +
@@ -1724,11 +1724,19 @@ function generatePass() {
   const timeHex = now.getTime().toString(16).slice(-4).toUpperCase();
   const passID = `SR-${dateStr}-${timeHex}`;
 
-  // Cargar el logo dorado oficial
-  const logoImg = new Image();
-  logoImg.src = 'assets/Silicon%20Riot%20Dorado.png';
+  // Helper para cargar imágenes asíncronas
+  const loadImage = (src) => new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.src = src;
+  });
 
-  logoImg.onload = () => {
+  // Cargamos el logo principal y el logo redondito al mismo tiempo
+  Promise.all([
+    loadImage('assets/Silicon%20Riot%20Dorado.png'),
+    loadImage('assets/Logo%20Limpio%20HD.png')
+  ]).then(([logoImg, roundLogoImg]) => {
+
     // 1. Fondo principal
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, 800, 420);
@@ -1752,48 +1760,45 @@ function generatePass() {
     ctx.fillText('★ OFFICIAL VIP PRESS PASS ★', 400, 53);
 
     // 4. Dibujar Logo Oficial de Silicon Riot
-    // Ajustamos la escala manteniendo la proporción
     const logoWidth = 360;
     const logoHeight = (logoImg.height / logoImg.width) * logoWidth;
-    ctx.drawImage(logoImg, 45, 95, logoWidth, logoHeight);
+    ctx.drawImage(logoImg, 45, 90, logoWidth, logoHeight);
 
+    // Bajamos los textos 25px para evitar el solapamiento
     ctx.fillStyle = '#9a7a30';
     ctx.font = '13px "Inter", sans-serif';
     ctx.textAlign = 'left';
-    ctx.fillText('NEO-CITY WORLD TOUR // ACCESS ALL AREAS', 50, 190);
+    ctx.fillText('NEO-CITY WORLD TOUR // ACCESS ALL AREAS', 50, 215);
 
     // 5. Nombre del titular
     ctx.fillStyle = '#8a8782';
     ctx.font = '12px "Inter", sans-serif';
-    ctx.fillText('PASSHOLDER / MEDIA:', 50, 240);
+    ctx.fillText('PASSHOLDER / MEDIA:', 50, 260);
 
     ctx.fillStyle = '#d4a843';
     ctx.font = 'bold 34px "Inter", sans-serif';
-    ctx.fillText(name, 50, 280);
+    ctx.fillText(name, 50, 300);
 
     // 6. Serial / Pass ID con Fecha-Hora
     ctx.fillStyle = '#555350';
     ctx.font = '12px monospace';
-    ctx.fillText(`SERIAL: ${passID}`, 50, 335);
-    ctx.fillText(`ISSUED: ${now.toLocaleDateString()} ${now.toLocaleTimeString()}`, 50, 355);
+    ctx.fillText(`SERIAL: ${passID}`, 50, 355);
+    ctx.fillText(`ISSUED: ${now.toLocaleDateString()} ${now.toLocaleTimeString()}`, 50, 375);
 
-    // 7. Simulación de Chip + Barcode retro a la derecha
-    // Chip
-    ctx.fillStyle = '#6a5a30';
-    ctx.fillRect(650, 110, 90, 65);
-    ctx.strokeStyle = '#d4a843';
-    ctx.strokeRect(650, 110, 90, 65);
+    // 7. Reemplazo del chip vacío por el Logo Redondito
+    const iconSize = 90;
+    ctx.drawImage(roundLogoImg, 640, 95, iconSize, iconSize);
 
-    // Barcode
+    // Barcode retro (bajado un poquito para alinear con el nuevo logo)
     ctx.fillStyle = '#f0ede8';
-    ctx.fillRect(620, 220, 130, 110);
+    ctx.fillRect(620, 230, 130, 110);
     ctx.fillStyle = '#0a0a0a';
     for (let i = 0; i < 22; i++) {
       const w = Math.random() > 0.5 ? 4 : 2;
-      ctx.fillRect(630 + (i * 5), 230, w, 80);
+      ctx.fillRect(630 + (i * 5), 240, w, 80);
     }
 
-    // Convertir a Data URL para preview y descarga
+    // Convertir a imagen y descargar
     const dataURL = canvas.toDataURL('image/png');
     const imgPreview = document.getElementById('vipPreviewImg');
     const downloadBtn = document.getElementById('downloadPassBtn');
@@ -1805,7 +1810,7 @@ function generatePass() {
     downloadBtn.style.display = 'inline-flex';
 
     notify('🎟️ VIP PASS GENERADO');
-  };
+  });
 }
 
 renderTrackList();
