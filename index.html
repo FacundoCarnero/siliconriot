@@ -8,6 +8,15 @@
   <meta name="description" content="Silicon Riot — 80s Synth-Rock from the future. Listen to Neon Fantasy.">
   <meta name="robots" content="index, follow">
 
+  <!-- Google Analytics GA4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-RK74R7434Y"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-RK74R7434Y');
+  </script>
+
   <link rel="canonical" id="canonicalLink" href="">
   <meta property="og:type" content="website">
   <meta property="og:url" id="ogUrl" content="">
@@ -22,7 +31,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=Press+Start+2P&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <style>
@@ -39,6 +48,7 @@
   --white:     #f0ede8;
   --white-dim: #8a8782;
   --white-dim2:#555350;
+  --neon-cyan: #00f3ff;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -488,7 +498,7 @@ section { position: relative; }
 }
 .vinyl-vol input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 10px; height: 10px;
+  width: 100px; height: 10px;
   background: var(--gold-dim);
   border-radius: 50%; cursor: pointer;
 }
@@ -812,6 +822,15 @@ section { position: relative; }
   font-size: 0.55rem; letter-spacing: 4px;
   color: var(--white-dim2); text-transform: uppercase;
   margin: 1rem 0 0.5rem; font-weight: 500;
+}
+
+.visitor-counter {
+  margin-top: 2.5rem;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.6rem;
+  color: var(--neon-cyan);
+  text-shadow: 0 0 5px rgba(0, 243, 255, 0.5);
+  letter-spacing: 2px;
 }
 
 /* ============================================================
@@ -1211,6 +1230,10 @@ body.overdrive .track-item.active {
     <a href="https://beacons.ai/siliconriot" target="_blank" class="connect-link beacons" onclick="notify('All Links → Beacons')">
       <i class="fa-solid fa-star"></i> All Links // Beacons
     </a>
+
+    <div class="visitor-counter">
+      VISITS: <span id="visitorCount">00000</span>
+    </div>
   </div>
 </section>
 
@@ -1222,6 +1245,25 @@ body.overdrive .track-item.active {
 
 <!-- JS -->
 <script>
+// ==========================================
+// 0. VISITOR COUNTER (CounterAPI)
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+  const visitorElement = document.getElementById('visitorCount');
+  fetch('https://counterapi.dev/v1/silicon-riot/visits/up')
+    .then(res => res.json())
+    .then(data => {
+      if (data && data.count !== undefined) {
+        visitorElement.innerText = String(data.count).padStart(5, '0');
+      } else {
+        visitorElement.innerText = 'ONLINE';
+      }
+    })
+    .catch(() => {
+      visitorElement.innerText = 'ONLINE';
+    });
+});
+
 // ==========================================
 // 1. NOTIFICATIONS
 // ==========================================
