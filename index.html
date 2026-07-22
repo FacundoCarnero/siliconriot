@@ -1229,11 +1229,42 @@ body.overdrive .track-item.active {
       <i class="fa-solid fa-star"></i> All Links // Beacons
     </a>
 
+    <!-- VIP PRESS PASS GENERATOR BUTTON -->
+    <div style="margin-top: 1.5rem;">
+      <button onclick="openVipModal()" class="connect-link beacons" style="cursor:pointer; border-color: var(--gold-dim); background: rgba(212,168,67,0.05);">
+        <i class="fa-solid fa-ticket"></i> GET YOUR VIP PRESS PASS
+      </button>
+    </div>
+
     <div class="visitor-counter">
       VISITORS: <span id="visitorCount">00001</span>
     </div>
   </div>
 </section>
+
+<!-- MODAL VIP PASS GENERATOR -->
+<div id="vipModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:10001; backdrop-filter:blur(8px); justify-content:center; align-items:center; padding:1rem;">
+  <div style="background:var(--black-2); border:1px solid var(--gold-dim); max-width:450px; width:100%; padding:1.5rem; border-radius:4px; text-align:center; position:relative; box-shadow:0 0 30px rgba(212,168,67,0.15);">
+    <button onclick="closeVipModal()" style="position:absolute; top:10px; right:12px; background:none; border:none; color:var(--white-dim); font-size:1.2rem; cursor:pointer;">&times;</button>
+    
+    <p class="tag">// ACCESS GRANTED</p>
+    <h3 class="title-md" style="font-size:1.8rem; margin-bottom:0.5rem;">VIP PRESS PASS</h3>
+    <p style="font-size:0.75rem; color:var(--white-dim); margin-bottom:1rem;">Ingresá tu nombre o alias para generar tu pase oficial de Silicon Riot.</p>
+
+    <input type="text" id="vipNameInput" placeholder="TU NOMBRE O ALIAS" maxlength="20" style="width:100%; padding:0.6rem; background:var(--black-3); border:1px solid var(--gold-dim2); color:var(--white); font-family:'Inter', sans-serif; text-transform:uppercase; font-size:0.85rem; text-align:center; margin-bottom:1rem; outline:none; border-radius:3px;">
+
+    <!-- Canvas oculto para renderizado -->
+    <canvas id="vipCanvas" width="800" height="420" style="display:none;"></canvas>
+    <img id="vipPreviewImg" style="width:100%; height:auto; border:1px solid rgba(255,255,255,0.1); margin-bottom:1rem; display:none; border-radius:4px;" alt="VIP Pass Preview">
+
+    <div style="display:flex; gap:0.5rem;">
+      <button onclick="generatePass()" class="connect-link" style="flex:1; cursor:pointer; background:var(--gold); color:var(--black); font-weight:600; border:none;">GENERAR</button>
+      <a id="downloadPassBtn" download="SiliconRiot_VIP_Pass.png" class="connect-link" style="display:none; flex:1; cursor:pointer; border-color:var(--gold); color:var(--gold); text-decoration:none;">
+        <i class="fa-solid fa-download"></i> DESCARGAR
+      </a>
+    </div>
+  </div>
+</div>
 
 <!-- FOOTER -->
 <footer>
@@ -1666,6 +1697,109 @@ document.body.addEventListener('click', function first() {
   document.getElementById('twUrl')?.setAttribute('content', base);
   document.getElementById('twImage')?.setAttribute('content', img);
 })();
+
+// ==========================================
+// 14. VIP PRESS PASS GENERATOR (Canvas + Unique ID)
+// ==========================================
+function openVipModal() {
+  document.getElementById('vipModal').style.display = 'flex';
+}
+
+function closeVipModal() {
+  document.getElementById('vipModal').style.display = 'none';
+}
+
+function generatePass() {
+  const input = document.getElementById('vipNameInput');
+  const name = (input.value.trim() || 'GUEST PRESS').toUpperCase();
+  
+  const canvas = document.getElementById('vipCanvas');
+  const ctx = canvas.getContext('2d');
+
+  // Generar ID único usando Timestamp + Hexadecimal
+  const now = new Date();
+  const dateStr = now.getFullYear().toString() +
+    String(now.getMonth() + 1).padStart(2, '0') +
+    String(now.getDate()).padStart(2, '0');
+  const timeHex = now.getTime().toString(16).slice(-4).toUpperCase();
+  const passID = `SR-${dateStr}-${timeHex}`;
+
+  // 1. Fondo principal
+  ctx.fillStyle = '#0a0a0a';
+  ctx.fillRect(0, 0, 800, 420);
+
+  // 2. Borde dorado elegante
+  ctx.strokeStyle = '#d4a843';
+  ctx.lineWidth = 6;
+  ctx.strokeRect(12, 12, 776, 396);
+
+  ctx.strokeStyle = '#9a7a30';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(20, 20, 760, 380);
+
+  // 3. Franja superior VIP
+  ctx.fillStyle = '#d4a843';
+  ctx.fillRect(20, 20, 760, 50);
+
+  ctx.fillStyle = '#0a0a0a';
+  ctx.font = 'bold 24px "Inter", sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('★ OFFICIAL VIP PRESS PASS ★', 400, 53);
+
+  // 4. Nombre de la banda
+  ctx.fillStyle = '#f0ede8';
+  ctx.font = '900 64px "Bebas Neue", sans-serif, Arial';
+  ctx.textAlign = 'left';
+  ctx.fillText('SILICON RIOT', 50, 150);
+
+  ctx.fillStyle = '#9a7a30';
+  ctx.font = '13px "Inter", sans-serif';
+  ctx.fillText('NEO-CITY WORLD TOUR // ACCESS ALL AREAS', 50, 175);
+
+  // 5. Nombre del titular
+  ctx.fillStyle = '#8a8782';
+  ctx.font = '12px "Inter", sans-serif';
+  ctx.fillText('PASSHOLDER / MEDIA:', 50, 230);
+
+  ctx.fillStyle = '#d4a843';
+  ctx.font = 'bold 34px "Inter", sans-serif';
+  ctx.fillText(name, 50, 275);
+
+  // 6. Serial / Pass ID con Fecha-Hora
+  ctx.fillStyle = '#555350';
+  ctx.font = '12px monospace';
+  ctx.fillText(`SERIAL: ${passID}`, 50, 330);
+  ctx.fillText(`ISSUED: ${now.toLocaleDateString()} ${now.toLocaleTimeString()}`, 50, 350);
+
+  // 7. Simulación de Chip + Barcode retro a la derecha
+  // Chip
+  ctx.fillStyle = '#6a5a30';
+  ctx.fillRect(650, 120, 90, 65);
+  ctx.strokeStyle = '#d4a843';
+  ctx.strokeRect(650, 120, 90, 65);
+
+  // Barcode
+  ctx.fillStyle = '#f0ede8';
+  ctx.fillRect(620, 230, 130, 110);
+  ctx.fillStyle = '#0a0a0a';
+  for (let i = 0; i < 22; i++) {
+    const w = Math.random() > 0.5 ? 4 : 2;
+    ctx.fillRect(630 + (i * 5), 240, w, 80);
+  }
+
+  // Convertir a Data URL para preview y descarga
+  const dataURL = canvas.toDataURL('image/png');
+  const imgPreview = document.getElementById('vipPreviewImg');
+  const downloadBtn = document.getElementById('downloadPassBtn');
+
+  imgPreview.src = dataURL;
+  imgPreview.style.display = 'block';
+  downloadBtn.href = dataURL;
+  downloadBtn.download = `SiliconRiot_VIP_${name.replace(/\s+/g, '_')}.png`;
+  downloadBtn.style.display = 'inline-flex';
+
+  notify('🎟️ VIP PASS GENERADO');
+}
 
 renderTrackList();
 loadTrack(0);
