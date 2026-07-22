@@ -424,13 +424,14 @@ section { position: relative; }
 .vinyl-disc.spin { animation: spinDisc 2s linear infinite; }
 @keyframes spinDisc { to { transform: rotate(360deg); } }
 
-/* Light reflection — subtle shimmer while disc spins */
+/* Light reflection — counter-rotates with disc + subtle oscillation */
 .vinyl-disc.spin::after {
-  animation: shimmerMove 3s ease-in-out infinite;
+  animation: shimmerMove 2s linear infinite;
 }
 @keyframes shimmerMove {
-  0%, 100% { transform: rotate(-3deg); }
-  50%      { transform: rotate(3deg); }
+  0%   { transform: rotate(-3deg); }      /* parent 0,   visual -3 */
+  50%  { transform: rotate(-177deg); }    /* parent 180, visual +3 */
+  100% { transform: rotate(-363deg); }    /* parent 360, visual -3 */
 }
 
 .vinyl-name {
@@ -826,6 +827,9 @@ body.overdrive .scanlines {
 
 /* Vinyl goes into OVERDRIVE */
 body.overdrive .vinyl-disc.spin {
+  animation-duration: 0.6s;
+}
+body.overdrive .vinyl-disc.spin::after {
   animation-duration: 0.6s;
 }
 
@@ -1246,6 +1250,23 @@ const trackList  = document.getElementById('trackList');
 const vinylArt   = document.getElementById('vinylArt');
 
 let ytPlayer = null;
+let previewTimer = null;
+const PREVIEW_SEC = 60;
+
+function startPreviewTimer() {
+  stopPreviewTimer();
+  previewTimer = setInterval(() => {
+    try {
+      if (ytPlayer && ytPlayer.getCurrentTime && ytPlayer.getCurrentTime() >= PREVIEW_SEC) {
+        notify('▶ Preview — full track on Spotify/YouTube');
+        nextTrack();
+      }
+    } catch(_) {}
+  }, 1000);
+}
+function stopPreviewTimer() {
+  if (previewTimer) { clearInterval(previewTimer); previewTimer = null; }
+}
 
 function playlist() { return albums[albumIdx].tracks; }
 function currentTrack() { return playlist()[trackIdx]; }
@@ -1296,10 +1317,12 @@ function onYTState(e) {
     playBtn.classList.add('playing');
     playIcon.className = 'fa-solid fa-pause';
     vDisc.classList.add('spin');
+    startPreviewTimer();
   } else if (e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.ENDED) {
     playBtn.classList.remove('playing');
     playIcon.className = 'fa-solid fa-play';
     vDisc.classList.remove('spin');
+    stopPreviewTimer();
   }
 }
 
@@ -1329,6 +1352,7 @@ function renderTrackList() {
 // ==========================================
 function switchAlbum(i) {
   if (i === albumIdx) return;
+  stopPreviewTimer();
   albumIdx = i;
   trackIdx = 0;
   if (ytPlayer && ytPlayer.stopVideo) ytPlayer.stopVideo();
@@ -1353,6 +1377,7 @@ function switchAlbum(i) {
 // 8. TRACK LOADING
 // ==========================================
 function loadTrack(i) {
+  stopPreviewTimer();
   trackIdx = i;
   const t = currentTrack();
   trackTitle.innerText = t.title;
