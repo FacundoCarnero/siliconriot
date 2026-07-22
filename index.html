@@ -31,7 +31,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <style>
@@ -48,7 +48,6 @@
   --white:     #f0ede8;
   --white-dim: #8a8782;
   --white-dim2:#555350;
-  --neon-cyan: #00f3ff;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -498,7 +497,7 @@ section { position: relative; }
 }
 .vinyl-vol input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 100px; height: 10px;
+  width: 10px; height: 10px;
   background: var(--gold-dim);
   border-radius: 50%; cursor: pointer;
 }
@@ -825,12 +824,11 @@ section { position: relative; }
 }
 
 .visitor-counter {
-  margin-top: 2.5rem;
-  font-family: 'Press Start 2P', monospace;
+  margin-top: 2rem;
   font-size: 0.6rem;
-  color: var(--neon-cyan);
-  text-shadow: 0 0 5px rgba(0, 243, 255, 0.5);
+  color: var(--white-dim2);
   letter-spacing: 2px;
+  text-transform: uppercase;
 }
 
 /* ============================================================
@@ -1232,7 +1230,7 @@ body.overdrive .track-item.active {
     </a>
 
     <div class="visitor-counter">
-      VISITS: <span id="visitorCount">00000</span>
+      ONLINE <span id="visitorCount">00000</span>
     </div>
   </div>
 </section>
@@ -1253,8 +1251,9 @@ document.addEventListener('DOMContentLoaded', () => {
   fetch('https://counterapi.dev/v1/silicon-riot/visits/up')
     .then(res => res.json())
     .then(data => {
-      if (data && data.count !== undefined) {
-        visitorElement.innerText = String(data.count).padStart(5, '0');
+      const count = data.count ?? data.value;
+      if (count !== undefined) {
+        visitorElement.innerText = String(count).padStart(5, '0');
       } else {
         visitorElement.innerText = 'ONLINE';
       }
