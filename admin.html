@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Silicon Riot</title>
+  <meta name="robots" content="noindex, nofollow" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+<style>
+/* ============================================================
+   Admin Panel — Silicon Riot
+   Sidebar layout
+   ============================================================ */
+:root {
+  --black:     #0a0a0a;
+  --black-2:   #111111;
+  --black-3:   #1a1a1a;
+  --gold:      #d4a843;
+  --gold-dim:  #9a7a30;
+  --gold-dim2: #6a5a30;
+  --white:     #f0ede8;
+  --white-dim: #8a8782;
+  --white-dim2:#555350;
+  --red:       #cc3333;
+  --red-dim:   #882222;
+  --sidebar-w: 220px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--black);
+  color: var(--white);
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ─── LOGIN ──────────────────────────────────── */
+#loginSection {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+.login-card {
+  background: var(--black-2);
+  border: 1px solid rgba(255,255,255,0.04);
+  padding: 2.5rem 2rem;
+  max-width: 340px;
+  width: 100%;
+  text-align: center;
+}
+
+.login-card h2 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.8rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.15rem;
+}
+
+.login-card .sub {
+  font-size: 0.6rem;
+  color: var(--white-dim2);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 1.2rem;
+}
+
+.login-error {
+  font-size: 0.65rem;
+  color: var(--red);
+  min-height: 1rem;
+  margin-bottom: 0.6rem;
+}
+
+.login-card .btn { width: 100%; justify-content: center; }
+
+/* ─── LAYOUT ─────────────────────────────────── */
+.admin-layout {
+  display: none;
+  min-height: 100vh;
+}
+.admin-layout.visible { display: flex; }
+
+/* ─── SIDEBAR ────────────────────────────────── */
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--black-2);
+  border-right: 1px solid rgba(255,255,255,0.04);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 10;
+}
+
+.sidebar-brand {
+  padding: 1.2rem 1.2rem 0.8rem;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.2rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gold);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.sidebar-brand span {
+  display: block;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.5rem;
+  letter-spacing: 2px;
+  color: var(--white-dim2);
+  font-weight: 400;
+  margin-top: 0.1rem;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 0.5rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.nav-item {
+  background: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0.65rem 1.2rem;
+  width: 100%;
+  text-align: left;
+  color: var(--white-dim2);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border-left: 2px solid transparent;
+}
+
+.nav-item i {
+  width: 16px;
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--white-dim2);
+  transition: color 0.15s;
+}
+
+.nav-item:hover {
+  color: var(--white-dim);
+  background: rgba(255,255,255,0.02);
+}
+
+.nav-item.active {
+  color: var(--gold);
+  border-left-color: var(--gold-dim);
+  background: rgba(212,168,67,0.04);
+}
+
+.nav-item.active i {
+  color: var(--gold);
+}
+
+.sidebar-footer {
+  padding: 0.8rem 1.2rem;
+  border-top: 1px solid rgba(255,255,255,0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.sidebar-user {
+  font-size: 0.6rem;
+  color: var(--white-dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebar-user .email {
+  color: var(--white);
+  font-weight: 500;
+}
+
+/* ─── MAIN CONTENT ───────────────────────────── */
+.main-content {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  padding: 2rem;
+  max-width: calc(100vw - var(--sidebar-w));
+  background: var(--black-2);
+  min-height: 100vh;
+}
+
+.page {
+  display: none;
+  max-width: 900px;
+}
+
+.page.active { display: block; }
+
+.page h2 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.4rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--white);
+  margin-bottom: 1.2rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.page h2 i { color: var(--gold-dim); }
+
+/* ─── BOTONES ────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0.45rem 1rem;
+  border: 1px solid var(--gold-dim);
+  background: transparent;
+  color: var(--gold);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 3px;
+}
+
+.btn:hover {
+  background: var(--gold);
+  color: var(--black);
+}
+
+.btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.55rem;
+  letter-spacing: 1px;
+}
+
+.btn-danger {
+  border-color: var(--red-dim);
+  color: var(--red);
+}
+.btn-danger:hover {
+  background: var(--red);
+  color: var(--white);
+  border-color: var(--red);
+}
+
+.btn-ghost {
+  border-color: transparent;
+  color: var(--white-dim2);
+}
+.btn-ghost:hover {
+  border-color: rgba(255,255,255,0.06);
+  color: var(--white);
+  background: transparent;
+}
+
+.btn-gold-solid {
+  background: var(--gold);
+  color: var(--black);
+  border-color: var(--gold);
+}
+.btn-gold-solid:hover {
+  background: var(--gold-dim);
+  border-color: var(--gold-dim);
+}
+
+/* ─── FORM CONTROLS ──────────────────────────── */
+.form-group {
+  text-align: left;
+  margin-bottom: 0.7rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.55rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--white-dim);
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 0.5rem 0.7rem;
+  background: var(--black-3);
+  border: 1px solid rgba(255,255,255,0.06);
+  color: var(--white);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+  border-radius: 3px;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: var(--gold-dim);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.input-sm {
+  padding: 0.4rem 0.6rem;
+  background: var(--black-3);
+  border: 1px solid rgba(255,255,255,0.06);
+  color: var(--white);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.7rem;
+  outline: none;
+  border-radius: 3px;
+  width: 100%;
+  transition: border-color 0.2s;
+}
+.input-sm:focus { border-color: var(--gold-dim); }
+.input-sm::placeholder { color: var(--white-dim2); font-size: 0.65rem; }
+
+.status-msg {
+  font-size: 0.65rem;
+  min-height: 1.2rem;
+}
+.status-ok  { color: var(--gold); }
+.status-error { color: var(--red); }
+.status-info { color: var(--white-dim); }
+
+/* ─── DASHBOARD ──────────────────────────────── */
+.dash-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.7rem;
+  margin-bottom: 0.5rem;
+}
+
+.dash-card {
+  background: var(--black-3);
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 4px;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.dash-card .dash-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(212,168,67,0.08);
+  border: 1px solid rgba(212,168,67,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dash-card .dash-icon i {
+  font-size: 1rem;
+  color: var(--gold-dim);
+}
+
+.dash-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.dash-label {
+  font-size: 0.55rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--white-dim2);
+  font-weight: 500;
+}
+
+.dash-value {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.6rem;
+  color: var(--white);
+  line-height: 1;
+}
+
+/* ─── CONFIG PAGE ────────────────────────────── */
+.config-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.7rem;
+}
+
+.config-grid .full { grid-column: 1 / -1; }
+
+.config-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.3rem;
+}
+
+/* ─── ALBUMS PAGE ────────────────────────────── */
+.album-list { display: flex; flex-direction: column; gap: 0.5rem; }
+
+.album-item {
+  background: var(--black-2);
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.album-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 1rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.album-head:hover { background: rgba(255,255,255,0.02); }
+
+.album-head .title {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--white);
+  flex: 1;
+}
+
+.album-head .meta {
+  font-size: 0.6rem;
+  color: var(--white-dim2);
+  white-space: nowrap;
+}
+
+.album-head .actions {
+  display: flex;
+  gap: 3px;
+  flex-shrink: 0;
+}
+
+.album-editor {
+  padding: 1rem;
+  border-top: 1px solid rgba(255,255,255,0.04);
+  display: grid;
+  gap: 0.6rem;
+}
+
+.album-editor .row-3 {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 5px;
+}
+
+.album-editor .row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+}
+
+.album-editor .section-label {
+  font-size: 0.55rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--white-dim2);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.album-editor .section-label hr {
+  flex: 1;
+  border: none;
+  border-top: 1px solid rgba(255,255,255,0.04);
+}
+
+.track-row {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.track-row .idx {
+  font-size: 0.6rem;
+  color: var(--white-dim2);
+  width: 22px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.editor-actions {
+  display: flex;
+  gap: 5px;
+  margin-top: 0.3rem;
+}
+
+/* ─── VIP PAGE ───────────────────────────────── */
+.vip-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.7rem;
+}
+
+.vip-table th {
+  text-align: left;
+  color: var(--white-dim2);
+  font-weight: 500;
+  font-size: 0.55rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.vip-table td {
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid rgba(255,255,255,0.02);
+  color: var(--white-dim);
+}
+
+.vip-table .empty-state {
+  text-align: center;
+  color: var(--white-dim2);
+  font-style: italic;
+  font-size: 0.65rem;
+  padding: 2rem 0;
+}
+
+.empty-msg {
+  text-align: center;
+  color: var(--white-dim2);
+  font-size: 0.7rem;
+  padding: 1.5rem 0;
+}
+
+/* ─── RESPONSIVE ─────────────────────────────── */
+@media (max-width: 768px) {
+  :root { --sidebar-w: 56px; }
+  .sidebar-brand { font-size: 0; padding: 1rem 0.8rem; }
+  .sidebar-brand span { display: none; }
+  .nav-item { justify-content: center; padding: 0.65rem 0; font-size: 0; gap: 0; }
+  .nav-item i { font-size: 1rem; width: auto; }
+  .sidebar-user { display: none; }
+  .sidebar-footer { align-items: center; }
+  .main-content { padding: 1rem; }
+  .config-grid { grid-template-columns: 1fr; }
+  .album-editor .row-3,
+  .album-editor .row-2 { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 400px) {
+  .login-card { padding: 1.5rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ LOGIN ═══ -->
+<section id="loginSection">
+  <div class="login-card">
+    <h2>ACCESS</h2>
+    <p class="sub">Panel de Administración</p>
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="loginEmail">Email</label>
+        <input type="email" id="loginEmail" placeholder="admin@silicon-riot.com" autocomplete="email" required />
+      </div>
+      <div class="form-group">
+        <label for="loginPassword">Contraseña</label>
+        <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password" required />
+      </div>
+      <div class="login-error" id="loginError"></div>
+      <button type="submit" class="btn"><i class="fa-solid fa-lock"></i> Ingresar</button>
+    </form>
+  </div>
+</section>
+
+<!-- ═══ DASHBOARD LAYOUT ═══ -->
+<div class="admin-layout" id="adminLayout">
+
+  <!-- ─── SIDEBAR ─── -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      SILICON RIOT
+      <span>Admin Panel</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button class="nav-item active" data-page="dashboard"><i class="fa-solid fa-chart-simple"></i> Dashboard</button>
+      <button class="nav-item" data-page="config"><i class="fa-solid fa-sliders"></i> Config</button>
+      <button class="nav-item" data-page="albums"><i class="fa-solid fa-record-vinyl"></i> Albums</button>
+      <button class="nav-item" data-page="vip"><i class="fa-solid fa-ticket"></i> VIP Passes</button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <span class="email" id="adminEmail">—</span>
+      </div>
+      <button class="btn btn-sm btn-ghost" id="logoutBtn" style="justify-content:center;"><i class="fa-solid fa-right-from-bracket"></i> <span>Salir</span></button>
+    </div>
+  </aside>
+
+  <!-- ─── MAIN ─── -->
+  <main class="main-content">
+
+    <!-- Page: Dashboard -->
+    <div class="page active" id="pageDashboard">
+      <h2 style="display:flex;align-items:center;justify-content:space-between;">
+        <span><i class="fa-solid fa-chart-simple"></i> Dashboard</span>
+        <button class="btn btn-sm btn-ghost" id="refreshDashBtn" style="border-color:rgba(255,255,255,0.06);"><i class="fa-solid fa-rotate"></i> Actualizar</button>
+      </h2>
+      <div class="dash-grid">
+        <div class="dash-card">
+          <div class="dash-icon"><i class="fa-solid fa-ticket"></i></div>
+          <div class="dash-body">
+            <span class="dash-label">VIP Passes</span>
+            <span class="dash-value" id="dashVipCount">—</span>
+          </div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-icon"><i class="fa-solid fa-users"></i></div>
+          <div class="dash-body">
+            <span class="dash-label">Visitas</span>
+            <span class="dash-value" id="dashVisits">—</span>
+          </div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-icon"><i class="fa-solid fa-record-vinyl"></i></div>
+          <div class="dash-body">
+            <span class="dash-label">Álbumes</span>
+            <span class="dash-value" id="dashAlbumCount">—</span>
+          </div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-icon"><i class="fa-solid fa-check"></i></div>
+          <div class="dash-body">
+            <span class="dash-label">Site Config</span>
+            <span class="dash-value" id="dashConfigStatus" style="font-size:0.7rem;">—</span>
+          </div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-icon"><i class="fa-brands fa-youtube"></i></div>
+          <div class="dash-body">
+            <span class="dash-label">YouTube Suscriptores</span>
+            <span class="dash-value" id="dashYtSubs" style="font-size:1.2rem;">—</span>
+          </div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-icon"><i class="fa-solid fa-eye"></i></div>
+          <div class="dash-body">
+            <span class="dash-label">YouTube Views</span>
+            <span class="dash-value" id="dashYtViews" style="font-size:1.2rem;">—</span>
+          </div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-icon"><i class="fa-solid fa-video"></i></div>
+          <div class="dash-body">
+            <span class="dash-label">YouTube Videos</span>
+            <span class="dash-value" id="dashYtVideos" style="font-size:1.2rem;">—</span>
+          </div>
+        </div>
+        <div class="dash-card" id="dashPageSpeedCard">
+          <div class="dash-icon"><i class="fa-solid fa-gauge-high"></i></div>
+          <div class="dash-body">
+            <span class="dash-label">PageSpeed</span>
+            <span class="dash-value" id="dashPageSpeedScore" style="font-size:1.8rem;">—</span>
+            <div id="dashPageSpeedMeta" style="font-size:0.6rem;color:var(--white-dim2);margin-top:2px;line-height:1.4;"></div>
+          </div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-icon"><i class="fa-brands fa-spotify"></i></div>
+          <div class="dash-body">
+            <span class="dash-label">Spotify</span>
+            <span class="dash-value" id="dashSpotify" style="font-size:1.4rem;">—</span>
+            <div id="dashSpotifyMeta" style="font-size:0.6rem;color:var(--white-dim2);margin-top:2px;line-height:1.4;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:1.5rem;">
+        <h3 style="font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:1px;text-transform:uppercase;color:var(--white-dim);margin-bottom:0.6rem;">Últimos VIP Passes</h3>
+        <table class="vip-table">
+          <thead><tr><th>Pass ID</th><th>Nombre</th><th>Creado</th></tr></thead>
+          <tbody id="dashRecentVip"><tr><td colspan="3" class="empty-state">Sin datos aún.</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Page: Config -->
+    <div class="page" id="pageConfig">
+      <h2><i class="fa-solid fa-sliders"></i> Configuración del Sitio</h2>
+      <form id="configForm">
+        <div class="config-grid">
+          <div class="form-group">
+            <label>Tagline</label>
+            <input type="text" id="configHeroTagline" placeholder="Loud. Raw. Proud." />
+          </div>
+          <div class="form-group">
+            <label>Descripción</label>
+            <input type="text" id="configHeroDesc" placeholder="80s Stadium Grandeur &amp; AI Innovation" />
+          </div>
+          <div class="form-group">
+            <label>Texto del CTA</label>
+            <input type="text" id="configCtaText" placeholder="Play" />
+          </div>
+          <div class="form-group">
+            <label>Footer</label>
+            <input type="text" id="configFooterText" placeholder="© 2026 Silicon Riot" />
+          </div>
+          <div class="full" style="margin:0.2rem 0;"><hr style="border:none;border-top:1px solid rgba(255,255,255,0.04);" /></div>
+          <div class="form-group">
+            <label>Spotify URL</label>
+            <input type="url" id="configSpotifyUrl" placeholder="https://open.spotify.com/..." />
+          </div>
+          <div class="form-group">
+            <label>Instagram URL</label>
+            <input type="url" id="configInstagramUrl" placeholder="https://www.instagram.com/..." />
+          </div>
+          <div class="form-group">
+            <label>YouTube URL</label>
+            <input type="url" id="configYoutubeUrl" placeholder="https://www.youtube.com/..." />
+          </div>
+          <div class="form-group">
+            <label>Beacons URL</label>
+            <input type="url" id="configBeaconsUrl" placeholder="https://beacons.ai/..." />
+          </div>
+          <div class="full" style="margin:0.2rem 0;"><hr style="border:none;border-top:1px solid rgba(255,255,255,0.04);" /></div>
+          <div class="form-group full">
+            <label>Anuncio</label>
+            <textarea id="configAnnouncement" placeholder="Texto del banner visible en el hero. Vacío = sin anuncio."></textarea>
+          </div>
+          <div class="full" style="margin:0.2rem 0;"><hr style="border:none;border-top:1px solid rgba(255,255,255,0.04);" /></div>
+          <div class="form-group">
+            <label>YouTube API Key</label>
+            <input type="text" id="configYtApiKey" placeholder="AIzaSy..." />
+          </div>
+          <div class="form-group">
+            <label>YouTube Channel ID</label>
+            <input type="text" id="configYtChannelId" placeholder="UC..." />
+          </div>
+          <div class="full" style="margin:0.2rem 0;"><hr style="border:none;border-top:1px solid rgba(255,255,255,0.04);" /></div>
+          <div class="form-group full">
+            <label>URL del Sitio (PageSpeed Insights)</label>
+            <input type="url" id="configSiteUrl" placeholder="https://silicon-riot.com" />
+          </div>
+          <div class="full" style="margin:0.2rem 0;"><hr style="border:none;border-top:1px solid rgba(255,255,255,0.04);" /></div>
+          <div class="form-group">
+            <label>Spotify Client ID</label>
+            <input type="text" id="configSpotifyClientId" placeholder="9dda85cfbef142f3a7a298d64c927c85" />
+          </div>
+          <div class="form-group">
+            <label>Spotify Client Secret</label>
+            <input type="password" id="configSpotifyClientSecret" placeholder="••••••••••••••••" />
+          </div>
+          <div class="form-group">
+            <label>Spotify Artist ID</label>
+            <input type="text" id="configSpotifyArtistId" placeholder="2RXnSX4vTC1SIHOElXYFIe" />
+          </div>
+          <div class="config-actions">
+            <button type="submit" class="btn"><i class="fa-solid fa-floppy-disk"></i> Guardar</button>
+            <div class="status-msg" id="configStatus"></div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Page: Albums -->
+    <div class="page" id="pageAlbums">
+      <h2><i class="fa-solid fa-record-vinyl"></i> Álbumes</h2>
+      <div class="album-list" id="albumsContainer">
+        <div class="empty-msg">Cargando álbumes…</div>
+      </div>
+      <button class="btn btn-sm" id="addAlbumBtn" style="margin-top:0.8rem;"><i class="fa-solid fa-plus"></i> Nuevo Álbum</button>
+      <div class="status-msg" id="albumStatus" style="margin-top:0.5rem;"></div>
+    </div>
+
+    <!-- Page: VIP -->
+    <div class="page" id="pageVip">
+      <h2><i class="fa-solid fa-ticket"></i> VIP Passes</h2>
+      <table class="vip-table">
+        <thead><tr><th>Pass ID</th><th>Nombre</th><th>Creado</th><th></th></tr></thead>
+        <tbody id="vipList"><tr><td colspan="4" class="empty-state">Cargando…</td></tr></tbody>
+      </table>
+    </div>
+
+  </main>
+</div>
+
+<!-- ═══ MODULES ═══ -->
+<script type="module" src="js/admin-app.js"></script>
+</body>
+</html>

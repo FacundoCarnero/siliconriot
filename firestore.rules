@@ -1,0 +1,45 @@
+// ============================================================
+// Firestore Security Rules — Silicon Riot
+// Reglas de acceso para site_config y vip_passes.
+// Copiá este bloque en Firebase Console > Firestore > Rules.
+// ============================================================
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ─── Site Config ────────────────────────────────────────
+    // Lectura: pública (cualquiera puede leer la config)
+    // Escritura: solo usuarios autenticados (admin)
+    match /site_config/{document} {
+      allow read: if true;
+      allow write: if request.auth != null;
+      allow delete: if false;               // nunca eliminar el documento
+    }
+
+    // ─── VIP Passes ─────────────────────────────────────────
+    // Lectura: pública (se muestran en el admin)
+    // Creación: pública (cualquier visitante genera su pase)
+    // Eliminación: solo admin
+    // Actualización: solo admin
+    match /vip_passes/{pass} {
+      allow read: if true;
+      allow create: if true;
+      allow delete: if request.auth != null;
+      allow update: if request.auth != null;
+    }
+
+    // ─── Albums ────────────────────────────────────────────
+    // Lectura: pública (el index los muestra)
+    // Escritura: solo admin
+    match /albums/{album} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // ─── Default: denegar todo lo demás ─────────────────────
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

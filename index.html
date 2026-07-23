@@ -1010,7 +1010,7 @@ body.overdrive .track-item.active {
 <div class="toast-container" id="toastContainer"></div>
 <button class="crt-btn" id="crtBtn" onclick="toggleCRT()">CRT: ON</button>
 
-<!-- NAV -->
+  <!-- NAV -->
 <nav id="navbar">
   <img src="assets/Logo%20Limpio%20HD.png" alt="Silicon Riot" class="nav-logo">
   <button class="nav-toggle" onclick="toggleNav()" aria-label="Menu">
@@ -1026,27 +1026,30 @@ body.overdrive .track-item.active {
 
 <!-- HERO -->
 <section id="hero">
-  <p class="hero-sub">Loud. Raw. Proud.</p>
+  <!-- Announcement banner (se muestra/oculta desde public-app.js) -->
+  <div id="siteAnnouncement" class="hero-announce" style="display:none; margin-bottom:1.5rem; background:var(--gold); color:var(--black); padding:0.3rem 1.5rem; font-size:0.65rem; letter-spacing:3px; text-transform:uppercase; font-weight:600; border-radius:2px;"></div>
+
+  <p class="hero-sub" data-fb="heroTagline">Loud. Raw. Proud.</p>
 
   <img src="assets/Silicon%20Riot%20Dorado.png" alt="SILICON RIOT" class="hero-logo-main">
 
-  <p style="color: var(--white-dim); font-size: clamp(0.7rem, 1.2vw, 0.85rem); letter-spacing: 5px; text-transform: uppercase; font-weight: 300; margin-bottom: 1.8rem;">80s Stadium Grandeur &amp; AI Innovation</p>
+  <p data-fb="heroDescription" style="color: var(--white-dim); font-size: clamp(0.7rem, 1.2vw, 0.85rem); letter-spacing: 5px; text-transform: uppercase; font-weight: 300; margin-bottom: 1.8rem;">80s Stadium Grandeur &amp; AI Innovation</p>
 
-  <a href="#sound" class="hero-cta">
+  <a href="#sound" class="hero-cta" data-fb="ctaText">
     <i class="fa-solid fa-play"></i> Play
   </a>
 
   <div class="hero-socials">
-    <a href="https://www.instagram.com/siliconriot80s" target="_blank" title="Instagram" onclick="notify('Instagram')">
+    <a href="https://www.instagram.com/siliconriot80s" target="_blank" title="Instagram" data-fb="instagramUrl" onclick="notify('Instagram')">
       <i class="fa-brands fa-instagram"></i>
     </a>
-    <a href="https://www.youtube.com/@siliconriot80s" target="_blank" title="YouTube" onclick="notify('YouTube')">
+    <a href="https://www.youtube.com/@siliconriot80s" target="_blank" title="YouTube" data-fb="youtubeUrl" onclick="notify('YouTube')">
       <i class="fa-brands fa-youtube"></i>
     </a>
-    <a href="https://open.spotify.com/intl-es/album/6wyKTUwsMbpDZLMLvhr3Gm" target="_blank" title="Spotify" onclick="notify('Spotify')">
+    <a href="https://open.spotify.com/intl-es/album/6wyKTUwsMbpDZLMLvhr3Gm" target="_blank" title="Spotify" data-firebase-spotify onclick="notify('Spotify')">
       <i class="fa-brands fa-spotify"></i>
     </a>
-    <a href="https://beacons.ai/siliconriot" target="_blank" title="Beacons" onclick="notify('All Links')">
+    <a href="https://beacons.ai/siliconriot" target="_blank" title="Beacons" data-fb="beaconsUrl" onclick="notify('All Links')">
       <i class="fa-solid fa-star"></i>
     </a>
   </div>
@@ -1162,7 +1165,7 @@ body.overdrive .track-item.active {
         <li><span class="track-num">07</span><span class="track-name">Final Frontier</span><span class="track-len">4:23</span></li>
       </ul>
       <div class="disco-links">
-        <a href="https://open.spotify.com/intl-es/album/6wyKTUwsMbpDZLMLvhr3Gm" target="_blank" onclick="notify('Opening Spotify...')"><i class="fa-brands fa-spotify"></i> Spotify</a>
+        <a href="https://open.spotify.com/intl-es/album/6wyKTUwsMbpDZLMLvhr3Gm" target="_blank" data-firebase-spotify onclick="notify('Opening Spotify...')"><i class="fa-brands fa-spotify"></i> Spotify</a>
         <a href="https://music.apple.com/artist/silicon-riot/1792440306" target="_blank" onclick="notify('Opening Apple Music...')"><i class="fa-brands fa-apple"></i> Apple Music</a>
         <a href="https://music.amazon.com/albums/B0GYBYQX85" target="_blank" onclick="notify('Opening Amazon Music...')"><i class="fa-brands fa-amazon"></i> Amazon</a>
         <a href="https://www.youtube.com/playlist?list=PLSGcMQLYdKYEQ_3Iku1i0wSFgvzLQq0Pj" target="_blank" onclick="notify('Opening YouTube...')"><i class="fa-brands fa-youtube"></i> YouTube</a>
@@ -1204,7 +1207,7 @@ body.overdrive .track-item.active {
   <div class="reveal">
     <p class="connect-label">Stream</p>
     <div class="connect-grid">
-      <a href="https://open.spotify.com/intl-es/album/6wyKTUwsMbpDZLMLvhr3Gm" target="_blank" class="connect-link" onclick="notify('Opening Spotify...')">
+      <a href="https://open.spotify.com/intl-es/album/6wyKTUwsMbpDZLMLvhr3Gm" target="_blank" class="connect-link" data-firebase-spotify onclick="notify('Opening Spotify...')">
         <i class="fa-brands fa-spotify"></i> Spotify
       </a>
       <a href="https://music.apple.com/artist/silicon-riot/1792440306" target="_blank" class="connect-link" onclick="notify('Opening Apple Music...')">
@@ -1217,15 +1220,15 @@ body.overdrive .track-item.active {
 
     <p class="connect-label" style="margin-top: 1.2rem;">Follow</p>
     <div class="connect-grid social">
-      <a href="https://www.youtube.com/@siliconriot80s" target="_blank" class="connect-link" onclick="notify('Opening YouTube...')">
+      <a href="https://www.youtube.com/@siliconriot80s" target="_blank" class="connect-link" data-fb="youtubeUrl" onclick="notify('Opening YouTube...')">
         <i class="fa-brands fa-youtube"></i> YouTube
       </a>
-      <a href="https://www.instagram.com/siliconriot80s" target="_blank" class="connect-link" onclick="notify('Opening Instagram...')">
+      <a href="https://www.instagram.com/siliconriot80s" target="_blank" class="connect-link" data-fb="instagramUrl" onclick="notify('Opening Instagram...')">
         <i class="fa-brands fa-instagram"></i> Instagram
       </a>
     </div>
 
-    <a href="https://beacons.ai/siliconriot" target="_blank" class="connect-link beacons" onclick="notify('All Links → Beacons')">
+    <a href="https://beacons.ai/siliconriot" target="_blank" class="connect-link beacons" data-fb="beaconsUrl" onclick="notify('All Links → Beacons')">
       <i class="fa-solid fa-star"></i> All Links // Beacons
     </a>
 
@@ -1269,8 +1272,11 @@ body.overdrive .track-item.active {
 <!-- FOOTER -->
 <footer>
   <img src="assets/Logo%20Limpio%20HD.png" alt="Silicon Riot">
-  <p>&copy; 2026 Silicon Riot</p>
+  <p data-fb="footerText">&copy; 2026 Silicon Riot</p>
 </footer>
+
+<!-- Firebase / Public App (ES module) -->
+<script type="module" src="js/public-app.js"></script>
 
 <!-- JS -->
 <script>
@@ -1644,6 +1650,14 @@ function toggleCRT() {
   notify(b.innerText);
 }
 
+// Ctrl + click en CRT → admin panel (secreto)
+document.getElementById('crtBtn').addEventListener('click', (e) => {
+  if (e.ctrlKey) {
+    e.stopPropagation();
+    window.location.href = 'admin.html';
+  }
+});
+
 // ==========================================
 // 11. EASTER EGG — OVERDRIVE TOGGLE
 // ==========================================
@@ -1810,6 +1824,13 @@ function generatePass() {
     downloadBtn.style.display = 'inline-flex';
 
     notify('🎟️ VIP PASS GENERADO');
+
+    // Guardar en Firestore si Firebase está disponible
+    if (typeof window.__saveVIPPass === 'function') {
+      window.__saveVIPPass(name, passID).then((fireId) => {
+        if (fireId) console.log('[VIP] Saved to Firestore:', fireId);
+      });
+    }
   });
 }
 
