@@ -31,19 +31,6 @@ const FIELD_TO_EL = [
   { key: 'beaconsUrl',     el: () => document.querySelectorAll('[data-fb="beaconsUrl"]'),      apply: (els, v) => { if (v) els.forEach((link) => { link.href = v; }); } },
   { key: 'appleMusicUrl',  el: () => document.querySelectorAll('[data-fb="appleMusicUrl"]'),   apply: (els, v) => { if (v) els.forEach((link) => { link.href = v; }); } },
   { key: 'amazonMusicUrl', el: () => document.querySelectorAll('[data-fb="amazonMusicUrl"]'),  apply: (els, v) => { if (v) els.forEach((link) => { link.href = v; }); } },
-  { key: 'presaveUrl',     el: () => document.querySelectorAll('[data-fb="presaveUrl"]'),       apply: (els, v) => { if (v) els.forEach((link) => { if (link.tagName === 'A') link.href = v; else link.onclick = () => { window.open(v, '_blank'); }; }); } },
-  { key: 'presaveWidget',  el: () => document.getElementById('presaveWidgetContainer'),          apply: (el, v) => {
-    if (!el) return;
-    let iframe = el.querySelector('iframe');
-    if (v && v.trim()) {
-      if (!iframe) { iframe = document.createElement('iframe'); iframe.setAttribute('frameborder','0'); iframe.style.cssText = 'width:300px;height:300px;border:none;'; el.appendChild(iframe); }
-      iframe.src = v.trim();
-      el.style.display = '';
-    } else {
-      if (iframe) { iframe.src = ''; iframe.remove(); }
-      el.style.display = 'none';
-    }
-  } },
 ];
 
 // ─── 1. Listener de site_config/general ────────────────────
