@@ -1,27 +1,34 @@
 // ============================================================
 // Firestore Security Rules — Silicon Riot
-// Reglas de acceso para site_config y vip_passes.
-// Copiá este bloque en Firebase Console > Firestore > Rules.
+// Copiá este bloque ENTERO en Firebase Console > Firestore > Rules.
 // ============================================================
 
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // ─── Site Config ────────────────────────────────────────
-    // Lectura: pública (cualquiera puede leer la config)
-    // Escritura: solo usuarios autenticados (admin)
-    match /site_config/{document} {
+    // ─── Site Config: ADMIN (API Keys, Secrets) ─────────────
+    // SOLO admin autenticado puede leer/escribir.
+    // Acá viven: youtubeApiKey, youtubeChannelId, siteUrl,
+    // spotifyClientId, spotifyClientSecret, spotifyArtistId
+    match /site_config/general {
+      allow read, write: if request.auth != null;
+      allow delete: if false;
+    }
+
+    // ─── Site Config: PÚBLICO (datos visibles en el site) ──
+    // READ: cualquiera. WRITE: solo admin autenticado.
+    // Acá viven: heroTagline, heroDescription, ctaText,
+    // spotifyUrl, instagramUrl, youtubeUrl, beaconsUrl,
+    // footerText, announcement
+    match /site_config/public {
       allow read: if true;
       allow write: if request.auth != null;
-      allow delete: if false;               // nunca eliminar el documento
+      allow delete: if false;
     }
 
     // ─── VIP Passes ─────────────────────────────────────────
-    // Lectura: pública (se muestran en el admin)
-    // Creación: pública (cualquier visitante genera su pase)
-    // Eliminación: solo admin
-    // Actualización: solo admin
+    // Lectura: pública. Creación: pública. Modificación: admin.
     match /vip_passes/{pass} {
       allow read: if true;
       allow create: if true;
@@ -30,8 +37,7 @@ service cloud.firestore {
     }
 
     // ─── Albums ────────────────────────────────────────────
-    // Lectura: pública (el index los muestra)
-    // Escritura: solo admin
+    // Lectura: pública. Escritura: solo admin.
     match /albums/{album} {
       allow read: if true;
       allow write: if request.auth != null;

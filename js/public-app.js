@@ -15,7 +15,7 @@ import {
 } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
 
 // ─── Referencias Firestore ─────────────────────────────────
-const SITE_CONFIG_REF = doc(db, 'site_config', 'general');
+const SITE_CONFIG_REF = doc(db, 'site_config', 'public');
 const VIP_COLLECTION = collection(db, 'vip_passes');
 
 // ─── Mapeo campo Firestore → elemento DOM ──────────────────

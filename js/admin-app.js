@@ -143,9 +143,21 @@ logoutBtn.addEventListener('click', async () => {
 });
 
 // ─── Site Config (lectura + escritura) ─────────────────────
-const SITE_CONFIG_REF = doc(db, 'site_config', 'general');
+const SITE_CONFIG_REF    = doc(db, 'site_config', 'general');  // secrets, API keys
+const SITE_CONFIG_PUBLIC = doc(db, 'site_config', 'public');   // datos visibles en el site
 
-const FIELD_MAP = {
+// Mapa campo del form → campo Firestore (datos PRIVADOS — site_config/general)
+const PRIVATE_FIELD_MAP = {
+  configYtApiKey: 'youtubeApiKey',
+  configYtChannelId: 'youtubeChannelId',
+  configSiteUrl: 'siteUrl',
+  configSpotifyClientId: 'spotifyClientId',
+  configSpotifyClientSecret: 'spotifyClientSecret',
+  configSpotifyArtistId: 'spotifyArtistId',
+};
+
+// Mapa campo del form → campo Firestore (datos PÚBLICOS — site_config/public)
+const PUBLIC_FIELD_MAP = {
   configHeroTagline: 'heroTagline',
   configHeroDesc: 'heroDescription',
   configCtaText: 'ctaText',
@@ -155,21 +167,26 @@ const FIELD_MAP = {
   configBeaconsUrl: 'beaconsUrl',
   configFooterText: 'footerText',
   configAnnouncement: 'announcement',
-  configYtApiKey: 'youtubeApiKey',
-  configYtChannelId: 'youtubeChannelId',
-  configSiteUrl: 'siteUrl',
-  configSpotifyClientId: 'spotifyClientId',
-  configSpotifyClientSecret: 'spotifyClientSecret',
-  configSpotifyArtistId: 'spotifyArtistId',
 };
 
 async function loadSiteConfig() {
   try {
-    const snap = await getDoc(SITE_CONFIG_REF);
     Object.keys(configFields).forEach((id) => { configFields[id].value = ''; });
-    if (snap.exists()) {
-      const data = snap.data();
-      Object.entries(FIELD_MAP).forEach(([id, fireKey]) => {
+
+    // Cargar datos privados
+    const snapPriv = await getDoc(SITE_CONFIG_REF);
+    if (snapPriv.exists()) {
+      const data = snapPriv.data();
+      Object.entries(PRIVATE_FIELD_MAP).forEach(([id, fireKey]) => {
+        if (data[fireKey] !== undefined) configFields[id].value = data[fireKey];
+      });
+    }
+
+    // Cargar datos públicos
+    const snapPub = await getDoc(SITE_CONFIG_PUBLIC);
+    if (snapPub.exists()) {
+      const data = snapPub.data();
+      Object.entries(PUBLIC_FIELD_MAP).forEach(([id, fireKey]) => {
         if (data[fireKey] !== undefined) configFields[id].value = data[fireKey];
       });
     }
@@ -177,24 +194,31 @@ async function loadSiteConfig() {
     configStatus.textContent = '✗ Error al cargar configuración.';
     configStatus.className = 'status-msg status-error';
   }
-  // Actualizar dashboard
   updateDashConfigStatus();
 }
 
 async function updateDashConfigStatus() {
   if (!dashConfigStatus) return;
   try {
-    const snap = await getDoc(SITE_CONFIG_REF);
-    if (snap.exists()) {
-      const d = snap.data();
-      const campos = ['spotifyUrl','instagramUrl','youtubeUrl','beaconsUrl','heroTagline','heroDescription','ctaText','footerText','announcement','youtubeApiKey','youtubeChannelId','siteUrl','spotifyClientId','spotifyClientSecret','spotifyArtistId'];
-      const filled = campos.filter(k => d[k] && d[k].trim()).length;
-      dashConfigStatus.textContent = `${filled}/${campos.length} completados`;
-      dashConfigStatus.style.color = filled > 5 ? 'var(--gold)' : 'var(--white-dim2)';
-    } else {
-      dashConfigStatus.textContent = 'Sin configurar';
-      dashConfigStatus.style.color = 'var(--red)';
-    }
+    const [snapPriv, snapPub] = await Promise.all([
+      getDoc(SITE_CONFIG_REF),
+      getDoc(SITE_CONFIG_PUBLIC),
+    ]);
+    const campos = [
+      'heroTagline','heroDescription','ctaText','spotifyUrl','instagramUrl',
+      'youtubeUrl','beaconsUrl','footerText','announcement',
+      'youtubeApiKey','youtubeChannelId','siteUrl','spotifyClientId',
+      'spotifyClientSecret','spotifyArtistId',
+    ];
+    let filled = 0;
+    const d1 = snapPriv.exists() ? snapPriv.data() : {};
+    const d2 = snapPub.exists() ? snapPub.data() : {};
+    campos.forEach(k => {
+      const v = d1[k] ?? d2[k] ?? '';
+      if (v && String(v).trim()) filled++;
+    });
+    dashConfigStatus.textContent = `${filled}/${campos.length} completados`;
+    dashConfigStatus.style.color = filled > 5 ? 'var(--gold)' : 'var(--white-dim2)';
   } catch {
     dashConfigStatus.textContent = '—';
   }
@@ -206,12 +230,22 @@ configForm.addEventListener('submit', async (e) => {
   configStatus.className = 'status-msg';
 
   try {
-    const payload = { updatedAt: serverTimestamp() };
-    Object.entries(FIELD_MAP).forEach(([id, fireKey]) => {
-      payload[fireKey] = configFields[id].value.trim();
-    });
+    const now = serverTimestamp();
 
-    await setDoc(SITE_CONFIG_REF, payload, { merge: true });
+    // Guardar datos privados (admin-only)
+    const privPayload = { updatedAt: now };
+    Object.entries(PRIVATE_FIELD_MAP).forEach(([id, fireKey]) => {
+      privPayload[fireKey] = configFields[id].value.trim();
+    });
+    await setDoc(SITE_CONFIG_REF, privPayload, { merge: true });
+
+    // Guardar datos públicos
+    const pubPayload = { updatedAt: now };
+    Object.entries(PUBLIC_FIELD_MAP).forEach(([id, fireKey]) => {
+      pubPayload[fireKey] = configFields[id].value.trim();
+    });
+    await setDoc(SITE_CONFIG_PUBLIC, pubPayload, { merge: true });
+
     configStatus.textContent = '✓ Configuración guardada.';
     configStatus.className = 'status-msg status-ok';
     updateDashConfigStatus();
@@ -427,12 +461,6 @@ async function fetchSpotifyStats() {
       return;
     }
     const bearer = 'Bearer ' + tokenData.access_token;
-
-    // 2. Intentar obtener followers — algunos artistas con Spotify for Artists verificados devuelven data
-    // Debug: test con el correcto ID de The Weeknd
-    const testRes = await fetch('https://api.spotify.com/v1/artists/1Xyo4u8uXC1ZmMpatF05PJ', { headers: { 'Authorization': bearer } });
-    const testText = await testRes.text();
-    console.log('[Spotify] test artist (The Weeknd) RAW:', testText);
 
     const artistRes = await fetch(
       `https://api.spotify.com/v1/artists/${artistId}`,
