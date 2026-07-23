@@ -29,6 +29,8 @@ const FIELD_TO_EL = [
   { key: 'instagramUrl',   el: () => document.querySelectorAll('[data-fb="instagramUrl"]'),    apply: (els, v) => { if (v) els.forEach((link) => { link.href = v; }); } },
   { key: 'youtubeUrl',     el: () => document.querySelectorAll('[data-fb="youtubeUrl"]'),      apply: (els, v) => { if (v) els.forEach((link) => { link.href = v; }); } },
   { key: 'beaconsUrl',     el: () => document.querySelectorAll('[data-fb="beaconsUrl"]'),      apply: (els, v) => { if (v) els.forEach((link) => { link.href = v; }); } },
+  { key: 'appleMusicUrl',  el: () => document.querySelectorAll('[data-fb="appleMusicUrl"]'),   apply: (els, v) => { if (v) els.forEach((link) => { link.href = v; }); } },
+  { key: 'amazonMusicUrl', el: () => document.querySelectorAll('[data-fb="amazonMusicUrl"]'),  apply: (els, v) => { if (v) els.forEach((link) => { link.href = v; }); } },
 ];
 
 // ─── 1. Listener de site_config/general ────────────────────
