@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title>SILICON RIOT — Confirmar dedicación</title>
+  <title>SILICON RIOT — Confirm your dedication</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -101,12 +101,12 @@
 <body>
   <div class="card">
     <p class="tag">// SILICON RIOT</p>
-    <h1 class="title">Confirmá tu dedicación</h1>
+    <h1 class="title">Confirm your dedication</h1>
     <div id="verifyStatus" class="status" style="display:flex; flex-direction:column; align-items:center; gap:0.4rem;">
       <div class="spinner"></div>
-      <span>Verificando…</span>
+      <span>Verifying…</span>
     </div>
-    <a id="backLink" class="btn" href="index.html" style="display:none;">VOLVER AL SITE</a>
+    <a id="backLink" class="btn" href="index.html" style="display:none;">BACK TO SITE</a>
   </div>
 
   <script type="module">
@@ -139,7 +139,7 @@
       const el = document.getElementById('verifyStatus');
 
       if (!id || !token) {
-        showStatus('El link de verificación es inválido o incompleto.', false);
+        showStatus('The verification link is invalid or incomplete.', false);
         return;
       }
 
@@ -150,10 +150,10 @@
           verificationTokenHash,
           verifiedAt: serverTimestamp(),
         });
-        showStatus('¡Dedicatoria confirmada! Gracias por participar en Silicon Riot.', true);
+        showStatus('Dedication confirmed! Thanks for being part of Silicon Riot.', true);
       } catch (err) {
         console.warn('[Verify] update error:', err);
-        showStatus('No pudimos confirmar tu dedicación. El link puede haber expirado o ya fue usado.', false);
+        showStatus('We could not confirm your dedication. The link may have expired or already been used.', false);
       }
     }
 

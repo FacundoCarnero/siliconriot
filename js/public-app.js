@@ -106,7 +106,7 @@ async function sha256Hex(text) {
 }
 
 /**
- * Guarda una dedicación (status 'sin_verificar' + hash del token)
+ * Saves a dedication (status 'sin_verificar' + token hash)
  * y dispara el mail de verificación vía Worker.
  * @param {string} name    - Nombre o alias del fan
  * @param {string} message - Frase o idea para la canción (opcional)
@@ -141,13 +141,13 @@ async function submitDedication(name, message, email) {
 
     if (!res.ok) {
       console.warn('[PublicApp] Worker mail error:', res.status, await res.text().catch(() => ''));
-      return { ok: false, docId: docRef.id, error: 'No se pudo enviar el mail de confirmación.' };
+      return { ok: false, docId: docRef.id, error: 'Could not send the confirmation email.' };
     }
 
     return { ok: true, docId: docRef.id };
   } catch (err) {
     console.warn('Firebase submitDedication error:', err);
-    return { ok: false, error: 'Error al enviar. Probá de nuevo.' };
+    return { ok: false, error: 'Error sending. Try again.' };
   }
 }
 

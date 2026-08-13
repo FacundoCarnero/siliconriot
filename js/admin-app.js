@@ -162,14 +162,14 @@ forgotPasswordBtn.addEventListener('click', async (e) => {
   const email = loginEmail.value.trim();
 
   if (!email) {
-    loginError.textContent = 'Ingresá tu email arriba para enviarte el link de recuperación.';
+    loginError.textContent = 'Enter your email above to send the recovery link.';
     return;
   }
 
   try {
     await sendPasswordResetEmail(auth, email);
     loginError.classList.add('success');
-    loginError.textContent = 'Te enviamos un link de recuperación a ' + email + '. Revisá tu bandeja (y el spam).';
+    loginError.textContent = 'We sent a recovery link to ' + email + '. Check your inbox (and spam).';
   } catch (err) {
     const messages = {
       'auth/invalid-email': 'El email no es válido.',
@@ -400,9 +400,9 @@ function listenDedications() {
           : '—';
         const status = data.status || 'pendiente';
         const statusOptions = [
-          ['pendiente', 'Pendiente'],
-          ['en produccion', 'En producción'],
-          ['publicado', 'Publicado'],
+          ['pendiente', 'Pending'],
+          ['en produccion', 'In production'],
+          ['publicado', 'Published'],
         ].map(([val, label]) =>
           `<option value="${val}" ${status === val ? 'selected' : ''}>${label}</option>`
         ).join('');
@@ -429,24 +429,24 @@ function listenDedications() {
           recentHtml += `
           <tr>
             <td>${escHtml(data.name) || '—'}</td>
-            <td>${status === 'publicado' ? 'Publicado' : status === 'en produccion' ? 'En producción' : 'Pendiente'}</td>
+            <td>${status === 'publicado' ? 'Published' : status === 'en produccion' ? 'In production' : 'Pending'}</td>
             <td>${createdAt}</td>
           </tr>`;
         }
         i++;
       });
 
-      if (snapshot.empty || !dedicationsData.length) {
-        dedicationHtml =
-          '<tr><td colspan="6" class="empty-state">Todavía no hay dedications.</td></tr>';
-        if (dashRecentDedications) dashRecentDedications.innerHTML = '<tr><td colspan="3" class="empty-state">Sin datos aún.</td></tr>';
-      } else if (dashRecentDedications) {
-        dashRecentDedications.innerHTML = recentHtml;
-      }
-      if (dedicationList) dedicationList.innerHTML = dedicationHtml;
-    },
-    (err) => {
-      if (dedicationList) dedicationList.innerHTML = `<tr><td colspan="6" class="empty-state">Error al cargar dedications.</td></tr>`;
+        if (snapshot.empty || !dedicationsData.length) {
+          dedicationHtml =
+            '<tr><td colspan="6" class="empty-state">No dedications yet.</td></tr>';
+          if (dashRecentDedications) dashRecentDedications.innerHTML = '<tr><td colspan="3" class="empty-state">No data yet.</td></tr>';
+        } else if (dashRecentDedications) {
+          dashRecentDedications.innerHTML = recentHtml;
+        }
+        if (dedicationList) dedicationList.innerHTML = dedicationHtml;
+      },
+      (err) => {
+        if (dedicationList) dedicationList.innerHTML = `<tr><td colspan="6" class="empty-state">Error loading dedications.</td></tr>`;
       console.warn('[Admin] Dedications listener error:', err);
     }
   );
@@ -465,19 +465,19 @@ window.setDedicationStatus = async (id, status) => {
   try {
     await updateDoc(doc(db, 'dedications', id), { status });
   } catch (err) {
-    alert('Error al actualizar estado: ' + err.message);
+    alert('Error updating status: ' + err.message);
   }
 };
 
 // ─── Eliminar dedication ───────────────────────────────────
 // Expuesta al global porque es llamada desde el onclick en el HTML.
 window.deleteDedication = async (id) => {
-  if (!confirm('¿Eliminar esta dedication?')) return;
+  if (!confirm('Delete this dedication?')) return;
 
   try {
     await deleteDoc(doc(db, 'dedications', id));
   } catch (err) {
-    alert('Error al eliminar: ' + err.message);
+    alert('Error deleting: ' + err.message);
   }
 };
 
@@ -486,15 +486,15 @@ if (copyDedicationNamesBtn) {
   copyDedicationNamesBtn.addEventListener('click', async () => {
     const published = dedicationsData.filter((d) => d.status === 'publicado');
     if (!published.length) {
-      alert('No hay dedications con estado "Publicado" para copiar.');
+      alert('No dedications with status "Published" to copy.');
       return;
     }
     const names = published.map((d) => d.name).join(', ');
     try {
       await navigator.clipboard.writeText(names);
-      alert('Nombres copiados: ' + names);
+      alert('Names copied: ' + names);
     } catch (err) {
-      alert('No se pudo copiar: ' + err.message);
+      alert('Could not copy: ' + err.message);
     }
   });
 }
