@@ -16,6 +16,7 @@ import {
   getDoc,
   setDoc,
   addDoc,
+  updateDoc,
   collection,
   query,
   orderBy,
@@ -51,6 +52,11 @@ const configFields = [
 // VIP Passes
 const vipList = $('vipList');
 
+// Dedications
+const dedicationList = $('dedicationList');
+const dashRecentDedications = $('dashRecentDedications');
+const copyDedicationNamesBtn = $('copyDedicationNamesBtn');
+
 // Dashboard
 const dashVipCount = $('dashVipCount');
 const dashVisits = $('dashVisits');
@@ -73,6 +79,7 @@ const pages = {
   config: $('pageConfig'),
   albums: $('pageAlbums'),
   vip: $('pageVip'),
+  dedications: $('pageDedications'),
 };
 
 navItems.forEach((item) => {
@@ -110,6 +117,7 @@ function showDashboard(user) {
 
   loadSiteConfig();
   listenVIPPasses();
+  listenDedications();
   listenAlbums();
   fetchVisitorCount();
   fetchYouTubeStats();
@@ -141,6 +149,7 @@ loginForm.addEventListener('submit', async (e) => {
 logoutBtn.addEventListener('click', async () => {
   await signOut(auth);
   stopVIPListener();
+  stopDedicationListener();
   window.location.href = 'index.html';
 });
 
@@ -365,6 +374,130 @@ window.deleteVIPPass = async (passId) => {
     alert('Error al eliminar: ' + err.message);
   }
 };
+
+// ─── Dedications (en tiempo real) ──────────────────────────
+let unsubDedications = null;
+let dedicationsData = []; // datos actuales para el copiado de nombres
+
+function listenDedications() {
+  unsubDedications = onSnapshot(
+    query(collection(db, 'dedications'), orderBy('createdAt', 'desc')),
+    (snapshot) => {
+      dedicationsData = [];
+      let dedicationHtml = '';
+      let recentHtml = '';
+      let i = 0;
+      snapshot.forEach((docSnap) => {
+        const data = docSnap.data();
+
+        // Ocultar dedications sin verificar por mail
+        if (data.status === 'sin_verificar') return;
+
+        dedicationsData.push({ _id: docSnap.id, ...data });
+
+        const createdAt = data.createdAt?.toDate
+          ? data.createdAt.toDate().toLocaleString()
+          : '—';
+        const status = data.status || 'pendiente';
+        const statusOptions = [
+          ['pendiente', 'Pendiente'],
+          ['en produccion', 'En producción'],
+          ['publicado', 'Publicado'],
+        ].map(([val, label]) =>
+          `<option value="${val}" ${status === val ? 'selected' : ''}>${label}</option>`
+        ).join('');
+
+        dedicationHtml += `
+          <tr>
+            <td>${escHtml(data.name) || '—'}</td>
+            <td>${escHtml(data.message) || '—'}</td>
+            <td>${escHtml(data.email) || '—'}</td>
+            <td>
+              <select class="status-select" onchange="setDedicationStatus('${docSnap.id}', this.value)">
+                ${statusOptions}
+              </select>
+            </td>
+            <td>${createdAt}</td>
+            <td>
+              <button class="btn-sm btn-danger" onclick="deleteDedication('${docSnap.id}')">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            </td>
+          </tr>`;
+
+        if (i < 5) {
+          recentHtml += `
+          <tr>
+            <td>${escHtml(data.name) || '—'}</td>
+            <td>${status === 'publicado' ? 'Publicado' : status === 'en produccion' ? 'En producción' : 'Pendiente'}</td>
+            <td>${createdAt}</td>
+          </tr>`;
+        }
+        i++;
+      });
+
+      if (snapshot.empty || !dedicationsData.length) {
+        dedicationHtml =
+          '<tr><td colspan="6" class="empty-state">Todavía no hay dedications.</td></tr>';
+        if (dashRecentDedications) dashRecentDedications.innerHTML = '<tr><td colspan="3" class="empty-state">Sin datos aún.</td></tr>';
+      } else if (dashRecentDedications) {
+        dashRecentDedications.innerHTML = recentHtml;
+      }
+      if (dedicationList) dedicationList.innerHTML = dedicationHtml;
+    },
+    (err) => {
+      if (dedicationList) dedicationList.innerHTML = `<tr><td colspan="6" class="empty-state">Error al cargar dedications.</td></tr>`;
+      console.warn('[Admin] Dedications listener error:', err);
+    }
+  );
+}
+
+function stopDedicationListener() {
+  if (unsubDedications) {
+    unsubDedications();
+    unsubDedications = null;
+  }
+}
+
+// ─── Cambiar estado de una dedication ──────────────────────
+// Expuesta al global porque es llamada desde el onchange del select.
+window.setDedicationStatus = async (id, status) => {
+  try {
+    await updateDoc(doc(db, 'dedications', id), { status });
+  } catch (err) {
+    alert('Error al actualizar estado: ' + err.message);
+  }
+};
+
+// ─── Eliminar dedication ───────────────────────────────────
+// Expuesta al global porque es llamada desde el onclick en el HTML.
+window.deleteDedication = async (id) => {
+  if (!confirm('¿Eliminar esta dedication?')) return;
+
+  try {
+    await deleteDoc(doc(db, 'dedications', id));
+  } catch (err) {
+    alert('Error al eliminar: ' + err.message);
+  }
+};
+
+// ─── Copiar nombres de dedications publicadas ──────────────
+if (copyDedicationNamesBtn) {
+  copyDedicationNamesBtn.addEventListener('click', async () => {
+    const published = dedicationsData.filter((d) => d.status === 'publicado');
+    if (!published.length) {
+      alert('No hay dedications con estado "Publicado" para copiar.');
+      return;
+    }
+    const names = published.map((d) => d.name).join(', ');
+    try {
+      await navigator.clipboard.writeText(names);
+      alert('Nombres copiados: ' + names);
+    } catch (err) {
+      alert('No se pudo copiar: ' + err.message);
+    }
+  });
+}
 
 // ─── Dashboard: visitas ────────────────────────────────────
 async function fetchVisitorCount() {

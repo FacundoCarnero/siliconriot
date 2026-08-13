@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>SILICON RIOT — Confirmar dedicación</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --black:     #0a0a0a;
+      --black-2:   #111111;
+      --black-3:   #1a1a1a;
+      --gold:      #d4a843;
+      --gold-dim:  #9a7a30;
+      --gold-dim2: #6a5a30;
+      --white:     #f0ede8;
+      --white-dim: #8a8782;
+      --white-dim2:#555350;
+      --red:       #c0392b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      font-weight: 400;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .card {
+      background: var(--black-2);
+      border: 1px solid var(--gold-dim);
+      border-radius: 4px;
+      max-width: 460px;
+      width: 100%;
+      padding: 2.5rem 1.8rem;
+      text-align: center;
+      box-shadow: 0 0 30px rgba(212, 168, 67, 0.15);
+    }
+    .tag {
+      font-family: 'Bebas Neue', sans-serif;
+      letter-spacing: 3px;
+      color: var(--gold-dim);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+    .title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--white);
+      margin-bottom: 1rem;
+    }
+    .status {
+      font-size: 0.8rem;
+      color: var(--white-dim);
+      min-height: 1.4rem;
+      line-height: 1.5;
+      margin-bottom: 1rem;
+    }
+    .status.ok { color: var(--gold); }
+    .status.err { color: var(--red); }
+    .spinner {
+      display: inline-block;
+      width: 22px;
+      height: 22px;
+      border: 2px solid var(--gold-dim2);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 0.8rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .btn {
+      display: inline-block;
+      margin-top: 0.5rem;
+      padding: 0.6rem 1.4rem;
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      text-decoration: none;
+      font-family: 'Bebas Neue', sans-serif;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      cursor: pointer;
+      background: transparent;
+      border-radius: 3px;
+    }
+    .btn:hover { background: rgba(212, 168, 67, 0.08); }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <p class="tag">// SILICON RIOT</p>
+    <h1 class="title">Confirmá tu dedicación</h1>
+    <div id="verifyStatus" class="status" style="display:flex; flex-direction:column; align-items:center; gap:0.4rem;">
+      <div class="spinner"></div>
+      <span>Verificando…</span>
+    </div>
+    <a id="backLink" class="btn" href="index.html" style="display:none;">VOLVER AL SITE</a>
+  </div>
+
+  <script type="module">
+    import { db } from './js/firebase-config.js';
+    import {
+      doc,
+      updateDoc,
+      serverTimestamp,
+    } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
+
+    async function sha256Hex(text) {
+      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+      return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    function showStatus(message, ok) {
+      const el = document.getElementById('verifyStatus');
+      el.classList.add(ok ? 'ok' : 'err');
+      el.innerHTML = '';
+      const span = document.createElement('span');
+      span.textContent = message;
+      el.appendChild(span);
+      document.getElementById('backLink').style.display = 'inline-block';
+    }
+
+    async function verify() {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get('id');
+      const token = params.get('token');
+      const el = document.getElementById('verifyStatus');
+
+      if (!id || !token) {
+        showStatus('El link de verificación es inválido o incompleto.', false);
+        return;
+      }
+
+      try {
+        const verificationTokenHash = await sha256Hex(token);
+        await updateDoc(doc(db, 'dedications', id), {
+          status: 'pendiente',
+          verificationTokenHash,
+          verifiedAt: serverTimestamp(),
+        });
+        showStatus('¡Dedicatoria confirmada! Gracias por participar en Silicon Riot.', true);
+      } catch (err) {
+        console.warn('[Verify] update error:', err);
+        showStatus('No pudimos confirmar tu dedicación. El link puede haber expirado o ya fue usado.', false);
+      }
+    }
+
+    verify();
+  </script>
+</body>
+</html>

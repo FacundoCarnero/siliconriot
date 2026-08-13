@@ -575,6 +575,20 @@ body {
   padding: 2rem 0;
 }
 
+/* ─── DEDICATIONS PAGE ──────────────────────────── */
+.status-select {
+  background: var(--black-3);
+  border: 1px solid rgba(255,255,255,0.06);
+  color: var(--white-dim);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.6rem;
+  padding: 0.2rem 0.3rem;
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+}
+.status-select:focus { border-color: var(--gold-dim); }
+
 .empty-msg {
   text-align: center;
   color: var(--white-dim2);
@@ -640,6 +654,7 @@ body {
       <button class="nav-item" data-page="config"><i class="fa-solid fa-sliders"></i> Config</button>
       <button class="nav-item" data-page="albums"><i class="fa-solid fa-record-vinyl"></i> Albums</button>
       <button class="nav-item" data-page="vip"><i class="fa-solid fa-ticket"></i> VIP Passes</button>
+      <button class="nav-item" data-page="dedications"><i class="fa-solid fa-microphone-lines"></i> Dedications</button>
     </nav>
 
     <div class="sidebar-footer">
@@ -732,6 +747,14 @@ body {
         <table class="vip-table">
           <thead><tr><th>Pass ID</th><th>Nombre</th><th>Creado</th></tr></thead>
           <tbody id="dashRecentVip"><tr><td colspan="3" class="empty-state">Sin datos aún.</td></tr></tbody>
+        </table>
+      </div>
+
+      <div style="margin-top:1.5rem;">
+        <h3 style="font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:1px;text-transform:uppercase;color:var(--white-dim);margin-bottom:0.6rem;">Últimas Dedications</h3>
+        <table class="vip-table">
+          <thead><tr><th>Nombre</th><th>Estado</th><th>Creado</th></tr></thead>
+          <tbody id="dashRecentDedications"><tr><td colspan="3" class="empty-state">Sin datos aún.</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -842,6 +865,18 @@ body {
       <table class="vip-table">
         <thead><tr><th>Pass ID</th><th>Nombre</th><th>Creado</th><th></th></tr></thead>
         <tbody id="vipList"><tr><td colspan="4" class="empty-state">Cargando…</td></tr></tbody>
+      </table>
+    </div>
+
+    <!-- Page: Dedications -->
+    <div class="page" id="pageDedications">
+      <h2 style="display:flex;align-items:center;justify-content:space-between;">
+        <span><i class="fa-solid fa-microphone-lines"></i> Dedications</span>
+        <button class="btn btn-sm btn-ghost" id="copyDedicationNamesBtn" style="border-color:rgba(255,255,255,0.06);"><i class="fa-solid fa-copy"></i> Copiar nombres de publicadas</button>
+      </h2>
+      <table class="vip-table">
+        <thead><tr><th>Nombre</th><th>Frase / Idea</th><th>Mail</th><th>Estado</th><th>Creado</th><th></th></tr></thead>
+        <tbody id="dedicationList"><tr><td colspan="6" class="empty-state">Cargando…</td></tr></tbody>
       </table>
     </div>
 

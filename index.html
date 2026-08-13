@@ -1357,6 +1357,13 @@ body.overdrive .track-item.active {
       </button>
     </div>
 
+    <!-- DEDICATIONS BUTTON -->
+    <div style="margin-top: 0.8rem;">
+      <button onclick="openDedicationModal()" class="connect-link beacons" style="cursor:pointer; border-color: var(--gold-dim); background: rgba(212,168,67,0.05);">
+        <i class="fa-solid fa-microphone-lines"></i> ★ APARECÉ EN UNA CANCIÓN
+      </button>
+    </div>
+
     <div class="visitor-counter">
       VISITORS: <span id="visitorCount">00001</span>
     </div>
@@ -1384,6 +1391,29 @@ body.overdrive .track-item.active {
         <i class="fa-solid fa-download"></i> DESCARGAR
       </a>
     </div>
+  </div>
+</div>
+
+<!-- MODAL DEDICATIONS -->
+<div id="dedicationModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:10002; backdrop-filter:blur(8px); justify-content:center; align-items:center; padding:1rem;">
+  <div style="background:var(--black-2); border:1px solid var(--gold-dim); max-width:450px; width:100%; padding:1.5rem; border-radius:4px; text-align:center; position:relative; box-shadow:0 0 30px rgba(212,168,67,0.15);">
+    <button onclick="closeDedicationModal()" style="position:absolute; top:10px; right:12px; background:none; border:none; color:var(--white-dim); font-size:1.2rem; cursor:pointer;">&times;</button>
+
+    <p class="tag">// BE PART OF THE SONG</p>
+    <h3 class="title-md" style="font-size:1.8rem; margin-bottom:0.5rem;">APARECÉ EN UNA CANCIÓN</h3>
+    <p style="font-size:0.75rem; color:var(--white-dim); margin-bottom:1rem;">Dejá tu nombre y una frase o idea. Si la banda la usa, tu nombre aparece en la descripción del tema publicado.</p>
+
+    <input type="text" id="dedicationNameInput" placeholder="TU NOMBRE O ALIAS" required maxlength="30" style="width:100%; padding:0.6rem; background:var(--black-3); border:1px solid var(--gold-dim2); color:var(--white); font-family:'Inter', sans-serif; text-transform:uppercase; font-size:0.85rem; text-align:center; margin-bottom:1rem; outline:none; border-radius:3px;">
+
+    <textarea id="dedicationMessageInput" maxlength="200" placeholder="¿Qué querés que diga o contenga el tema?" style="width:100%; padding:0.6rem; background:var(--black-3); border:1px solid var(--gold-dim2); color:var(--white); font-family:'Inter', sans-serif; font-size:0.85rem; text-align:center; margin-bottom:1rem; outline:none; border-radius:3px; resize:vertical; min-height:80px;"></textarea>
+
+    <input type="email" id="dedicationEmailInput" placeholder="TU MAIL (SOLO PARA CONFIRMAR)" required style="width:100%; padding:0.6rem; background:var(--black-3); border:1px solid var(--gold-dim2); color:var(--white); font-family:'Inter', sans-serif; font-size:0.85rem; text-align:center; margin-bottom:0.5rem; outline:none; border-radius:3px;">
+
+    <p style="font-size:0.65rem; color:var(--white-dim); opacity:0.75; margin-bottom:0.8rem;">Tu mail solo se usa para confirmar tu dedicatoria.</p>
+
+    <div id="dedicationStatus" style="font-size:0.7rem; color:var(--white-dim); min-height:1rem; margin-bottom:0.6rem;"></div>
+
+    <button onclick="submitDedication()" class="connect-link" style="width:100%; cursor:pointer; background:var(--gold); color:var(--black); font-weight:600; border:none;">ENVIAR</button>
   </div>
 </div>
 
@@ -1973,6 +2003,61 @@ function generatePass() {
       });
     }
   });
+}
+
+// ==========================================
+// 14b. DEDICATIONS — aparecé en una canción
+// ==========================================
+function openDedicationModal() {
+  document.getElementById('dedicationModal').style.display = 'flex';
+}
+
+function closeDedicationModal() {
+  document.getElementById('dedicationModal').style.display = 'none';
+}
+
+async function submitDedication() {
+  const statusEl = document.getElementById('dedicationStatus');
+  const nameInput = document.getElementById('dedicationNameInput');
+  const msgInput = document.getElementById('dedicationMessageInput');
+  const emailInput = document.getElementById('dedicationEmailInput');
+  const name = nameInput.value.trim();
+  const message = msgInput.value.trim();
+  const email = emailInput.value.trim();
+
+  if (!name) {
+    statusEl.textContent = '✗ Ingresá tu nombre o alias.';
+    statusEl.style.color = 'var(--red)';
+    return;
+  }
+
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    statusEl.textContent = '✗ Ingresá un mail válido para confirmar.';
+    statusEl.style.color = 'var(--red)';
+    return;
+  }
+
+  if (typeof window.__submitDedication !== 'function') {
+    statusEl.textContent = '✗ Firebase no está disponible. Probá de nuevo.';
+    statusEl.style.color = 'var(--red)';
+    return;
+  }
+
+  statusEl.textContent = 'Enviando…';
+  statusEl.style.color = 'var(--white-dim)';
+
+  const result = await window.__submitDedication(name, message, email);
+  if (result && result.ok) {
+    statusEl.textContent = '¡Revisá tu mail y confirmá tu dedicatoria!';
+    statusEl.style.color = 'var(--gold)';
+    nameInput.value = '';
+    msgInput.value = '';
+    emailInput.value = '';
+    notify('🎤 DEDICACIÓN ENVIADA');
+  } else {
+    statusEl.textContent = '✗ ' + ((result && result.error) || 'Error al enviar. Probá de nuevo.');
+    statusEl.style.color = 'var(--red)';
+  }
 }
 
 // ==========================================

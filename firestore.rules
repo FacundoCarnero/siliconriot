@@ -36,6 +36,22 @@ service cloud.firestore {
       allow update: if request.auth != null;
     }
 
+    // ─── Dedications ────────────────────────────────────────
+    // Lectura: solo admin (los fans no leen la lista).
+    // Creación: pública (form del site).
+    // Modificación: admin, o unauthenticated SOLO para flip
+    // sin_verificar → pendiente con token hash correcto.
+    match /dedications/{id} {
+      allow read: if request.auth != null;
+      allow create: if true;
+      allow delete: if request.auth != null;
+      allow update: if request.auth != null || (
+        request.resource.data.status == 'pendiente' &&
+        resource.data.status == 'sin_verificar' &&
+        request.resource.data.verificationTokenHash == resource.data.verificationTokenHash
+      );
+    }
+
     // ─── Albums ────────────────────────────────────────────
     // Lectura: pública. Escritura: solo admin.
     match /albums/{album} {
