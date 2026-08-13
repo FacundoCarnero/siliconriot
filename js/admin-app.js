@@ -41,7 +41,7 @@ const configStatus = $('configStatus');
 const configFields = [
   'configHeroTagline', 'configHeroDesc', 'configCtaText',
   'configSpotifyUrl', 'configInstagramUrl', 'configYoutubeUrl', 'configBeaconsUrl',
-  'configAppleMusicUrl', 'configAmazonMusicUrl',
+  'configAppleMusicUrl', 'configAmazonMusicUrl', 'configYoutubeMusicUrl',
   'configFooterText', 'configAnnouncement',
   'configYtApiKey', 'configYtChannelId',
   'configSiteUrl',
@@ -197,6 +197,7 @@ const PUBLIC_FIELD_MAP = {
   configAnnouncement: 'announcement',
   configAppleMusicUrl: 'appleMusicUrl',
   configAmazonMusicUrl: 'amazonMusicUrl',
+  configYoutubeMusicUrl: 'youtubeMusicUrl',
 };
 
 async function loadSiteConfig() {
@@ -236,7 +237,7 @@ async function updateDashConfigStatus() {
     ]);
     const campos = [
       'heroTagline','heroDescription','ctaText','spotifyUrl','instagramUrl',
-      'youtubeUrl','beaconsUrl','appleMusicUrl','amazonMusicUrl','footerText','announcement',
+      'youtubeUrl','beaconsUrl','appleMusicUrl','amazonMusicUrl','youtubeMusicUrl','footerText','announcement',
       'youtubeApiKey','youtubeChannelId','siteUrl','spotifyClientId',
       'spotifyClientSecret','spotifyArtistId',
     ];
