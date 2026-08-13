@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Seed — Albums a Firestore</title>
+  <meta name="robots" content="noindex" />
+  <style>
+    body {
+      background: #0a0a0a; color: #f0ede8;
+      font-family: 'Inter', sans-serif; padding: 2rem;
+      max-width: 500px; margin: 0 auto; text-align: center;
+    }
+    h1 { font-family: 'Bebas Neue', sans-serif; color: #d4a843; font-size: 2rem; letter-spacing: 2px; }
+    p { color: #8a8782; font-size: 0.85rem; margin-bottom: 1.5rem; }
+    button {
+      background: #d4a843; color: #0a0a0a; border: none;
+      padding: 0.7rem 2rem; font-family: 'Inter', sans-serif;
+      font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase;
+      font-weight: 600; cursor: pointer; border-radius: 3px;
+    }
+    button:disabled { opacity: 0.4; cursor: not-allowed; }
+    #status { margin-top: 1rem; font-size: 0.75rem; min-height: 1.5rem; }
+    .ok { color: #d4a843; }
+    .err { color: #cc3333; }
+    .info { color: #8a8782; }
+  </style>
+</head>
+<body>
+  <h1>Seed Albums</h1>
+  <p>Este script migra los álbumes que tenés hardcodeados en <code>index.html</code> a la colección <code>albums</code> de Firestore.</p>
+  <button id="seedBtn">Ejecutar Seed</button>
+  <div id="status" class="info">Listo para ejecutar</div>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
+    import { getFirestore, doc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
+
+    // ─── Misma config que el proyecto ───────────────────────
+    const firebaseConfig = {
+      apiKey: 'AIzaSyDOt-Guoi0CmtE2tO5H5pCDTIlvQpYUBPc',
+      authDomain: 'siliconriot-ae86e.firebaseapp.com',
+      projectId: 'siliconriot-ae86e',
+      storageBucket: 'siliconriot-ae86e.firebasestorage.app',
+      messagingSenderId: '907760728875',
+      appId: '1:907760728875:web:54a3a4d38e5fb87b58636e',
+      measurementId: 'G-8TY409LQNG',
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // ─── Datos de los álbumes ───────────────────────────────
+    const ALBUMS = [
+      {
+        id: 'night-in-neo-city',
+        title: 'A Night in Neo-City',
+        cover: 'assets/album-cover.jpg',
+        year: 2026,
+        order: 0,
+        tracks: [
+          { title: 'NEON FANTASY',      duration: '2:44', ytId: 'bTm1gv7oBus' },
+          { title: 'MIDNIGHT RIDER',    duration: '3:01', ytId: 'GnCEnjhkh4I' },
+          { title: 'DIGITAL TEARS',     duration: '3:59', ytId: 'xrrsMDefDmc' },
+          { title: 'VELVET THUNDER',    duration: '3:35', ytId: 's4fPTk1KehA' },
+          { title: 'STREETS OF CHROME', duration: '3:37', ytId: 'az4ap9t9I1w' },
+          { title: 'RAZOR EDGE',        duration: '3:08', ytId: '71fQ80bfQCI' },
+          { title: 'FINAL FRONTIER',    duration: '4:23', ytId: '9MPv6ctwRDY' },
+        ],
+        links: {
+          spotify: 'https://open.spotify.com/intl-es/album/6wyKTUwsMbpDZLMLvhr3Gm',
+          appleMusic: 'https://music.apple.com/artist/silicon-riot/1792440306',
+          amazon: 'https://music.amazon.com/albums/B0GYBYQX85',
+          youtube: 'https://www.youtube.com/playlist?list=PLSGcMQLYdKYEQ_3Iku1i0wSFgvzLQq0Pj',
+        },
+      },
+      {
+        id: 'neon-ghosts',
+        title: 'Neon Ghosts & Iron Dreams',
+        cover: 'assets/neon-ghosts-cover.jpg',
+        year: 2026,
+        order: 1,
+        tracks: [
+          { title: 'CIRCUIT BREAKER',       duration: '2:59', ytId: 'y8jb6WOFd4M' },
+          { title: 'IRON DREAMS',           duration: '3:32', ytId: 'ddoMhzIPbP0' },
+          { title: 'BLACKOUT LOVE',         duration: '3:10', ytId: 'P2X8W0ADvnE' },
+          { title: 'UNDERGROUND EMPIRE',    duration: '2:25', ytId: 'nGsqftWuD_Q' },
+          { title: 'THE GHOST IN THE MACHINE', duration: '4:22', ytId: 'yY1kV4AM8u8' },
+          { title: 'STATIC RAIN',           duration: '4:41', ytId: 'eYzu69tW8lA' },
+          { title: 'RADIO REBEL',           duration: '2:19', ytId: 'UcEayB5cWKo' },
+          { title: 'LASER SCARS',           duration: '4:02', ytId: 'V1heaEvlYCk' },
+          { title: 'ONE LAST SPARK',        duration: '4:17', ytId: 'VUVyr5OPKMw' },
+        ],
+        links: {
+          youtube: 'https://www.youtube.com/playlist?list=PLSGcMQLYdKYEQ_3Iku1i0wSFgvzLQq0Pj',
+        },
+      },
+    ];
+
+    // ─── Ejecutar ───────────────────────────────────────────
+    document.getElementById('seedBtn').addEventListener('click', async () => {
+      const btn = document.getElementById('seedBtn');
+      const status = document.getElementById('status');
+      btn.disabled = true;
+      status.className = 'info';
+      status.textContent = 'Escribiendo en Firestore…';
+
+      let ok = 0, err = 0;
+      for (const album of ALBUMS) {
+        try {
+          const { id, ...albumData } = album;  // sacamos id del spread
+          await setDoc(doc(db, 'albums', id), {
+            ...albumData,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
+          });
+          ok++;
+        } catch (e) {
+          console.error('Error con', album.id, e);
+          err++;
+        }
+      }
+
+      if (err === 0) {
+        status.className = 'ok';
+        status.textContent = `✓ Seed completado. ${ok} álbum(es) creados en Firestore.`;
+      } else {
+        status.className = 'err';
+        status.textContent = `✗ ${ok} creados, ${err} error(es). Revisá la consola (F12).`;
+      }
+
+      btn.disabled = false;
+    });
+  </script>
+</body>
+</html>

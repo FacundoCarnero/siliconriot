@@ -87,7 +87,24 @@ body {
   margin-bottom: 0.6rem;
 }
 
+.login-error.success { color: var(--green, #4ade80); }
+
 .login-card .btn { width: 100%; justify-content: center; }
+
+.login-card .btn-link {
+  display: block;
+  width: 100%;
+  margin-top: 0.8rem;
+  background: none;
+  border: none;
+  color: var(--white-dim2);
+  font-size: 0.65rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.login-card .btn-link:hover { color: var(--white); }
 
 /* ─── LAYOUT ─────────────────────────────────── */
 .admin-layout {
@@ -603,6 +620,7 @@ body {
       </div>
       <div class="login-error" id="loginError"></div>
       <button type="submit" class="btn"><i class="fa-solid fa-lock"></i> Ingresar</button>
+      <button type="button" class="btn-link" id="forgotPasswordBtn">¿Olvidaste tu contraseña?</button>
     </form>
   </div>
 </section>

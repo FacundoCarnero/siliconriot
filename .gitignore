@@ -1,0 +1,24 @@
+# ─── Local tooling (no es parte de la web) ───
+.atl/
+.opencode/
+.codegraph/
+opencode-portable.bat
+
+# ─── Backups / copias locales ───
+index-BKP*.html
+*-BKP*.html
+
+# ─── Secretos — NUNCA subir ───
+.env
+.env.*
+*.local
+firebase-config.local.js
+
+# ─── Sistema operativo ───
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# ─── Node (si algún día se usa) ───
+node_modules/
+dist/

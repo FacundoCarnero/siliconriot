@@ -9,6 +9,7 @@ import {
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
+  sendPasswordResetEmail,
 } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
 import {
   doc,
@@ -141,6 +142,32 @@ logoutBtn.addEventListener('click', async () => {
   await signOut(auth);
   stopVIPListener();
   window.location.href = 'index.html';
+});
+
+// ─── Forgot password ────────────────────────────────────────
+const forgotPasswordBtn = $('forgotPasswordBtn');
+
+forgotPasswordBtn.addEventListener('click', async (e) => {
+  e.preventDefault();
+  loginError.classList.remove('success');
+  const email = loginEmail.value.trim();
+
+  if (!email) {
+    loginError.textContent = 'Ingresá tu email arriba para enviarte el link de recuperación.';
+    return;
+  }
+
+  try {
+    await sendPasswordResetEmail(auth, email);
+    loginError.classList.add('success');
+    loginError.textContent = 'Te enviamos un link de recuperación a ' + email + '. Revisá tu bandeja (y el spam).';
+  } catch (err) {
+    const messages = {
+      'auth/invalid-email': 'El email no es válido.',
+      'auth/user-not-found': 'No hay ningún usuario registrado con ese email.',
+    };
+    loginError.textContent = messages[err.code] || 'Error al enviar el mail de recuperación.';
+  }
 });
 
 // ─── Site Config (lectura + escritura) ─────────────────────
