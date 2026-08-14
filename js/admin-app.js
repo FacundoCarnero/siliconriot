@@ -394,9 +394,10 @@ function listenDedications() {
         // Ocultar dedications sin verificar por mail
         if (data.status === 'sin_verificar') return;
 
-        dedicationsData.push({ _id: docSnap.id, ...data });
+      dedicationsData.push({ _id: docSnap.id, ...data });
       });
       renderDedications();
+      repairStoredCollabs();
     },
     (err) => {
       if (dedicationList) dedicationList.innerHTML = `<tr><td colspan="7" class="empty-state">Error loading dedications.</td></tr>`;
@@ -511,6 +512,7 @@ async function setAlbumTrackCollab(albumId, trackIdx, collab) {
   if (!albumSnap.exists() || !Array.isArray(tracks) || !tracks[trackIdx]) {
     throw new Error('Album track not found.');
   }
+  if ((tracks[trackIdx].collab || '') === collab) return;
   const nextTracks = tracks.map((track, index) =>
     index === trackIdx ? { ...track, collab } : track
   );
@@ -899,6 +901,7 @@ const albumStatus = $('albumStatus');
 
 let albumsData = [];        // datos actuales de Firestore
 let editingAlbum = null;    // id del álbum actualmente expandido
+const repairingCollabs = new Set();
 
 let unsubAlbums = null;
 function applyAlbumsSnapshot(snapshot) {
@@ -911,7 +914,35 @@ function applyAlbumsSnapshot(snapshot) {
   // Repoblar el selector de tracks cuando los álbumes llegan después
   // de las dedications.
   renderDedications();
+  repairStoredCollabs();
   if (dashAlbumCount) dashAlbumCount.textContent = albumsData.length;
+}
+
+// Repara asignaciones antiguas que guardaron `collabRef` en la dedication
+// pero no pudieron escribir el campo collab dentro del array del álbum.
+async function repairStoredCollabs() {
+  if (!albumsData.length) return;
+  for (const dedication of dedicationsData) {
+    const ref = dedication.collabRef;
+    if (
+      dedication.status !== 'publicado' ||
+      !dedication.name ||
+      !ref?.albumId ||
+      typeof ref.trackIdx !== 'number'
+    ) continue;
+
+    const key = `${dedication._id}:${ref.albumId}:${ref.trackIdx}`;
+    if (repairingCollabs.has(key)) continue;
+    repairingCollabs.add(key);
+    try {
+      await setAlbumTrackCollab(ref.albumId, ref.trackIdx, dedication.name);
+      console.info('[Admin] Repaired collaboration:', dedication.name, ref);
+    } catch (err) {
+      console.error('[Admin] Collaboration repair failed:', err);
+    } finally {
+      repairingCollabs.delete(key);
+    }
+  }
 }
 
 function listenAlbums() {
