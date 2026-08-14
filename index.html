@@ -1750,13 +1750,13 @@ function switchAlbum(i) {
 // ==========================================
 // 8. TRACK LOADING
 // ==========================================
-function loadTrack(i) {
+function loadTrack(i, silent) {
   stopPreviewTimer();
   trackIdx = i;
   const t = currentTrack();
   trackTitle.innerText = t.title;
   trackDur.innerText   = t.duration;
-  notify('▶ ' + t.title);
+  if (!silent) notify('▶ ' + t.title);
 
   const ytLink = document.getElementById('trackYTLink');
   if (ytLink) ytLink.href = 'https://youtu.be/' + t.yt;
@@ -1899,6 +1899,9 @@ document.addEventListener('keydown', (e) => {
 // solo cuando el usuario pulsa play.
 (function startRadioOnFirstInteraction() {
   const start = () => {
+    // Cargar el API de YouTube (lo necesita la radio),
+    // sin tocar el reproductor de álbumes.
+    initYT(() => {});
     initRadio();
     window.removeEventListener('click', start);
     window.removeEventListener('scroll', start);
@@ -2195,7 +2198,7 @@ function handleRadioClick(e) {
 }
 
 renderTrackList();
-loadTrack(0);
+loadTrack(0, true);
 </script>
 </body>
 </html>
