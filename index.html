@@ -1834,6 +1834,20 @@ function onYTState(e) {
 // ==========================================
 // 6. TRACK LIST RENDERER
 // ==========================================
+// Normaliza los créditos de un track a un array único de nombres.
+// Fuente primaria `inspiredBy` (array); acepta el legacy `collab`
+// (string) por compatibilidad.
+function normalizeInspiredBy(t) {
+  if (!t) return [];
+  if (Array.isArray(t.inspiredBy)) {
+    return [...new Set(t.inspiredBy.map((n) => String(n).trim()).filter(Boolean))];
+  }
+  if (typeof t.collab === 'string' && String(t.collab).trim()) {
+    return [String(t.collab).trim()];
+  }
+  return [];
+}
+
 function renderTrackList() {
   const p = playlist();
   trackList.innerHTML = '';
@@ -1849,15 +1863,16 @@ function renderTrackList() {
        <span class="track-name">${t.title}</span>
       <span class="track-time">${t.duration}</span>
     `;
-    // Colaboración: etiqueta opcional bajo el nombre del track.
-    // El nombre del fan se inyecta con textContent (escapado),
+    // Inspiración: etiqueta opcional bajo el nombre del track.
+    // Los nombres del fan se inyectan con textContent (escapados),
     // nunca con interpolación de HTML crudo.
-    if (t.collab && String(t.collab).trim()) {
+    const inspired = normalizeInspiredBy(t);
+    if (inspired.length) {
       const nameEl = div.querySelector('.track-name');
-      const collabEl = document.createElement('span');
-      collabEl.className = 'track-collab';
-      collabEl.textContent = 'colab: ' + String(t.collab).trim();
-      nameEl.appendChild(collabEl);
+      const inspiredEl = document.createElement('span');
+      inspiredEl.className = 'track-collab';
+      inspiredEl.textContent = 'Inspired by ' + inspired.join(' · ');
+      nameEl.appendChild(inspiredEl);
     }
     trackList.appendChild(div);
   });

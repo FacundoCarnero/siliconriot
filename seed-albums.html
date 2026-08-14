@@ -131,6 +131,9 @@
             : [];
           const tracks = albumData.tracks.map((track, index) => ({
             ...track,
+            ...(Array.isArray(existingTracks[index]?.inspiredBy)
+              ? { inspiredBy: existingTracks[index].inspiredBy }
+              : {}),
             ...(existingTracks[index]?.collab ? { collab: existingTracks[index].collab } : {}),
           }));
           await setDoc(doc(db, 'albums', id), {

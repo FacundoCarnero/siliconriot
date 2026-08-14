@@ -504,17 +504,38 @@ function stopDedicationListener() {
   }
 }
 
-// ─── Cambiar estado de una dedication ──────────────────────
-async function setAlbumTrackCollab(albumId, trackIdx, collab) {
+// ─── Normalización de nombres en arrays ─────────────────────
+// Filtra vacíos y elimina duplicados de cualquier lista de nombres.
+function normalizeTrackNames(arr) {
+  return [...new Set((Array.isArray(arr) ? arr : []).map((n) => String(n).trim()).filter(Boolean))];
+}
+
+// Agrega un nombre a `inspiredBy` de un track sin duplicados.
+function addNameToTrack(track, name) {
+  const names = normalizeTrackNames([...(Array.isArray(track.inspiredBy) ? track.inspiredBy : []), name]);
+  return { ...track, inspiredBy: names };
+}
+
+// Quita únicamente ese nombre de `inspiredBy` de un track.
+function removeNameFromTrack(track, name) {
+  const names = normalizeTrackNames(track.inspiredBy).filter((n) => n !== name);
+  return { ...track, inspiredBy: names };
+}
+
+// ─── Agregar nombre a `inspiredBy` de un track ──────────────
+// Lectura-modificación-escritura del array completo de tracks
+// (nunca dotted paths numéricos). Idempotente: si el nombre ya
+// está en `inspiredBy`, no escribe nada.
+async function addTrackInspiredBy(albumId, trackIdx, fanName) {
   const albumRef = doc(db, 'albums', albumId);
   const albumSnap = await getDoc(albumRef);
   const tracks = albumSnap.data()?.tracks;
   if (!albumSnap.exists() || !Array.isArray(tracks) || !tracks[trackIdx]) {
     throw new Error('Album track not found.');
   }
-  if ((tracks[trackIdx].collab || '') === collab) return;
+  if (normalizeTrackNames(tracks[trackIdx].inspiredBy).includes(fanName)) return;
   const nextTracks = tracks.map((track, index) =>
-    index === trackIdx ? { ...track, collab } : track
+    index === trackIdx ? addNameToTrack(track, fanName) : track
   );
   await updateDoc(albumRef, { tracks: nextTracks });
 }
@@ -530,13 +551,13 @@ window.setDedicationStatus = async (id, status) => {
 
   // Al pasar a 'publicado', reaplicar el crédito guardado (si hay
   // collabRef previo) por si el track quedó sin el nombre. Es
-  // idempotente: sobreescribe con el mismo nombre del fan.
+  // idempotente: agrega el nombre del fan a `inspiredBy` una sola vez.
   if (status === 'publicado') {
     const dedication = dedicationsData.find((d) => d._id === id);
-      const ref = dedication && dedication.collabRef;
+    const ref = dedication && dedication.collabRef;
     if (dedication && dedication.name && ref && ref.albumId && typeof ref.trackIdx === 'number') {
       try {
-        await setAlbumTrackCollab(ref.albumId, ref.trackIdx, dedication.name);
+        await addTrackInspiredBy(ref.albumId, ref.trackIdx, dedication.name);
       } catch (err) {
         console.warn('[Admin] collab reapply skipped:', err);
       }
@@ -556,9 +577,9 @@ window.setDedicationStatus = async (id, status) => {
 
 // ─── Asignar track a una dedication (crédito de colaboración) ──
 // Expuesta al global porque es llamada desde el onchange del select.
-// Guarda la referencia collabRef en la dedication y escribe el
-// nombre del fan en albums/<albumId>/tracks[<idx>].collab. Seleccionar
-// un valor vacío limpia la referencia y el crédito del track previo.
+// Guarda la referencia collabRef en la dedication y mantiene el array
+// `inspiredBy` del track: asignar agrega el nombre del fan, desasignar
+// o mover lo quita únicamente del track previo (sin borrar los demás).
 window.setDedicationTrack = async (id, value) => {
   const dedication = dedicationsData.find((d) => d._id === id);
   if (!dedication) return;
@@ -582,8 +603,9 @@ window.setDedicationTrack = async (id, value) => {
 
   try {
     // `tracks` es un array de objetos: Firestore no permite actualizar
-    // tracks.0.collab como un dotted path. Leemos, modificamos y guardamos
-    // el array dentro de una transacción para no perder otros campos.
+    // tracks.0.inspiredBy como un dotted path. Leemos, modificamos y
+    // guardamos el array completo dentro de una transacción para no
+    // perder otros campos ni nombres de otros fans.
     await runTransaction(db, async (transaction) => {
       const dedicationRef = doc(db, 'dedications', id);
       const dedicationSnap = await transaction.get(dedicationRef);
@@ -611,12 +633,15 @@ window.setDedicationTrack = async (id, value) => {
         if (!target?.snap.exists() || !Array.isArray(targetTracks) || !targetTracks[trackIdx]) {
           throw new Error('Selected album track was not found.');
         }
+        // Agregar el nombre al track destino sin borrar los existentes
+        // ni duplicar el mismo nombre.
         nextTracksByAlbum.set(collabRef.albumId, targetTracks.map((track, index) =>
-          index === trackIdx ? { ...track, collab: fanName } : track
+          index === trackIdx ? addNameToTrack(track, fanName) : track
         ));
       }
 
-      // Limpiar el crédito anterior si se cambió de track o se desasignó.
+      // Quitar SOLO el nombre del fan del track previo si se cambió de
+      // track o se desasignó (los demás nombres de inspiredBy se conservan).
       if (
         previous?.albumId &&
         typeof previous.trackIdx === 'number' &&
@@ -627,7 +652,7 @@ window.setDedicationTrack = async (id, value) => {
         if (previousAlbum?.snap.exists() && Array.isArray(previousTracks) && previousTracks[previous.trackIdx]) {
           const baseTracks = nextTracksByAlbum.get(previous.albumId) || previousTracks;
           nextTracksByAlbum.set(previous.albumId, baseTracks.map((track, index) =>
-            index === previous.trackIdx ? { ...track, collab: '' } : track
+            index === previous.trackIdx ? removeNameFromTrack(track, fanName) : track
           ));
         }
       }
@@ -919,7 +944,9 @@ function applyAlbumsSnapshot(snapshot) {
 }
 
 // Repara asignaciones antiguas que guardaron `collabRef` en la dedication
-// pero no pudieron escribir el campo collab dentro del array del álbum.
+// pero no pudieron escribir el crédito dentro del array del álbum: agrega
+// el nombre del fan a `inspiredBy` del track apuntado. Es idempotente
+// (no escribe si el nombre ya está) y el Set evita bucles de snapshot.
 async function repairStoredCollabs() {
   if (!albumsData.length) return;
   for (const dedication of dedicationsData) {
@@ -935,7 +962,7 @@ async function repairStoredCollabs() {
     if (repairingCollabs.has(key)) continue;
     repairingCollabs.add(key);
     try {
-      await setAlbumTrackCollab(ref.albumId, ref.trackIdx, dedication.name);
+      await addTrackInspiredBy(ref.albumId, ref.trackIdx, dedication.name);
       console.info('[Admin] Repaired collaboration:', dedication.name, ref);
     } catch (err) {
       console.error('[Admin] Collaboration repair failed:', err);
@@ -1071,6 +1098,14 @@ function escHtml(str) {
   return str.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
+// Conserva los créditos de un track fuente al reconstruir el array de
+// tracks del álbum: el array `inspiredBy` (aunque sea vacío) y el campo
+// legacy `collab` cuando no está vacío.
+function preserveTrackCredits(source, target) {
+  if (Array.isArray(source.inspiredBy)) target.inspiredBy = source.inspiredBy;
+  if (typeof source.collab === 'string' && source.collab.trim()) target.collab = source.collab;
+}
+
 // ─── Eventos (delegados) ────────────────────────────────────
 albumsContainer.addEventListener('click', (e) => {
   const target = e.target.closest('[data-album-id]');
@@ -1122,9 +1157,10 @@ albumsContainer.addEventListener('submit', async (e) => {
   const albumId = form.dataset.albumId;
   const isNew = albumId === '__new__' || albumId === '';
 
-  // Recolectar tracks preservando el collab existente por índice.
-  // Filas nuevas/renombradas sin match no llevan crédito; las filas
-  // eliminadas sueltan su crédito. Nunca se borra collab por error.
+  // Recolectar tracks preservando los créditos existentes por índice
+  // (array `inspiredBy` y campo legacy `collab`). Filas nuevas o
+  // renombradas sin match no llevan crédito; las filas eliminadas
+  // sueltan su crédito. Nunca se borran créditos por error.
   const sourceAlbum = albumsData.find((a) => a._id === albumId);
   const sourceTracks = sourceAlbum?.tracks || [];
   const trackRows = form.querySelectorAll('.track-row');
@@ -1140,7 +1176,7 @@ albumsContainer.addEventListener('submit', async (e) => {
     // orden original salvo que se hayan quitado/insertado filas).
     const src = sourceTracks[idx];
     if (src && src.title && src.title.trim().toLowerCase() === title.toLowerCase()) {
-      trackOut.collab = src.collab || '';
+      preserveTrackCredits(src, trackOut);
     } else {
       // Fallback por identidad (título + ytId): evita que una fila
       // removida deslice el crédito hacia el track siguiente.
@@ -1148,7 +1184,7 @@ albumsContainer.addEventListener('submit', async (e) => {
         t.title && t.title.trim().toLowerCase() === title.toLowerCase() &&
         (t.ytId || '') === (ytId || '')
       );
-      trackOut.collab = (match && match.collab) || '';
+      if (match) preserveTrackCredits(match, trackOut);
     }
     tracks.push(trackOut);
   });

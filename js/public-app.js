@@ -288,7 +288,7 @@ onSnapshot(
 // ─── 3c. Albums — carga para el player público ──────────────
 // Lee la colección pública `albums` ordenada por `order`, la
 // normaliza al shape del player (`name`, `cover`, `tracks[]`
-// con `title`, `duration`, `yt`, `collab`) y la entrega al
+// con `title`, `duration`, `yt`, `inspiredBy`) y la entrega al
 // script inline del player vía callback/global. Si la lectura
 // falla o devuelve cero álbumes, el player conserva su fallback
 // hardcodeado (los callbacks simplemente no se invocan).
@@ -326,9 +326,27 @@ function deliverPublicAlbums(albums) {
 }
 
 /**
+ * Normaliza los créditos de un track a un array único de nombres.
+ * La fuente primaria es `inspiredBy` (array de fan names). Si el campo
+ * no existe, se acepta el legacy `collab` (string) por compatibilidad.
+ * @param {object} t - Track de Firestore
+ * @returns {string[]} Nombres únicos, sin vacíos
+ */
+function normalizeInspiredBy(t) {
+  if (!t) return [];
+  if (Array.isArray(t.inspiredBy)) {
+    return [...new Set(t.inspiredBy.map((n) => String(n).trim()).filter(Boolean))];
+  }
+  if (typeof t.collab === 'string' && String(t.collab).trim()) {
+    return [String(t.collab).trim()];
+  }
+  return [];
+}
+
+/**
  * Normaliza un documento de la colección `albums` al shape del player.
  * @param {{ id: string, data: () => object }} docSnap
- * @returns {{ name: string, cover: string, tracks: Array<{title:string,duration:string,yt:string,collab:string}> }}
+ * @returns {{ name: string, cover: string, tracks: Array<{title:string,duration:string,yt:string,inspiredBy:Array<string>}> }}
  */
 function normalizeAlbum(docSnap) {
   const d = docSnap.data() || {};
@@ -339,7 +357,7 @@ function normalizeAlbum(docSnap) {
           title: (t && t.title) || '',
           duration: (t && t.duration) || '—',
           yt: (t && t.ytId) || '',
-          collab: (t && t.collab) || '',
+          inspiredBy: normalizeInspiredBy(t),
         }))
     : [];
   return {
