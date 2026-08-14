@@ -333,12 +333,14 @@ function deliverPublicAlbums(albums) {
 function normalizeAlbum(docSnap) {
   const d = docSnap.data() || {};
   const tracks = Array.isArray(d.tracks)
-    ? d.tracks.map((t) => ({
-        title: (t && t.title) || '',
-        duration: (t && t.duration) || '—',
-        yt: (t && t.ytId) || '',
-        collab: (t && t.collab) || '',
-      }))
+    ? d.tracks
+        .filter((t) => t && typeof t === 'object') // saltar entradas null/undefined
+        .map((t) => ({
+          title: (t && t.title) || '',
+          duration: (t && t.duration) || '—',
+          yt: (t && t.ytId) || '',
+          collab: (t && t.collab) || '',
+        }))
     : [];
   return {
     name: d.title || docSnap.id,

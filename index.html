@@ -1678,8 +1678,12 @@ function renderAlbumTabs() {
 // Firestore entrega datos no vacíos, clampa índices y re-renderiza.
 window.__setPublicAlbums = function (loaded) {
   if (!Array.isArray(loaded) || !loaded.length) return; // conservar fallback
+  // Solo reemplazamos el fallback si al menos un álbum trae tracks
+  // utilizables; un doc vacío/roto en Firestore no debe matar la lista.
+  const usable = loaded.filter((a) => a && Array.isArray(a.tracks) && a.tracks.length > 0);
+  if (!usable.length) return; // conservar fallback hardcodeado
   albums.length = 0;
-  loaded.forEach((a) => albums.push(a));
+  usable.forEach((a) => albums.push(a));
   if (albumIdx >= albums.length) albumIdx = 0;
   const p = playlist();
   if (trackIdx >= p.length) trackIdx = 0;
@@ -1752,7 +1756,10 @@ function stopPreviewTimer() {
   if (msg)   msg.classList.remove('show');
 }
 
-function playlist() { return albums[albumIdx].tracks; }
+function playlist() {
+  const a = albums[albumIdx];
+  return (a && Array.isArray(a.tracks)) ? a.tracks : [];
+}
 function currentTrack() { return playlist()[trackIdx]; }
 
 function openYT(e) {
@@ -1821,6 +1828,7 @@ function renderTrackList() {
   const p = playlist();
   trackList.innerHTML = '';
   p.forEach((t, i) => {
+    if (!t || typeof t.title !== 'string' || !t.title) return; // saltar tracks vacíos/rotos
     const div = document.createElement('div');
     div.className = 'track-item' + (i === trackIdx ? ' active' : '');
     div.dataset.track = i;
@@ -1877,6 +1885,16 @@ function switchAlbum(i) {
 function loadTrack(i, silent) {
   stopPreviewTimer();
   trackIdx = i;
+  const p = playlist();
+  if (!p.length) {
+    // Sin tracks disponibles: no crasheamos, dejamos la lista tal cual.
+    if (ytPlayer && ytPlayer.stopVideo) ytPlayer.stopVideo();
+    playBtn.classList.remove('playing');
+    playIcon.className = 'fa-solid fa-play';
+    vDisc.classList.remove('spin');
+    return;
+  }
+  if (trackIdx >= p.length) trackIdx = 0;
   const t = currentTrack();
   trackTitle.innerText = t.title;
   trackDur.innerText   = t.duration;
