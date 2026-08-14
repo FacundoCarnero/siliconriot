@@ -153,19 +153,20 @@ function buildMailHTML(name, verifyUrl) {
 /**
  * Saves a dedication (status 'sin_verificar' + token hash)
  * y dispara el mail de verificación vía Worker.
- * @param {string} name    - Nombre o alias del fan
- * @param {string} message - Frase o idea para la canción (opcional)
- * @param {string} email   - Mail del fan (solo para confirmar)
+ * @param {string} displayName - Nombre para el ticker/admin: "ADRIAN T."
+ * @param {string} firstName   - Primer nombre, para el saludo del mail
+ * @param {string} message     - Frase o idea para la canción (opcional)
+ * @param {string} email       - Mail del fan (solo para confirmar)
  * @returns {Promise<{ok:boolean, docId?:string, error?:string}>}
  */
-async function submitDedication(name, message, email) {
+async function submitDedication(displayName, firstName, message, email) {
   const emailClean = email.trim().toLowerCase();
   const rawToken = crypto.randomUUID();
 
   try {
     const verificationTokenHash = await sha256Hex(rawToken);
     const docRef = await addDoc(DEDICATIONS_COLLECTION, {
-      name: name.trim().toUpperCase(),
+      name: displayName.trim().toUpperCase(),
       message: message.trim(),
       email: emailClean,
       status: 'sin_verificar',
@@ -177,13 +178,13 @@ async function submitDedication(name, message, email) {
     const verifyUrl =
       'https://silicon-riot.com/verify.html?id=' + encodeURIComponent(docRef.id) +
       '&token=' + encodeURIComponent(rawToken) +
-      '&name=' + encodeURIComponent(name.trim().toUpperCase()) +
+      '&name=' + encodeURIComponent(displayName.trim().toUpperCase()) +
       '&msg=' + encodeURIComponent(message.trim());
 
     const res = await fetch(WORKER_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ to: emailClean, name: name.trim(), html: buildMailHTML(name.trim(), verifyUrl) }),
+      body: JSON.stringify({ to: emailClean, name: firstName.trim(), html: buildMailHTML(firstName.trim(), verifyUrl) }),
     });
 
     if (!res.ok) {

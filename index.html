@@ -1508,7 +1508,9 @@ body.overdrive .track-item.active {
     <h3 class="title-md" style="font-size:1.8rem; margin-bottom:0.5rem;">YOUR IDEA IN A SONG</h3>
     <p style="font-size:0.75rem; color:var(--white-dim); margin-bottom:1rem;">Leave your name and a phrase or idea. If the band uses it, your name goes in the description of the released track.</p>
 
-    <input type="text" id="dedicationNameInput" placeholder="YOUR NAME OR ALIAS" required maxlength="30" style="width:100%; padding:0.6rem; background:var(--black-3); border:1px solid var(--gold-dim2); color:var(--white); font-family:'Inter', sans-serif; text-transform:uppercase; font-size:0.85rem; text-align:center; margin-bottom:1rem; outline:none; border-radius:3px;">
+    <input type="text" id="dedicationFirstName" placeholder="FIRST NAME" required maxlength="20" style="width:100%; padding:0.6rem; background:var(--black-3); border:1px solid var(--gold-dim2); color:var(--white); font-family:'Inter', sans-serif; text-transform:uppercase; font-size:0.85rem; text-align:center; margin-bottom:1rem; outline:none; border-radius:3px;">
+
+    <input type="text" id="dedicationLastName" placeholder="LAST NAME" required maxlength="20" style="width:100%; padding:0.6rem; background:var(--black-3); border:1px solid var(--gold-dim2); color:var(--white); font-family:'Inter', sans-serif; text-transform:uppercase; font-size:0.85rem; text-align:center; margin-bottom:1rem; outline:none; border-radius:3px;">
 
     <textarea id="dedicationMessageInput" maxlength="200" placeholder="What should the song say or include?" style="width:100%; padding:0.6rem; background:var(--black-3); border:1px solid var(--gold-dim2); color:var(--white); font-family:'Inter', sans-serif; font-size:0.85rem; text-align:center; margin-bottom:1rem; outline:none; border-radius:3px; resize:vertical; min-height:80px;"></textarea>
 
@@ -2136,15 +2138,17 @@ function closeDedicationModal() {
 
 async function submitDedication() {
   const statusEl = document.getElementById('dedicationStatus');
-  const nameInput = document.getElementById('dedicationNameInput');
+  const firstNameInput = document.getElementById('dedicationFirstName');
+  const lastNameInput = document.getElementById('dedicationLastName');
   const msgInput = document.getElementById('dedicationMessageInput');
   const emailInput = document.getElementById('dedicationEmailInput');
-  const name = nameInput.value.trim();
+  const firstName = firstNameInput.value.trim();
+  const lastName = lastNameInput.value.trim();
   const message = msgInput.value.trim();
   const email = emailInput.value.trim();
 
-  if (!name) {
-    statusEl.textContent = '✗ Enter your name or alias.';
+  if (!firstName || !lastName) {
+    statusEl.textContent = '✗ Enter your first and last name.';
     statusEl.style.color = 'var(--red)';
     return;
   }
@@ -2161,14 +2165,18 @@ async function submitDedication() {
     return;
   }
 
+  // Nombre para el ticker/admin: "ADRIAN T." (primer nombre + inicial del apellido)
+  const displayName = (firstName + ' ' + lastName.charAt(0).toUpperCase() + '.').toUpperCase();
+
   statusEl.textContent = 'Sending…';
   statusEl.style.color = 'var(--white-dim)';
 
-  const result = await window.__submitDedication(name, message, email);
+  const result = await window.__submitDedication(displayName, firstName, message, email);
   if (result && result.ok) {
     statusEl.textContent = 'Check your email and confirm your dedication!';
     statusEl.style.color = 'var(--gold)';
-    nameInput.value = '';
+    firstNameInput.value = '';
+    lastNameInput.value = '';
     msgInput.value = '';
     emailInput.value = '';
     notify('🎤 DEDICATION SENT');
