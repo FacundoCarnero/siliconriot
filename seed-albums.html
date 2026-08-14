@@ -34,7 +34,8 @@
 
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
-    import { getFirestore, doc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
+    import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
+    import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
 
     // ─── Misma config que el proyecto ───────────────────────
     const firebaseConfig = {
@@ -48,7 +49,17 @@
     };
 
     const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
     const db = getFirestore(app);
+    let currentUser = null;
+
+    onAuthStateChanged(auth, (user) => {
+      currentUser = user;
+      if (!user) {
+        document.getElementById('status').textContent = 'Iniciá sesión en el admin antes de ejecutar el seed.';
+        document.getElementById('status').className = 'err';
+      }
+    });
 
     // ─── Datos de los álbumes ───────────────────────────────
     const ALBUMS = [
@@ -101,6 +112,11 @@
     document.getElementById('seedBtn').addEventListener('click', async () => {
       const btn = document.getElementById('seedBtn');
       const status = document.getElementById('status');
+      if (!currentUser) {
+        status.className = 'err';
+        status.textContent = 'Sesión requerida: iniciá sesión en admin.html y volvé a abrir esta página.';
+        return;
+      }
       btn.disabled = true;
       status.className = 'info';
       status.textContent = 'Escribiendo en Firestore…';
@@ -109,11 +125,20 @@
       for (const album of ALBUMS) {
         try {
           const { id, ...albumData } = album;  // sacamos id del spread
+          const existing = await getDoc(doc(db, 'albums', id));
+          const existingTracks = existing.exists() && Array.isArray(existing.data().tracks)
+            ? existing.data().tracks
+            : [];
+          const tracks = albumData.tracks.map((track, index) => ({
+            ...track,
+            ...(existingTracks[index]?.collab ? { collab: existingTracks[index].collab } : {}),
+          }));
           await setDoc(doc(db, 'albums', id), {
             ...albumData,
+            tracks,
             createdAt: serverTimestamp(),
             updatedAt: serverTimestamp(),
-          });
+          }, { merge: true });
           ok++;
         } catch (e) {
           console.error('Error con', album.id, e);
