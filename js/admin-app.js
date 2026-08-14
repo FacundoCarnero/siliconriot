@@ -901,27 +901,40 @@ let albumsData = [];        // datos actuales de Firestore
 let editingAlbum = null;    // id del álbum actualmente expandido
 
 let unsubAlbums = null;
+function applyAlbumsSnapshot(snapshot) {
+  albumsData = [];
+  snapshot.forEach((docSnap) => {
+    albumsData.push({ _id: docSnap.id, ...docSnap.data() });
+  });
+  albumsData.sort((a, b) => (a.order ?? Number.MAX_SAFE_INTEGER) - (b.order ?? Number.MAX_SAFE_INTEGER));
+  renderAlbums();
+  // Repoblar el selector de tracks cuando los álbumes llegan después
+  // de las dedications.
+  renderDedications();
+  if (dashAlbumCount) dashAlbumCount.textContent = albumsData.length;
+}
+
 function listenAlbums() {
   if (unsubAlbums) return;
   unsubAlbums = onSnapshot(
     ALBUMS_COLLECTION,
-    (snapshot) => {
-      albumsData = [];
-      snapshot.forEach((docSnap) => {
-        albumsData.push({ _id: docSnap.id, ...docSnap.data() });
-      });
-      albumsData.sort((a, b) => (a.order ?? Number.MAX_SAFE_INTEGER) - (b.order ?? Number.MAX_SAFE_INTEGER));
-      renderAlbums();
-      // Si la tabla de dedications ya se renderizó sin albumsData,
-      // repoblar los selectores de track con las opciones completas.
-      renderDedications();
-      if (dashAlbumCount) dashAlbumCount.textContent = albumsData.length;
-    },
+    applyAlbumsSnapshot,
     (err) => {
+      console.error('[Admin] Albums realtime listener error:', err);
       albumStatus.textContent = '✗ Error al cargar álbumes.';
       albumStatus.className = 'status-msg status-error';
     }
   );
+
+  // Lectura inicial explícita: garantiza que Dedications tenga los álbumes
+  // aun si el primer snapshot en tiempo real llega tarde o se pierde.
+  getDocs(ALBUMS_COLLECTION)
+    .then((snapshot) => applyAlbumsSnapshot(snapshot))
+    .catch((err) => {
+      console.error('[Admin] Albums initial load error:', err);
+      albumStatus.textContent = '✗ Error al cargar álbumes.';
+      albumStatus.className = 'status-msg status-error';
+    });
 }
 
 function stopAlbumsListener() {
