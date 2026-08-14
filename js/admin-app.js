@@ -601,16 +601,17 @@ window.setDedicationTrack = async (id, value) => {
         });
       }
 
+      const nextTracksByAlbum = new Map();
+
       if (collabRef) {
         const target = albumSnapshots.get(collabRef.albumId);
         const targetTracks = target?.snap.data()?.tracks;
         if (!target?.snap.exists() || !Array.isArray(targetTracks) || !targetTracks[trackIdx]) {
           throw new Error('Selected album track was not found.');
         }
-        const nextTracks = targetTracks.map((track, index) =>
+        nextTracksByAlbum.set(collabRef.albumId, targetTracks.map((track, index) =>
           index === trackIdx ? { ...track, collab: fanName } : track
-        );
-        transaction.update(target.ref, { tracks: nextTracks });
+        ));
       }
 
       // Limpiar el crédito anterior si se cambió de track o se desasignó.
@@ -622,16 +623,21 @@ window.setDedicationTrack = async (id, value) => {
         const previousAlbum = albumSnapshots.get(previous.albumId);
         const previousTracks = previousAlbum?.snap.data()?.tracks;
         if (previousAlbum?.snap.exists() && Array.isArray(previousTracks) && previousTracks[previous.trackIdx]) {
-          const clearedTracks = previousTracks.map((track, index) =>
+          const baseTracks = nextTracksByAlbum.get(previous.albumId) || previousTracks;
+          nextTracksByAlbum.set(previous.albumId, baseTracks.map((track, index) =>
             index === previous.trackIdx ? { ...track, collab: '' } : track
-          );
-          transaction.update(previousAlbum.ref, { tracks: clearedTracks });
+          ));
         }
       }
 
+      for (const [currentAlbumId, nextTracks] of nextTracksByAlbum) {
+        transaction.update(albumSnapshots.get(currentAlbumId).ref, { tracks: nextTracks });
+      }
       transaction.update(dedicationRef, { collabRef });
     });
+    console.info('[Admin] Collaboration saved:', dedication.name, collabRef || 'cleared');
   } catch (err) {
+    console.error('[Admin] Collaboration save failed:', err);
     alert('Error updating track assignment: ' + err.message);
   }
 };
