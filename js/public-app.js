@@ -211,6 +211,18 @@ const STATUS_META = {
   'publicado':      { label: 'PUBLISHED',      cls: 'published' },
 };
 
+// Dedications de ejemplo — solo decorativas (no viven en Firestore).
+// Se mezclan con las reales para que el Fan Wall se vea vivo.
+const SAMPLE_DEDICATIONS = [
+  { label: 'MATI: A laser sunset over the city',       status: 'pendiente' },
+  { label: 'VALEN: Synthesizers at 3am',               status: 'pendiente' },
+  { label: 'JULI: The ghost in the machine',           status: 'en produccion' },
+  { label: 'SANTI: Chrome hearts and neon rain',       status: 'pendiente' },
+  { label: 'LU: Fade to the final frontier',           status: 'publicado' },
+  { label: 'NICO: Drive through a storm of pixels',    status: 'en produccion' },
+  { label: 'RO: The radio speaks my name',             status: 'publicado' },
+];
+
 function statusBadge(status) {
   const meta = STATUS_META[status];
   if (!meta) return '';
@@ -222,13 +234,11 @@ function renderTicker(items) {
   const track  = document.getElementById('dedicationTrack');
   if (!ticker || !track) return;
 
-  if (!items.length) {
-    ticker.classList.remove('active');
-    track.innerHTML = '';
-    return;
-  }
+  // Mezcla: ejemplos decorativos + dedications reales.
+  // Los ejemplos van primeros; si hay reales, se intercalan detrás.
+  const mixed = [...SAMPLE_DEDICATIONS, ...items];
 
-  const html = items
+  const html = mixed
     .map((item) => {
       const { label, status } = item;
       const idx = label.indexOf(': ');
