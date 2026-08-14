@@ -2,6 +2,7 @@
 .atl/
 .opencode/
 .codegraph/
+.wrangler/
 opencode-portable.bat
 
 # ─── Backups / copias locales ───
