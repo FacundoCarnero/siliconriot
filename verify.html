@@ -130,6 +130,11 @@
       span.textContent = message;
       el.appendChild(span);
       document.getElementById('backLink').style.display = 'inline-block';
+
+      // Redirigir automáticamente al sitio tras unos segundos (solo en éxito)
+      if (ok) {
+        setTimeout(() => { window.location.href = 'index.html'; }, 3500);
+      }
     }
 
     async function verify() {
