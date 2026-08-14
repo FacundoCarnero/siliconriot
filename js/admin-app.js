@@ -25,6 +25,7 @@ import {
   onSnapshot,
   deleteDoc,
   serverTimestamp,
+  runTransaction,
 } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
 
 // ─── Refs del DOM ──────────────────────────────────────────
@@ -503,6 +504,19 @@ function stopDedicationListener() {
 }
 
 // ─── Cambiar estado de una dedication ──────────────────────
+async function setAlbumTrackCollab(albumId, trackIdx, collab) {
+  const albumRef = doc(db, 'albums', albumId);
+  const albumSnap = await getDoc(albumRef);
+  const tracks = albumSnap.data()?.tracks;
+  if (!albumSnap.exists() || !Array.isArray(tracks) || !tracks[trackIdx]) {
+    throw new Error('Album track not found.');
+  }
+  const nextTracks = tracks.map((track, index) =>
+    index === trackIdx ? { ...track, collab } : track
+  );
+  await updateDoc(albumRef, { tracks: nextTracks });
+}
+
 // Expuesta al global porque es llamada desde el onchange del select.
 window.setDedicationStatus = async (id, status) => {
   try {
@@ -517,12 +531,10 @@ window.setDedicationStatus = async (id, status) => {
   // idempotente: sobreescribe con el mismo nombre del fan.
   if (status === 'publicado') {
     const dedication = dedicationsData.find((d) => d._id === id);
-    const ref = dedication && dedication.collabRef;
+      const ref = dedication && dedication.collabRef;
     if (dedication && dedication.name && ref && ref.albumId && typeof ref.trackIdx === 'number') {
       try {
-        await updateDoc(doc(db, 'albums', ref.albumId), {
-          ['tracks.' + ref.trackIdx + '.collab']: dedication.name,
-        });
+        await setAlbumTrackCollab(ref.albumId, ref.trackIdx, dedication.name);
       } catch (err) {
         console.warn('[Admin] collab reapply skipped:', err);
       }
@@ -543,8 +555,7 @@ window.setDedicationStatus = async (id, status) => {
 // ─── Asignar track a una dedication (crédito de colaboración) ──
 // Expuesta al global porque es llamada desde el onchange del select.
 // Guarda la referencia collabRef en la dedication y escribe el
-// nombre del fan en albums/<albumId>/tracks[<idx>].collab vía
-// dotted-path (sin pisar los otros campos del track). Seleccionar
+// nombre del fan en albums/<albumId>/tracks[<idx>].collab. Seleccionar
 // un valor vacío limpia la referencia y el crédito del track previo.
 window.setDedicationTrack = async (id, value) => {
   const dedication = dedicationsData.find((d) => d._id === id);
@@ -568,21 +579,58 @@ window.setDedicationTrack = async (id, value) => {
   const fanName = dedication.name || '';
 
   try {
-    if (collabRef) {
-      await updateDoc(doc(db, 'dedications', id), { collabRef });
-      await updateDoc(doc(db, 'albums', albumId), {
-        ['tracks.' + trackIdx + '.collab']: fanName,
-      });
-    } else {
-      // Limpiar: borra la referencia y el crédito del track previo.
-      await updateDoc(doc(db, 'dedications', id), { collabRef: null });
-      const prev = dedication.collabRef;
-      if (prev && prev.albumId && typeof prev.trackIdx === 'number') {
-        await updateDoc(doc(db, 'albums', prev.albumId), {
-          ['tracks.' + prev.trackIdx + '.collab']: '',
+    // `tracks` es un array de objetos: Firestore no permite actualizar
+    // tracks.0.collab como un dotted path. Leemos, modificamos y guardamos
+    // el array dentro de una transacción para no perder otros campos.
+    await runTransaction(db, async (transaction) => {
+      const dedicationRef = doc(db, 'dedications', id);
+      const dedicationSnap = await transaction.get(dedicationRef);
+      if (!dedicationSnap.exists()) throw new Error('Dedication not found.');
+
+      const previous = dedicationSnap.data().collabRef;
+      const albumIds = new Set();
+      if (collabRef) albumIds.add(collabRef.albumId);
+      if (previous?.albumId) albumIds.add(previous.albumId);
+
+      const albumSnapshots = new Map();
+      for (const currentAlbumId of albumIds) {
+        const albumRef = doc(db, 'albums', currentAlbumId);
+        albumSnapshots.set(currentAlbumId, {
+          ref: albumRef,
+          snap: await transaction.get(albumRef),
         });
       }
-    }
+
+      if (collabRef) {
+        const target = albumSnapshots.get(collabRef.albumId);
+        const targetTracks = target?.snap.data()?.tracks;
+        if (!target?.snap.exists() || !Array.isArray(targetTracks) || !targetTracks[trackIdx]) {
+          throw new Error('Selected album track was not found.');
+        }
+        const nextTracks = targetTracks.map((track, index) =>
+          index === trackIdx ? { ...track, collab: fanName } : track
+        );
+        transaction.update(target.ref, { tracks: nextTracks });
+      }
+
+      // Limpiar el crédito anterior si se cambió de track o se desasignó.
+      if (
+        previous?.albumId &&
+        typeof previous.trackIdx === 'number' &&
+        (!collabRef || previous.albumId !== collabRef.albumId || previous.trackIdx !== collabRef.trackIdx)
+      ) {
+        const previousAlbum = albumSnapshots.get(previous.albumId);
+        const previousTracks = previousAlbum?.snap.data()?.tracks;
+        if (previousAlbum?.snap.exists() && Array.isArray(previousTracks) && previousTracks[previous.trackIdx]) {
+          const clearedTracks = previousTracks.map((track, index) =>
+            index === previous.trackIdx ? { ...track, collab: '' } : track
+          );
+          transaction.update(previousAlbum.ref, { tracks: clearedTracks });
+        }
+      }
+
+      transaction.update(dedicationRef, { collabRef });
+    });
   } catch (err) {
     alert('Error updating track assignment: ' + err.message);
   }
