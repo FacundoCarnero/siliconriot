@@ -181,6 +181,23 @@ nav ul a:hover { color: var(--white); }
 }
 .nav-cta:hover { background: var(--white); transform: translateY(-1px); }
 
+.nav-cta-ghost {
+  background: transparent;
+  color: var(--white-dim);
+  border: 1px solid rgba(255,255,255,0.15);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+.nav-cta-ghost:hover { border-color: var(--gold); color: var(--gold); }
+
 /* ============================================================
    SECTIONS — shared
    ============================================================ */
@@ -1108,6 +1125,7 @@ body.overdrive .track-item.active {
   nav ul.open { display: flex; flex-direction: column; position: absolute; top: 100%; left: 0; right: 0; background: rgba(10,10,10,0.98); padding: 1rem 1.5rem; gap: 1rem; border-bottom: 1px solid rgba(255,255,255,0.04); }
   .nav-toggle { display: block; }
   .nav-cta { font-size: 0.6rem; padding: 0.5rem 0.8rem; letter-spacing: 1px; }
+  .nav-cta-ghost { font-size: 0.6rem; padding: 0.45rem 0.7rem; letter-spacing: 1px; }
 
   #hero { padding: 5rem 1.5rem 2rem; }
   .hero-logos img { height: 40px; }
@@ -1154,7 +1172,10 @@ body.overdrive .track-item.active {
     <li><a href="#connect" onclick="closeNav()">Connect</a></li>
     <li class="nav-easter" onclick="handleEaster()" title="↑↑↓↓←→←→BA"><i class="fa-solid fa-gamepad"></i></li>
   </ul>
-  <button class="nav-cta" onclick="openDedicationModal()" aria-label="Be in a song"><i class="fa-solid fa-microphone-lines"></i> BE IN A SONG</button>
+  <div style="display:flex; align-items:center; gap:0.6rem;">
+    <button class="nav-cta-ghost" onclick="openVipModal()" aria-label="Get your official fan card"><i class="fa-solid fa-id-card"></i> FAN CARD</button>
+    <button class="nav-cta" onclick="openDedicationModal()" aria-label="Be in a song"><i class="fa-solid fa-microphone-lines"></i> BE IN A SONG</button>
+  </div>
 </nav>
 
 <!-- HERO -->
