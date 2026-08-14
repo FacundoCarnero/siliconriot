@@ -30,6 +30,7 @@ const CORS_HEADERS = {
 
 // One-time starting value for the existing site's historical visits.
 const INITIAL_VISITOR_COUNT = 203;
+const VISITOR_BASELINE_VERSION = 'historical-203-v1';
 
 function json(body, status = 200) {
   return new Response(JSON.stringify(body), { status, headers: CORS_HEADERS });
@@ -45,9 +46,9 @@ export class VisitCounter {
   }
 
   async ensureInitialized() {
-    if (await this.state.storage.get('initialized')) return;
+    if (await this.state.storage.get('baselineVersion') === VISITOR_BASELINE_VERSION) return;
     await this.state.storage.put('count', INITIAL_VISITOR_COUNT);
-    await this.state.storage.put('initialized', true);
+    await this.state.storage.put('baselineVersion', VISITOR_BASELINE_VERSION);
   }
 
   async fetch(request) {
