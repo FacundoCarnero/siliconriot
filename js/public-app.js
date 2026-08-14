@@ -218,13 +218,13 @@ const STATUS_META = {
 // Dedications de ejemplo — solo decorativas (no viven en Firestore).
 // Se mezclan con las reales para que el Fan Wall se vea vivo.
 const SAMPLE_DEDICATIONS = [
-  { label: 'JAKE: A laser sunset over the city',      status: 'pendiente' },
-  { label: 'EMMA: Synthesizers at 3am',               status: 'pendiente' },
-  { label: 'KAI: The ghost in the machine',           status: 'publicado' },
-  { label: 'MIA: Chrome hearts and neon rain',        status: 'en produccion' },
-  { label: 'LEO: Fade to the final frontier',         status: 'publicado' },
-  { label: 'AVA: Drive through a storm of pixels',    status: 'en produccion' },
-  { label: 'RYAN: The radio speaks my name',          status: 'publicado' },
+  { label: 'ADRIAN: A laser sunset over the city',     status: 'pendiente' },
+  { label: 'CAROLINA: Synthesizers at 3am',            status: 'pendiente' },
+  { label: 'DANIEL: The ghost in the machine',         status: 'publicado' },
+  { label: 'SOFIA: Chrome hearts and neon rain',       status: 'en produccion' },
+  { label: 'MARCUS: Fade to the final frontier',       status: 'publicado' },
+  { label: 'ISABEL: Drive through a storm of pixels',  status: 'en produccion' },
+  { label: 'TOMAS: The radio speaks my name',          status: 'publicado' },
 ];
 
 function statusBadge(status) {
