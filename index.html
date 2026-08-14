@@ -1891,10 +1891,23 @@ document.addEventListener('keydown', (e) => {
 });
 
 // ==========================================
-// 12. (removed) FIRST CLICK AUTO-START
+// 12. FIRST INTERACTION — RADIO AUTO-START
 // ==========================================
-// El reproductor arranca SOLO cuando el usuario
-// toca el botón de play — no en el primer clic.
+// La radio 24/7 arranca con la primera interacción
+// del usuario (clic en cualquier lado o scroll).
+// El reproductor de álbumes NO se toca — arranca
+// solo cuando el usuario pulsa play.
+(function startRadioOnFirstInteraction() {
+  const start = () => {
+    initRadio();
+    window.removeEventListener('click', start);
+    window.removeEventListener('scroll', start);
+    window.removeEventListener('touchstart', start);
+  };
+  window.addEventListener('click', start);
+  window.addEventListener('scroll', start);
+  window.addEventListener('touchstart', start);
+})();
 
 // ==========================================
 // 13. GITHUB PAGES META
