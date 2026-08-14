@@ -1848,6 +1848,19 @@ function normalizeInspiredBy(t) {
   return [];
 }
 
+// Firestore puede contener títulos antiguos en mayúsculas. Los mostramos
+// de forma legible sin modificar el valor almacenado.
+function displayTrackTitle(title) {
+  const value = String(title || '').trim();
+  if (!value || value !== value.toUpperCase()) return value;
+  const minorWords = new Set(['a', 'an', 'and', 'in', 'of', 'the']);
+  return value.toLowerCase().split(/\s+/).map((word, index) =>
+    index > 0 && minorWords.has(word)
+      ? word
+      : word.charAt(0).toUpperCase() + word.slice(1)
+  ).join(' ');
+}
+
 function renderTrackList() {
   const p = playlist();
   trackList.innerHTML = '';
@@ -1860,7 +1873,7 @@ function renderTrackList() {
     div.innerHTML = `
       <span class="track-icon"><i class="fa-solid fa-play"></i></span>
       <span class="track-idx">${String(i+1).padStart(2,'0')}</span>
-       <span class="track-name">${t.title}</span>
+       <span class="track-name">${displayTrackTitle(t.title)}</span>
       <span class="track-time">${t.duration}</span>
     `;
     // Inspiración: etiqueta opcional bajo el nombre del track.
@@ -1921,7 +1934,7 @@ function loadTrack(i, silent) {
   }
   if (trackIdx >= p.length) trackIdx = 0;
   const t = currentTrack();
-  trackTitle.innerText = t.title;
+  trackTitle.innerText = displayTrackTitle(t.title);
   trackDur.innerText   = t.duration;
   if (!silent) notify('▶ ' + t.title);
 
