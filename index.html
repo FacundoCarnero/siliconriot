@@ -659,6 +659,15 @@ section { position: relative; }
   font-weight: 400; letter-spacing: 0.5px;
 }
 
+.track-collab {
+  display: block;
+  font-size: 0.62rem;
+  color: var(--gold-dim);
+  letter-spacing: 0.5px;
+  text-transform: none;
+  margin-top: 2px;
+}
+
 .track-time {
   font-size: 0.7rem; color: var(--white-dim2);
   font-weight: 300; font-variant-numeric: tabular-nums;
@@ -1364,11 +1373,8 @@ body.overdrive .track-item.active {
     <div class="reveal" style="align-self: center;">
       <p class="track-header"><i class="fa-solid fa-waveform"></i> Tracks</p>
 
-      <!-- Album selector tabs -->
-      <div class="album-tabs">
-        <button class="album-tab active" data-album="0" onclick="switchAlbum(0)">A Night in Neo-City</button>
-        <button class="album-tab" data-album="1" onclick="switchAlbum(1)">Neon Ghosts &amp; Iron Dreams</button>
-      </div>
+      <!-- Album selector tabs (generadas dinámicamente desde `albums`) -->
+      <div class="album-tabs" id="albumTabs"></div>
 
       <div id="trackList"></div>
     </div>
@@ -1650,6 +1656,38 @@ const vDisc      = document.getElementById('vinylDisc');
 const trackList  = document.getElementById('trackList');
 const vinylArt   = document.getElementById('vinylArt');
 
+// ─── Tabs de álbumes (dinámicas) ───────────────────────────
+// Los nombres se insertan con textContent (escapados), nunca
+// con interpolación innerHTML de datos externos.
+function renderAlbumTabs() {
+  const tabs = document.getElementById('albumTabs');
+  if (!tabs) return;
+  tabs.innerHTML = '';
+  albums.forEach((a, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'album-tab' + (i === albumIdx ? ' active' : '');
+    btn.dataset.album = i;
+    btn.textContent = a.name || ('Album ' + (i + 1));
+    btn.onclick = () => switchAlbum(i);
+    tabs.appendChild(btn);
+  });
+}
+
+// Puente con js/public-app.js (módulo que corre después de este
+// script clásico): reemplaza el fallback hardcodeado solo si
+// Firestore entrega datos no vacíos, clampa índices y re-renderiza.
+window.__setPublicAlbums = function (loaded) {
+  if (!Array.isArray(loaded) || !loaded.length) return; // conservar fallback
+  albums.length = 0;
+  loaded.forEach((a) => albums.push(a));
+  if (albumIdx >= albums.length) albumIdx = 0;
+  const p = playlist();
+  if (trackIdx >= p.length) trackIdx = 0;
+  renderAlbumTabs();
+  renderTrackList();
+  loadTrack(trackIdx, true);
+};
+
 let ytPlayer = null;
 let previewTimer = null;
 let previewEndTimer = null;
@@ -1793,6 +1831,16 @@ function renderTrackList() {
       <span class="track-name">${t.title.charAt(0) + t.title.slice(1).toLowerCase()}</span>
       <span class="track-time">${t.duration}</span>
     `;
+    // Colaboración: etiqueta opcional bajo el nombre del track.
+    // El nombre del fan se inyecta con textContent (escapado),
+    // nunca con interpolación de HTML crudo.
+    if (t.collab && String(t.collab).trim()) {
+      const nameEl = div.querySelector('.track-name');
+      const collabEl = document.createElement('span');
+      collabEl.className = 'track-collab';
+      collabEl.textContent = 'colab: ' + String(t.collab).trim();
+      nameEl.appendChild(collabEl);
+    }
     trackList.appendChild(div);
   });
 }
@@ -2279,6 +2327,7 @@ function handleRadioClick(e) {
   }
 }
 
+renderAlbumTabs();
 renderTrackList();
 loadTrack(0, true);
 </script>

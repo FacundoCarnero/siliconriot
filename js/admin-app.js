@@ -387,9 +387,6 @@ function listenDedications() {
     query(collection(db, 'dedications'), orderBy('createdAt', 'desc')),
     (snapshot) => {
       dedicationsData = [];
-      let dedicationHtml = '';
-      let recentHtml = '';
-      let i = 0;
       snapshot.forEach((docSnap) => {
         const data = docSnap.data();
 
@@ -397,62 +394,105 @@ function listenDedications() {
         if (data.status === 'sin_verificar') return;
 
         dedicationsData.push({ _id: docSnap.id, ...data });
-
-        const createdAt = data.createdAt?.toDate
-          ? data.createdAt.toDate().toLocaleString()
-          : '—';
-        const status = data.status || 'pendiente';
-        const statusOptions = [
-          ['pendiente', 'Pending'],
-          ['en produccion', 'In production'],
-          ['publicado', 'Published'],
-        ].map(([val, label]) =>
-          `<option value="${val}" ${status === val ? 'selected' : ''}>${label}</option>`
-        ).join('');
-
-        dedicationHtml += `
-          <tr>
-            <td>${escHtml(data.name) || '—'}</td>
-            <td>${escHtml(data.message) || '—'}</td>
-            <td>${escHtml(data.email) || '—'}</td>
-            <td>
-              <select class="status-select" onchange="setDedicationStatus('${docSnap.id}', this.value)">
-                ${statusOptions}
-              </select>
-            </td>
-            <td>${createdAt}</td>
-            <td>
-              <button class="btn-sm btn-danger" onclick="deleteDedication('${docSnap.id}')">
-                <i class="fa-solid fa-trash-can"></i>
-              </button>
-            </td>
-          </tr>`;
-
-        if (i < 5) {
-          recentHtml += `
-          <tr>
-            <td>${escHtml(data.name) || '—'}</td>
-            <td>${status === 'publicado' ? 'Published' : status === 'en produccion' ? 'In production' : 'Pending'}</td>
-            <td>${createdAt}</td>
-          </tr>`;
-        }
-        i++;
       });
-
-        if (snapshot.empty || !dedicationsData.length) {
-          dedicationHtml =
-            '<tr><td colspan="6" class="empty-state">No dedications yet.</td></tr>';
-          if (dashRecentDedications) dashRecentDedications.innerHTML = '<tr><td colspan="3" class="empty-state">No data yet.</td></tr>';
-        } else if (dashRecentDedications) {
-          dashRecentDedications.innerHTML = recentHtml;
-        }
-        if (dedicationList) dedicationList.innerHTML = dedicationHtml;
-      },
-      (err) => {
-        if (dedicationList) dedicationList.innerHTML = `<tr><td colspan="6" class="empty-state">Error loading dedications.</td></tr>`;
+      renderDedications();
+    },
+    (err) => {
+      if (dedicationList) dedicationList.innerHTML = `<tr><td colspan="7" class="empty-state">Error loading dedications.</td></tr>`;
       console.warn('[Admin] Dedications listener error:', err);
     }
   );
+}
+
+// ─── Opciones del selector de track por dedication ──────────
+// Lista todos los tracks de albumsData como "Album — Track";
+// el valor es "albumId:trackIdx" ('' = sin asignar).
+function dedicationTrackOptions(selectedRef) {
+  if (!albumsData.length) {
+    return '<option value="">No albums loaded</option>';
+  }
+  let html = '<option value="">— Not assigned —</option>';
+  albumsData.forEach((album) => {
+    const albumTitle = album.title || 'Sin título';
+    (album.tracks || []).forEach((t, idx) => {
+      const val = album._id + ':' + idx;
+      const selected =
+        selectedRef && selectedRef.albumId === album._id && selectedRef.trackIdx === idx;
+      html +=
+        `<option value="${val}"${selected ? ' selected' : ''}>` +
+        `${escHtml(albumTitle)} — ${escHtml(t.title || ('Track ' + (idx + 1)))}</option>`;
+    });
+  });
+  return html;
+}
+
+// ─── Render de la tabla de dedications ─────────────────────
+// Se llama desde el snapshot de dedications y también desde el
+// snapshot de albums, para repoblar los selectores si albumsData
+// llega después que las dedications (race de carga).
+function renderDedications() {
+  let dedicationHtml = '';
+  let recentHtml = '';
+  let i = 0;
+
+  dedicationsData.forEach((data) => {
+    const createdAt = data.createdAt?.toDate
+      ? data.createdAt.toDate().toLocaleString()
+      : '—';
+    const status = data.status || 'pendiente';
+    const statusOptions = [
+      ['pendiente', 'Pending'],
+      ['en produccion', 'In production'],
+      ['publicado', 'Published'],
+    ].map(([val, label]) =>
+      `<option value="${val}" ${status === val ? 'selected' : ''}>${label}</option>`
+    ).join('');
+
+    const isPublished = status === 'publicado';
+    const trackOptions = dedicationTrackOptions(data.collabRef || null);
+
+    dedicationHtml += `
+      <tr>
+        <td>${escHtml(data.name) || '—'}</td>
+        <td>${escHtml(data.message) || '—'}</td>
+        <td>${escHtml(data.email) || '—'}</td>
+        <td>
+          <select class="status-select" onchange="setDedicationTrack('${data._id}', this.value)" ${isPublished ? '' : 'disabled'}>
+            ${trackOptions}
+          </select>
+        </td>
+        <td>
+          <select class="status-select" onchange="setDedicationStatus('${data._id}', this.value)">
+            ${statusOptions}
+          </select>
+        </td>
+        <td>${createdAt}</td>
+        <td>
+          <button class="btn-sm btn-danger" onclick="deleteDedication('${data._id}')">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        </td>
+      </tr>`;
+
+    if (i < 5) {
+      recentHtml += `
+      <tr>
+        <td>${escHtml(data.name) || '—'}</td>
+        <td>${status === 'publicado' ? 'Published' : status === 'en produccion' ? 'In production' : 'Pending'}</td>
+        <td>${createdAt}</td>
+      </tr>`;
+    }
+    i++;
+  });
+
+  if (!dedicationsData.length) {
+    dedicationHtml =
+      '<tr><td colspan="7" class="empty-state">No dedications yet.</td></tr>';
+    if (dashRecentDedications) dashRecentDedications.innerHTML = '<tr><td colspan="3" class="empty-state">No data yet.</td></tr>';
+  } else if (dashRecentDedications) {
+    dashRecentDedications.innerHTML = recentHtml;
+  }
+  if (dedicationList) dedicationList.innerHTML = dedicationHtml;
 }
 
 function stopDedicationListener() {
@@ -472,6 +512,23 @@ window.setDedicationStatus = async (id, status) => {
     return;
   }
 
+  // Al pasar a 'publicado', reaplicar el crédito guardado (si hay
+  // collabRef previo) por si el track quedó sin el nombre. Es
+  // idempotente: sobreescribe con el mismo nombre del fan.
+  if (status === 'publicado') {
+    const dedication = dedicationsData.find((d) => d._id === id);
+    const ref = dedication && dedication.collabRef;
+    if (dedication && dedication.name && ref && ref.albumId && typeof ref.trackIdx === 'number') {
+      try {
+        await updateDoc(doc(db, 'albums', ref.albumId), {
+          ['tracks.' + ref.trackIdx + '.collab']: dedication.name,
+        });
+      } catch (err) {
+        console.warn('[Admin] collab reapply skipped:', err);
+      }
+    }
+  }
+
   // Mirror the status into the public fan_wall copy so the ticker
   // badge stays in sync. Ignore failures: the doc may not exist yet
   // (dedications created before this feature) — the ticker still
@@ -480,6 +537,54 @@ window.setDedicationStatus = async (id, status) => {
     await updateDoc(doc(db, 'fan_wall', id), { status });
   } catch (err) {
     console.warn('[Admin] fan_wall status sync skipped:', err);
+  }
+};
+
+// ─── Asignar track a una dedication (crédito de colaboración) ──
+// Expuesta al global porque es llamada desde el onchange del select.
+// Guarda la referencia collabRef en la dedication y escribe el
+// nombre del fan en albums/<albumId>/tracks[<idx>].collab vía
+// dotted-path (sin pisar los otros campos del track). Seleccionar
+// un valor vacío limpia la referencia y el crédito del track previo.
+window.setDedicationTrack = async (id, value) => {
+  const dedication = dedicationsData.find((d) => d._id === id);
+  if (!dedication) return;
+
+  let collabRef = null;
+  let albumId = '';
+  let trackIdx = -1;
+
+  if (value) {
+    const parts = value.split(':');
+    albumId = parts[0] || '';
+    trackIdx = parseInt(parts[1], 10);
+    if (!albumId || isNaN(trackIdx) || trackIdx < 0) {
+      alert('Invalid track selection.');
+      return;
+    }
+    collabRef = { albumId, trackIdx };
+  }
+
+  const fanName = dedication.name || '';
+
+  try {
+    if (collabRef) {
+      await updateDoc(doc(db, 'dedications', id), { collabRef });
+      await updateDoc(doc(db, 'albums', albumId), {
+        ['tracks.' + trackIdx + '.collab']: fanName,
+      });
+    } else {
+      // Limpiar: borra la referencia y el crédito del track previo.
+      await updateDoc(doc(db, 'dedications', id), { collabRef: null });
+      const prev = dedication.collabRef;
+      if (prev && prev.albumId && typeof prev.trackIdx === 'number') {
+        await updateDoc(doc(db, 'albums', prev.albumId), {
+          ['tracks.' + prev.trackIdx + '.collab']: '',
+        });
+      }
+    }
+  } catch (err) {
+    alert('Error updating track assignment: ' + err.message);
   }
 };
 
@@ -752,6 +857,9 @@ function listenAlbums() {
         albumsData.push({ _id: docSnap.id, ...docSnap.data() });
       });
       renderAlbums();
+      // Si la tabla de dedications ya se renderizó sin albumsData,
+      // repoblar los selectores de track con las opciones completas.
+      renderDedications();
       if (dashAlbumCount) dashAlbumCount.textContent = albumsData.length;
     },
     (err) => {
@@ -910,19 +1018,40 @@ addAlbumBtn.addEventListener('click', () => {
 // ─── Guardar álbum ──────────────────────────────────────────
 albumsContainer.addEventListener('submit', async (e) => {
   e.preventDefault();
-  const form = e.target.closest('.album-form');
+  const form = e.target.closest('.album-editor');
   if (!form) return;
   const albumId = form.dataset.albumId;
   const isNew = albumId === '__new__' || albumId === '';
 
-  // Recolectar tracks
+  // Recolectar tracks preservando el collab existente por índice.
+  // Filas nuevas/renombradas sin match no llevan crédito; las filas
+  // eliminadas sueltan su crédito. Nunca se borra collab por error.
+  const sourceAlbum = albumsData.find((a) => a._id === albumId);
+  const sourceTracks = sourceAlbum?.tracks || [];
   const trackRows = form.querySelectorAll('.track-row');
   const tracks = [];
-  trackRows.forEach((row) => {
+  trackRows.forEach((row, idx) => {
     const title = row.querySelector('.track-title')?.value.trim();
     const duration = row.querySelector('.track-dur')?.value.trim();
     const ytId = row.querySelector('.track-yt')?.value.trim();
-    if (title) tracks.push({ title, duration: duration || '—', ytId: ytId || '' });
+    if (!title) return;
+
+    const trackOut = { title, duration: duration || '—', ytId: ytId || '' };
+    // Match primario por índice original (el orden de filas es el
+    // orden original salvo que se hayan quitado/insertado filas).
+    const src = sourceTracks[idx];
+    if (src && src.title && src.title.trim().toLowerCase() === title.toLowerCase()) {
+      trackOut.collab = src.collab || '';
+    } else {
+      // Fallback por identidad (título + ytId): evita que una fila
+      // removida deslice el crédito hacia el track siguiente.
+      const match = sourceTracks.find((t) =>
+        t.title && t.title.trim().toLowerCase() === title.toLowerCase() &&
+        (t.ytId || '') === (ytId || '')
+      );
+      trackOut.collab = (match && match.collab) || '';
+    }
+    tracks.push(trackOut);
   });
 
   // Recolectar campos
@@ -970,7 +1099,7 @@ albumsContainer.addEventListener('submit', async (e) => {
 albumsContainer.addEventListener('click', (e) => {
   const btn = e.target.closest('.add-track');
   if (!btn) return;
-  const form = btn.closest('.album-form');
+  const form = btn.closest('.album-editor');
   if (!form) return;
   const list = form.querySelector('.tracks-list');
   const idx = list.querySelectorAll('.track-row').length;
@@ -994,7 +1123,7 @@ albumsContainer.addEventListener('click', (e) => {
   const row = btn.closest('.track-row');
   if (row) {
     row.remove();
-    updateTrackNumbers(row.closest('.album-form'));
+    updateTrackNumbers(row.closest('.album-editor'));
   }
 });
 
@@ -1010,7 +1139,7 @@ function updateTrackNumbers(form) {
 albumsContainer.addEventListener('click', (e) => {
   const btn = e.target.closest('.cancel-edit');
   if (!btn) return;
-  const form = btn.closest('.album-form');
+  const form = btn.closest('.album-editor');
   if (!form) return;
   const id = form.dataset.albumId;
   // Si era nuevo y cancelamos, lo sacamos

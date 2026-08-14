@@ -12,6 +12,8 @@ import {
   collection,
   addDoc,
   serverTimestamp,
+  query,
+  orderBy,
 } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
 
 // ─── Referencias Firestore ─────────────────────────────────
@@ -19,6 +21,7 @@ const SITE_CONFIG_REF = doc(db, 'site_config', 'public');
 const VIP_COLLECTION = collection(db, 'vip_passes');
 const DEDICATIONS_COLLECTION = collection(db, 'dedications');
 const FAN_WALL_COLLECTION = collection(db, 'fan_wall');
+const ALBUMS_COLLECTION = collection(db, 'albums');
 
 // ─── Mapeo campo Firestore → elemento DOM ──────────────────
 const FIELD_TO_EL = [
@@ -282,9 +285,85 @@ onSnapshot(
   (err) => { console.warn('[PublicApp] Fan wall ticker error:', err); }
 );
 
+// ─── 3c. Albums — carga para el player público ──────────────
+// Lee la colección pública `albums` ordenada por `order`, la
+// normaliza al shape del player (`name`, `cover`, `tracks[]`
+// con `title`, `duration`, `yt`, `collab`) y la entrega al
+// script inline del player vía callback/global. Si la lectura
+// falla o devuelve cero álbumes, el player conserva su fallback
+// hardcodeado (los callbacks simplemente no se invocan).
+
+let albumsReady = false;
+let lastAlbums = null;
+const albumsReadyCallbacks = [];
+
+/**
+ * Registra un callback que recibe los álbumes normalizados.
+ * Si los álbumes ya cargaron, el callback se invoca de inmediato.
+ * @param {(albums: Array<object>) => void} cb
+ */
+function onPublicAlbumsReady(cb) {
+  if (albumsReady) {
+    try { cb(lastAlbums); } catch (err) { console.warn('[PublicApp] albums callback error:', err); }
+    return;
+  }
+  albumsReadyCallbacks.push(cb);
+}
+
+function deliverPublicAlbums(albums) {
+  albumsReady = true;
+  lastAlbums = albums;
+  albumsReadyCallbacks.splice(0).forEach((cb) => {
+    try { cb(albums); } catch (err) { console.warn('[PublicApp] albums callback error:', err); }
+  });
+  // Puente directo al player inline (definido en index.html):
+  // reemplaza el fallback hardcodeado solo con datos no vacíos.
+  if (typeof window.__setPublicAlbums === 'function') {
+    try { window.__setPublicAlbums(albums); } catch (err) {
+      console.warn('[PublicApp] __setPublicAlbums error:', err);
+    }
+  }
+}
+
+/**
+ * Normaliza un documento de la colección `albums` al shape del player.
+ * @param {{ id: string, data: () => object }} docSnap
+ * @returns {{ name: string, cover: string, tracks: Array<{title:string,duration:string,yt:string,collab:string}> }}
+ */
+function normalizeAlbum(docSnap) {
+  const d = docSnap.data() || {};
+  const tracks = Array.isArray(d.tracks)
+    ? d.tracks.map((t) => ({
+        title: (t && t.title) || '',
+        duration: (t && t.duration) || '—',
+        yt: (t && t.ytId) || '',
+        collab: (t && t.collab) || '',
+      }))
+    : [];
+  return {
+    name: d.title || docSnap.id,
+    cover: d.cover || '',
+    tracks,
+  };
+}
+
+onSnapshot(
+  query(ALBUMS_COLLECTION, orderBy('order', 'asc')),
+  (snapshot) => {
+    const albums = [];
+    snapshot.forEach((docSnap) => albums.push(normalizeAlbum(docSnap)));
+    if (albums.length) deliverPublicAlbums(albums);
+  },
+  (err) => {
+    // No bloquea: el player sigue con su fallback hardcodeado.
+    console.warn('[PublicApp] Albums snapshot error:', err);
+  }
+);
+
 // ─── 4. Exponer al scope global ────────────────────────────
 window.__firebaseReady = true;
 window.__saveVIPPass = saveVIPPassToFirestore;
 window.__submitDedication = submitDedication;
+window.__onPublicAlbumsReady = onPublicAlbumsReady;
 
 console.log('[PublicApp] Firebase listeners active.');
