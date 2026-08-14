@@ -739,7 +739,7 @@ const ADMIN_WORKER_URL = 'https://siliconriot-verify.ramusito.workers.dev/';
 async function fetchVisitorCount() {
   if (!dashVisits) return;
   try {
-    const res = await fetch(ADMIN_WORKER_URL + 'visits');
+    const res = await fetch(ADMIN_WORKER_URL + 'visitor-count', { cache: 'no-store' });
     if (!res.ok) throw new Error('Bad status');
     const data = await res.json();
     const count = data.count;

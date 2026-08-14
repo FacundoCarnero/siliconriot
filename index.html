@@ -1565,7 +1565,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!visitorElement) return;
 
   visitorElement.innerText = '00000';
-  fetch('https://siliconriot-verify.ramusito.workers.dev/visits', { cache: 'no-store' })
+  fetch('https://siliconriot-verify.ramusito.workers.dev/visitor-count', { cache: 'no-store' })
     .then(res => res.json())
     .then(data => {
       const count = data.count ?? data.value;

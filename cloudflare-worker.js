@@ -24,6 +24,7 @@ const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type',
+  'Cache-Control': 'no-store',
   'Content-Type': 'application/json',
 };
 
@@ -85,7 +86,7 @@ export default {
     }
 
     // GET /visits — return the current count for the admin dashboard.
-    if (request.method === 'GET' && url.pathname === '/visits') {
+    if (request.method === 'GET' && (url.pathname === '/visitor-count' || url.pathname === '/visits')) {
       const id = env.VISIT_COUNTER.idFromName('global');
       return env.VISIT_COUNTER.get(id).fetch('https://durable-object/value');
     }
