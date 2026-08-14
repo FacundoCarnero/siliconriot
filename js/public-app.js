@@ -202,6 +202,29 @@ async function submitDedication(displayName, firstName, message, email) {
   }
 }
 
+// ─── 3a. Visitor counter (once per browser session) ─────────
+// Tracks a visit through the same Cloudflare Worker used for the
+// verification email. The sessionStorage guard ensures exactly one
+// `/visit` call per browser session; failures are silent and never
+// block the page.
+
+const VISIT_COUNTED_KEY = 'sr_visit_counted';
+
+function trackVisitorVisit() {
+  try {
+    if (sessionStorage.getItem(VISIT_COUNTED_KEY)) return;
+    sessionStorage.setItem(VISIT_COUNTED_KEY, '1');
+  } catch {
+    return;
+  }
+
+  fetch(WORKER_URL + 'visit').catch(() => {
+    // Silent: the counter is best-effort, never blocking.
+  });
+}
+
+trackVisitorVisit();
+
 // ─── 3b. Fan Wall Ticker ────────────────────────────────────
 // Muestra las ideas/frases que mandaron los fans (solo las
 // verificadas por email) en un banner deslizante.

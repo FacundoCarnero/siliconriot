@@ -1558,30 +1558,22 @@ body.overdrive .track-item.active {
 <!-- JS -->
 <script>
 // ==========================================
-// 0. VISITOR COUNTER (Garantizado sin errores)
+// 0. VISITOR COUNTER (Cloudflare Worker)
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
   const visitorElement = document.getElementById('visitorCount');
+  if (!visitorElement) return;
 
-  // Conteo local persistente por navegador
-  let visits = parseInt(localStorage.getItem('sr_visits') || '100', 10) + 1;
-  localStorage.setItem('sr_visits', visits);
-  
-  // Muestra siempre 5 dígitos (ej: 00101)
-  visitorElement.innerText = String(visits).padStart(5, '0');
-
-  // Intento de sync asíncrono con API sin bloquear la pantalla
-  fetch('https://api.counterapi.dev/v1/silicon-riot-official/visits/up')
+  visitorElement.innerText = '00000';
+  fetch('https://siliconriot-verify.ramusito.workers.dev/visits', { cache: 'no-store' })
     .then(res => res.json())
     .then(data => {
       const count = data.count ?? data.value;
-      if (count && !isNaN(count)) {
+      if (Number.isFinite(Number(count))) {
         visitorElement.innerText = String(count).padStart(5, '0');
       }
     })
-    .catch(() => {
-      // Si la API falla, mantiene el conteo formateado de 5 dígitos
-    });
+    .catch(() => {});
 });
 
 // ==========================================

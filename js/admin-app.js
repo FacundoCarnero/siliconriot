@@ -732,14 +732,21 @@ window.deleteUnverifiedDedications = async () => {
 };
 
 // ─── Dashboard: visitas ────────────────────────────────────
+// Reads the current visitor count from the Cloudflare Worker
+// (Durable Object backed). Read-only: the admin never increments.
+const ADMIN_WORKER_URL = 'https://siliconriot-verify.ramusito.workers.dev/';
+
 async function fetchVisitorCount() {
   if (!dashVisits) return;
   try {
-    const res = await fetch('https://api.counterapi.dev/v1/silicon-riot-official/visits/up');
+    const res = await fetch(ADMIN_WORKER_URL + 'visits');
+    if (!res.ok) throw new Error('Bad status');
     const data = await res.json();
-    const count = data.count ?? data.value;
-    if (count && !isNaN(count)) {
+    const count = data.count;
+    if (count !== undefined && count !== null && !isNaN(count)) {
       dashVisits.textContent = String(count).padStart(5, '0');
+    } else {
+      dashVisits.textContent = '—';
     }
   } catch {
     dashVisits.textContent = '—';
