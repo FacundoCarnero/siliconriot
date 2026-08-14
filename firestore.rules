@@ -52,6 +52,18 @@ service cloud.firestore {
       );
     }
 
+    // ─── Fan Wall (public ticker) ──────────────────────────
+    // Lectura: pública (ticker del sitio para visitantes anónimos).
+    // Creación: pública (verify.html replica la dedication aquí).
+    // Modificación: admin (sync de estados desde el panel).
+    // SOLO datos públicos: { name, message, status } — sin email.
+    match /fan_wall/{id} {
+      allow read: if true;
+      allow create: if true;
+      allow update: if request.auth != null;
+      allow delete: if request.auth != null;
+    }
+
     // ─── Albums ────────────────────────────────────────────
     // Lectura: pública. Escritura: solo admin.
     match /albums/{album} {

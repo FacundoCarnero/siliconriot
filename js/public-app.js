@@ -18,6 +18,7 @@ import {
 const SITE_CONFIG_REF = doc(db, 'site_config', 'public');
 const VIP_COLLECTION = collection(db, 'vip_passes');
 const DEDICATIONS_COLLECTION = collection(db, 'dedications');
+const FAN_WALL_COLLECTION = collection(db, 'fan_wall');
 
 // ─── Mapeo campo Firestore → elemento DOM ──────────────────
 const FIELD_TO_EL = [
@@ -175,7 +176,9 @@ async function submitDedication(name, message, email) {
 
     const verifyUrl =
       'https://silicon-riot.com/verify.html?id=' + encodeURIComponent(docRef.id) +
-      '&token=' + encodeURIComponent(rawToken);
+      '&token=' + encodeURIComponent(rawToken) +
+      '&name=' + encodeURIComponent(name.trim().toUpperCase()) +
+      '&msg=' + encodeURIComponent(message.trim());
 
     const res = await fetch(WORKER_URL, {
       method: 'POST',
@@ -198,6 +201,7 @@ async function submitDedication(name, message, email) {
 // ─── 3b. Fan Wall Ticker ────────────────────────────────────
 // Muestra las ideas/frases que mandaron los fans (solo las
 // verificadas por email) en un banner deslizante.
+// Lee la colección pública fan_wall (sin email, sin auth).
 
 function escTicker(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({
@@ -214,13 +218,13 @@ const STATUS_META = {
 // Dedications de ejemplo — solo decorativas (no viven en Firestore).
 // Se mezclan con las reales para que el Fan Wall se vea vivo.
 const SAMPLE_DEDICATIONS = [
-  { label: 'MATI: A laser sunset over the city',       status: 'pendiente' },
-  { label: 'VALEN: Synthesizers at 3am',               status: 'pendiente' },
-  { label: 'JULI: The ghost in the machine',           status: 'en produccion' },
-  { label: 'SANTI: Chrome hearts and neon rain',       status: 'pendiente' },
-  { label: 'LU: Fade to the final frontier',           status: 'publicado' },
-  { label: 'NICO: Drive through a storm of pixels',    status: 'en produccion' },
-  { label: 'RO: The radio speaks my name',             status: 'publicado' },
+  { label: 'JAKE: A laser sunset over the city',      status: 'pendiente' },
+  { label: 'EMMA: Synthesizers at 3am',               status: 'pendiente' },
+  { label: 'KAI: The ghost in the machine',           status: 'en produccion' },
+  { label: 'MIA: Chrome hearts and neon rain',        status: 'pendiente' },
+  { label: 'LEO: Fade to the final frontier',         status: 'publicado' },
+  { label: 'AVA: Drive through a storm of pixels',    status: 'en produccion' },
+  { label: 'RYAN: The radio speaks my name',          status: 'publicado' },
 ];
 
 function statusBadge(status) {
@@ -255,7 +259,7 @@ function renderTicker(items) {
 }
 
 onSnapshot(
-  DEDICATIONS_COLLECTION,
+  FAN_WALL_COLLECTION,
   (snapshot) => {
     const items = [];
     snapshot.forEach((docSnap) => {

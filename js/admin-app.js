@@ -469,6 +469,17 @@ window.setDedicationStatus = async (id, status) => {
     await updateDoc(doc(db, 'dedications', id), { status });
   } catch (err) {
     alert('Error updating status: ' + err.message);
+    return;
+  }
+
+  // Mirror the status into the public fan_wall copy so the ticker
+  // badge stays in sync. Ignore failures: the doc may not exist yet
+  // (dedications created before this feature) — the ticker still
+  // falls back to 'pendiente'.
+  try {
+    await updateDoc(doc(db, 'fan_wall', id), { status });
+  } catch (err) {
+    console.warn('[Admin] fan_wall status sync skipped:', err);
   }
 };
 
@@ -481,6 +492,15 @@ window.deleteDedication = async (id) => {
     await deleteDoc(doc(db, 'dedications', id));
   } catch (err) {
     alert('Error deleting: ' + err.message);
+    return;
+  }
+
+  // Also delete the public fan_wall copy (same doc id). Ignore
+  // failures — old dedications may have no fan_wall doc at all.
+  try {
+    await deleteDoc(doc(db, 'fan_wall', id));
+  } catch (err) {
+    console.warn('[Admin] fan_wall delete sync skipped:', err);
   }
 };
 

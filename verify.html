@@ -113,6 +113,7 @@
     import { db } from './js/firebase-config.js';
     import {
       doc,
+      setDoc,
       updateDoc,
       serverTimestamp,
     } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
@@ -155,6 +156,27 @@
           verificationTokenHash,
           verifiedAt: serverTimestamp(),
         });
+
+        // Mirror the public data into fan_wall (same doc id) so the
+        // public ticker can read it without auth. Public fields only:
+        // { name, message, status }. Never email or token data.
+        // URLSearchParams already decodes percent-encoding, so no
+        // manual decodeURIComponent (it would double-decode and can
+        // throw on values containing a literal '%').
+        const name = params.get('name');
+        const msg = params.get('msg');
+        if (name && msg) {
+          try {
+            await setDoc(doc(db, 'fan_wall', id), {
+              name,
+              message: msg,
+              status: 'pendiente',
+            });
+          } catch (fwErr) {
+            console.warn('[Verify] fan_wall copy failed (ignored):', fwErr);
+          }
+        }
+
         showStatus('Dedication confirmed! Thanks for being part of Silicon Riot.', true);
       } catch (err) {
         console.warn('[Verify] update error:', err);
