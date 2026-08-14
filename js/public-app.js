@@ -52,6 +52,9 @@ onSnapshot(
       }
     });
 
+    // Capture the mail template from Firestore (no DOM element needed).
+    if (data.mailTemplate) mailTemplate = data.mailTemplate;
+
     // updatedAt — opcional, para debug
     const tsEl = document.getElementById('configUpdatedAt');
     if (tsEl && data.updatedAt?.toDate) {
@@ -95,6 +98,9 @@ async function saveVIPPassToFirestore(name, passId) {
 // Worker (Cloudflare) que envía el mail de verificación via Resend.
 const WORKER_URL = 'https://siliconriot-verify.ramusito.workers.dev/';
 
+// Verification email template, editable from site_config/public.mailTemplate.
+let mailTemplate = '';
+
 /**
  * Hashea un string a SHA-256 en hex (crypto.subtle, async).
  * @param {string} text
@@ -103,6 +109,44 @@ const WORKER_URL = 'https://siliconriot-verify.ramusito.workers.dev/';
 async function sha256Hex(text) {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
   return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+// Default email template — same design as the original Worker email.
+// Used when site_config/public.mailTemplate is empty or invalid.
+const DEFAULT_MAIL_TEMPLATE = `
+  <div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;padding:0;background:#0a0a0a;color:#e5e5e5;border:1px solid #2a2a2a;border-radius:12px;overflow:hidden;">
+    <div style="background:linear-gradient(135deg,#1a1a1a 0%,#0a0a0a 60%);padding:36px 36px 24px;text-align:center;border-bottom:1px solid #d4a843;">
+      <img src="https://silicon-riot.com/assets/Silicon%20Riot%20Dorado.png" alt="SILICON RIOT" style="max-width:220px;max-height:70px;display:block;margin:0 auto 14px;" />
+      <div style="letter-spacing:4px;color:#d4a843;font-size:11px;text-transform:uppercase;">Official Fan Community</div>
+    </div>
+    <div style="padding:32px 36px;text-align:center;">
+      <div style="font-size:14px;color:#8a8782;letter-spacing:1px;text-transform:uppercase;margin-bottom:14px;">Be part of the song</div>
+      <h2 style="font-size:22px;color:#f0ede8;margin:0 0 16px;letter-spacing:0.5px;">Hi <strong style="color:#d4a843;">{{name}}</strong>,</h2>
+      <p style="font-size:14px;line-height:1.7;color:#b8b5ae;margin:0 0 24px;">Thanks for wanting to be part of a Silicon Riot song.<br/>Confirm your dedication by clicking the button below:</p>
+      <a href="{{verifyUrl}}" style="display:inline-block;padding:14px 36px;background:#d4a843;color:#0a0a0a;text-decoration:none;font-weight:bold;border-radius:6px;letter-spacing:2px;font-size:13px;text-transform:uppercase;">Confirm Dedication</a>
+    </div>
+    <div style="padding:18px 36px;background:#111111;border-top:1px solid #222;">
+      <p style="font-size:12px;color:#777;margin:0;text-align:center;line-height:1.6;">If this was not you, ignore this email.<br/>Your address is only used to confirm your dedication.<br/><span style="color:#d4a843;letter-spacing:2px;">SILICON RIOT</span></p>
+    </div>
+  </div>
+`;
+
+/**
+ * Builds the verification email HTML from the Firestore template
+ * (mailTemplate), or falls back to the built-in default.
+ * The name is sanitized to avoid HTML injection.
+ * @param {string} name - Fan name or alias
+ * @param {string} verifyUrl - Verification link
+ * @returns {string}
+ */
+function buildMailHTML(name, verifyUrl) {
+  const template =
+    typeof mailTemplate === 'string' && mailTemplate.includes('{{name}}')
+      ? mailTemplate
+      : DEFAULT_MAIL_TEMPLATE;
+  return template
+    .replaceAll('{{name}}', (name || '').replace(/[<>&]/g, ''))
+    .replaceAll('{{verifyUrl}}', verifyUrl);
 }
 
 /**
@@ -136,7 +180,7 @@ async function submitDedication(name, message, email) {
     const res = await fetch(WORKER_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ to: emailClean, name: name.trim(), verifyUrl }),
+      body: JSON.stringify({ to: emailClean, name: name.trim(), html: buildMailHTML(name.trim(), verifyUrl) }),
     });
 
     if (!res.ok) {

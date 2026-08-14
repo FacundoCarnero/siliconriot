@@ -43,7 +43,7 @@ const configFields = [
   'configHeroTagline', 'configHeroDesc', 'configCtaText',
   'configSpotifyUrl', 'configInstagramUrl', 'configYoutubeUrl', 'configBeaconsUrl',
   'configAppleMusicUrl', 'configAmazonMusicUrl', 'configYoutubeMusicUrl',
-  'configFooterText', 'configAnnouncement',
+  'configFooterText', 'configAnnouncement', 'configMailTemplate',
   'configYtApiKey', 'configYtChannelId',
   'configSiteUrl',
   'configSpotifyClientId', 'configSpotifyClientSecret', 'configSpotifyArtistId',
@@ -204,6 +204,7 @@ const PUBLIC_FIELD_MAP = {
   configBeaconsUrl: 'beaconsUrl',
   configFooterText: 'footerText',
   configAnnouncement: 'announcement',
+  configMailTemplate: 'mailTemplate',
   configAppleMusicUrl: 'appleMusicUrl',
   configAmazonMusicUrl: 'amazonMusicUrl',
   configYoutubeMusicUrl: 'youtubeMusicUrl',
@@ -246,7 +247,7 @@ async function updateDashConfigStatus() {
     ]);
     const campos = [
       'heroTagline','heroDescription','ctaText','spotifyUrl','instagramUrl',
-      'youtubeUrl','beaconsUrl','appleMusicUrl','amazonMusicUrl','youtubeMusicUrl','footerText','announcement',
+      'youtubeUrl','beaconsUrl','appleMusicUrl','amazonMusicUrl','youtubeMusicUrl','footerText','announcement','mailTemplate',
       'youtubeApiKey','youtubeChannelId','siteUrl','spotifyClientId',
       'spotifyClientSecret','spotifyArtistId',
     ];
