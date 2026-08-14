@@ -350,6 +350,15 @@ body {
   min-height: 60px;
 }
 
+/* Textarea grande para templates HTML (mail de confirmación) */
+.form-group textarea.template-editor {
+  min-height: 420px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  tab-size: 2;
+}
+
 .input-sm {
   padding: 0.4rem 0.6rem;
   background: var(--black-3);
@@ -816,7 +825,7 @@ body {
           </div>
           <div class="form-group full">
             <label>Verification Email Template</label>
-            <textarea id="configMailTemplate" placeholder="Confirmation email HTML. Use {{name}} and {{verifyUrl}}. Empty = default template."></textarea>
+            <textarea id="configMailTemplate" class="template-editor" placeholder="Confirmation email HTML. Use {{name}} and {{verifyUrl}}. Empty = default template."></textarea>
           </div>
           <div class="full" style="margin:0.2rem 0;"><hr style="border:none;border-top:1px solid rgba(255,255,255,0.04);" /></div>
           <div class="form-group">
