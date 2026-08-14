@@ -1678,12 +1678,19 @@ function renderAlbumTabs() {
 // Firestore entrega datos no vacíos, clampa índices y re-renderiza.
 window.__setPublicAlbums = function (loaded) {
   if (!Array.isArray(loaded) || !loaded.length) return; // conservar fallback
-  // Solo reemplazamos el fallback si al menos un álbum trae tracks
-  // utilizables; un doc vacío/roto en Firestore no debe matar la lista.
+  // Merge: álbumes de Firestore con tracks utilizables + álbumes del
+  // fallback hardcodeado que Firestore aún no cubre (por nombre). Así
+  // nunca se pierde un álbum mientras los datos de Firestore estén
+  // incompletos; cuando Firestore tenga todo, el fallback queda inactivo.
   const usable = loaded.filter((a) => a && Array.isArray(a.tracks) && a.tracks.length > 0);
-  if (!usable.length) return; // conservar fallback hardcodeado
+  const merged = usable.slice();
+  albums.forEach((fallback) => {
+    const exists = merged.some((a) => a.name === fallback.name);
+    if (!exists) merged.push(fallback);
+  });
+  if (!merged.length) return; // conservar fallback hardcodeado
   albums.length = 0;
-  usable.forEach((a) => albums.push(a));
+  merged.forEach((a) => albums.push(a));
   if (albumIdx >= albums.length) albumIdx = 0;
   const p = playlist();
   if (trackIdx >= p.length) trackIdx = 0;
