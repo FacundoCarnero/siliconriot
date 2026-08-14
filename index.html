@@ -1622,13 +1622,13 @@ const albums = [
     order: 0,
     cover: 'assets/album-cover.jpg',
     tracks: [
-      { title: 'NEON FANTASY',      yt: 'bTm1gv7oBus',  duration: '2:44' },
-      { title: 'MIDNIGHT RIDER',    yt: 'GnCEnjhkh4I', duration: '3:01' },
-      { title: 'DIGITAL TEARS',     yt: 'xrrsMDefDmc', duration: '3:59' },
-      { title: 'VELVET THUNDER',    yt: 's4fPTk1KehA', duration: '3:35' },
-      { title: 'STREETS OF CHROME', yt: 'az4ap9t9I1w', duration: '3:37' },
-      { title: 'RAZOR EDGE',        yt: '71fQ80bfQCI', duration: '3:08' },
-      { title: 'FINAL FRONTIER',    yt: '9MPv6ctwRDY', duration: '4:23' },
+      { title: 'Neon Fantasy',      yt: 'bTm1gv7oBus',  duration: '2:44' },
+      { title: 'Midnight Rider',    yt: 'GnCEnjhkh4I', duration: '3:01' },
+      { title: 'Digital Tears',     yt: 'xrrsMDefDmc', duration: '3:59' },
+      { title: 'Velvet Thunder',    yt: 's4fPTk1KehA', duration: '3:35' },
+      { title: 'Streets of Chrome', yt: 'az4ap9t9I1w', duration: '3:37' },
+      { title: 'Razor Edge',        yt: '71fQ80bfQCI', duration: '3:08' },
+      { title: 'Final Frontier',    yt: '9MPv6ctwRDY', duration: '4:23' },
     ],
   },
   {
@@ -1636,15 +1636,15 @@ const albums = [
     order: 1,
     cover: 'assets/neon-ghosts-cover.jpg',
     tracks: [
-      { title: 'CIRCUIT BREAKER',       yt: 'y8jb6WOFd4M', duration: '2:59' },
-      { title: 'IRON DREAMS',           yt: 'ddoMhzIPbP0', duration: '3:32' },
-      { title: 'BLACKOUT LOVE',         yt: 'P2X8W0ADvnE', duration: '3:10' },
-      { title: 'UNDERGROUND EMPIRE',    yt: 'nGsqftWuD_Q', duration: '2:25' },
-      { title: 'THE GHOST IN THE MACHINE', yt: 'yY1kV4AM8u8', duration: '4:22' },
-      { title: 'STATIC RAIN',           yt: 'eYzu69tW8lA', duration: '4:41' },
-      { title: 'RADIO REBEL',           yt: 'UcEayB5cWKo', duration: '2:19' },
-      { title: 'LASER SCARS',           yt: 'V1heaEvlYCk', duration: '4:02' },
-      { title: 'ONE LAST SPARK',        yt: 'VUVyr5OPKMw', duration: '4:17' },
+      { title: 'Circuit Breaker',       yt: 'y8jb6WOFd4M', duration: '2:59' },
+      { title: 'Iron Dreams',           yt: 'ddoMhzIPbP0', duration: '3:32' },
+      { title: 'Blackout Love',         yt: 'P2X8W0ADvnE', duration: '3:10' },
+      { title: 'Underground Empire',    yt: 'nGsqftWuD_Q', duration: '2:25' },
+      { title: 'The Ghost in the Machine', yt: 'yY1kV4AM8u8', duration: '4:22' },
+      { title: 'Static Rain',           yt: 'eYzu69tW8lA', duration: '4:41' },
+      { title: 'Radio Rebel',           yt: 'UcEayB5cWKo', duration: '2:19' },
+      { title: 'Laser Scars',           yt: 'V1heaEvlYCk', duration: '4:02' },
+      { title: 'One Last Spark',        yt: 'VUVyr5OPKMw', duration: '4:17' },
     ],
   },
 ];
@@ -1846,7 +1846,7 @@ function renderTrackList() {
     div.innerHTML = `
       <span class="track-icon"><i class="fa-solid fa-play"></i></span>
       <span class="track-idx">${String(i+1).padStart(2,'0')}</span>
-      <span class="track-name">${t.title.charAt(0) + t.title.slice(1).toLowerCase()}</span>
+       <span class="track-name">${t.title}</span>
       <span class="track-time">${t.duration}</span>
     `;
     // Colaboración: etiqueta opcional bajo el nombre del track.
