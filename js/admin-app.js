@@ -14,11 +14,13 @@ import {
 import {
   doc,
   getDoc,
+  getDocs,
   setDoc,
   addDoc,
   updateDoc,
   collection,
   query,
+  where,
   orderBy,
   onSnapshot,
   deleteDoc,
@@ -499,6 +501,29 @@ if (copyDedicationNamesBtn) {
     }
   });
 }
+
+// ─── Borrar dedications sin verificar ──────────────────────
+// Elimina todas las dedications con status 'sin_verificar'
+// (las que nunca confirmaron el mail). Expuesta al global.
+window.deleteUnverifiedDedications = async () => {
+  if (!confirm('Delete ALL unverified dedications? This cannot be undone.')) return;
+  try {
+    const q = query(collection(db, 'dedications'), where('status', '==', 'sin_verificar'));
+    const snap = await getDocs(q);
+    if (snap.empty) {
+      alert('No unverified dedications found.');
+      return;
+    }
+    let n = 0;
+    for (const docSnap of snap.docs) {
+      await deleteDoc(doc(db, 'dedications', docSnap.id));
+      n++;
+    }
+    alert('Deleted ' + n + ' unverified dedication(s).');
+  } catch (err) {
+    alert('Error: ' + err.message);
+  }
+};
 
 // ─── Dashboard: visitas ────────────────────────────────────
 async function fetchVisitorCount() {

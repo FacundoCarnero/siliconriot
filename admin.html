@@ -885,7 +885,10 @@ body {
     <div class="page" id="pageDedications">
       <h2 style="display:flex;align-items:center;justify-content:space-between;">
         <span><i class="fa-solid fa-microphone-lines"></i> Dedications</span>
-        <button class="btn btn-sm btn-ghost" id="copyDedicationNamesBtn" style="border-color:rgba(255,255,255,0.06);"><i class="fa-solid fa-copy"></i> Copy published names</button>
+        <span style="display:flex; gap:0.5rem;">
+          <button class="btn btn-sm btn-danger" onclick="deleteUnverifiedDedications()" style="border-color:rgba(255,80,80,0.3);"><i class="fa-solid fa-broom"></i> Delete unverified</button>
+          <button class="btn btn-sm btn-ghost" id="copyDedicationNamesBtn" style="border-color:rgba(255,255,255,0.06);"><i class="fa-solid fa-copy"></i> Copy published names</button>
+        </span>
       </h2>
       <table class="vip-table">
         <thead><tr><th>Name</th><th>Phrase / Idea</th><th>Email</th><th>Status</th><th>Created</th><th></th></tr></thead>
