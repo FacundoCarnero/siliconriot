@@ -7,12 +7,19 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // Replace this email if the Firebase admin account uses another address.
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.token.email == 'admin@silicon-riot.com';
+    }
+
     // ─── Site Config: ADMIN (API Keys, Secrets) ─────────────
     // SOLO admin autenticado puede leer/escribir.
     // Acá viven: youtubeApiKey, youtubeChannelId, siteUrl,
     // spotifyClientId, spotifyClientSecret, spotifyArtistId
     match /site_config/general {
-      allow read, write: if request.auth != null;
+      allow read: if isAdmin();
+      allow create, update: if isAdmin();
       allow delete: if false;
     }
 
@@ -23,17 +30,17 @@ service cloud.firestore {
     // footerText, announcement
     match /site_config/public {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow create, update: if isAdmin();
       allow delete: if false;
     }
 
     // ─── VIP Passes ─────────────────────────────────────────
     // Lectura: pública. Creación: pública. Modificación: admin.
     match /vip_passes/{pass} {
-      allow read: if true;
-      allow create: if true;
-      allow delete: if request.auth != null;
-      allow update: if request.auth != null;
+      allow read: if isAdmin();
+      allow create: if request.resource.data.name is string
+        && request.resource.data.passId is string;
+      allow delete, update: if isAdmin();
     }
 
     // ─── Dedications ────────────────────────────────────────
@@ -42,13 +49,20 @@ service cloud.firestore {
     // Modificación: admin, o unauthenticated SOLO para flip
     // sin_verificar → pendiente con token hash correcto.
     match /dedications/{id} {
-      allow read: if request.auth != null;
-      allow create: if true;
-      allow delete: if request.auth != null;
-      allow update: if request.auth != null || (
+      allow read: if isAdmin();
+      allow create: if request.resource.data.status == 'sin_verificar'
+        && request.resource.data.name is string
+        && request.resource.data.message is string
+        && request.resource.data.email is string
+        && request.resource.data.verificationTokenHash is string;
+      allow delete: if isAdmin();
+      allow update: if isAdmin() || (
         request.resource.data.status == 'pendiente' &&
         resource.data.status == 'sin_verificar' &&
-        request.resource.data.verificationTokenHash == resource.data.verificationTokenHash
+        request.resource.data.verificationTokenHash == resource.data.verificationTokenHash &&
+        request.resource.data.name == resource.data.name &&
+        request.resource.data.message == resource.data.message &&
+        request.resource.data.email == resource.data.email
       );
     }
 
@@ -59,16 +73,17 @@ service cloud.firestore {
     // SOLO datos públicos: { name, message, status } — sin email.
     match /fan_wall/{id} {
       allow read: if true;
-      allow create: if true;
-      allow update: if request.auth != null;
-      allow delete: if request.auth != null;
+      allow create: if request.resource.data.status == 'pendiente'
+        && request.resource.data.name is string
+        && request.resource.data.message is string;
+      allow update, delete: if isAdmin();
     }
 
     // ─── Albums ────────────────────────────────────────────
     // Lectura: pública. Escritura: solo admin.
     match /albums/{album} {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow write: if isAdmin();
     }
 
     // ─── Default: denegar todo lo demás ─────────────────────
