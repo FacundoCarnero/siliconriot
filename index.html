@@ -1891,13 +1891,10 @@ document.addEventListener('keydown', (e) => {
 });
 
 // ==========================================
-// 12. FIRST CLICK AUTO-START
+// 12. (removed) FIRST CLICK AUTO-START
 // ==========================================
-document.body.addEventListener('click', function first() {
-  toggleAudio();
-  initRadio();
-  document.body.removeEventListener('click', first);
-}, { once: true });
+// El reproductor arranca SOLO cuando el usuario
+// toca el botón de play — no en el primer clic.
 
 // ==========================================
 // 13. GITHUB PAGES META
