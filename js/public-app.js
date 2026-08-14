@@ -220,8 +220,8 @@ const STATUS_META = {
 const SAMPLE_DEDICATIONS = [
   { label: 'JAKE: A laser sunset over the city',      status: 'pendiente' },
   { label: 'EMMA: Synthesizers at 3am',               status: 'pendiente' },
-  { label: 'KAI: The ghost in the machine',           status: 'en produccion' },
-  { label: 'MIA: Chrome hearts and neon rain',        status: 'pendiente' },
+  { label: 'KAI: The ghost in the machine',           status: 'publicado' },
+  { label: 'MIA: Chrome hearts and neon rain',        status: 'en produccion' },
   { label: 'LEO: Fade to the final frontier',         status: 'publicado' },
   { label: 'AVA: Drive through a storm of pixels',    status: 'en produccion' },
   { label: 'RYAN: The radio speaks my name',          status: 'publicado' },
