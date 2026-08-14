@@ -1108,6 +1108,8 @@ body.overdrive .track-item.active {
    ============================================================ */
 .dedication-ticker {
   position: relative;
+  z-index: 50;
+  margin-top: 64px; /* deja espacio para el nav fixed */
   overflow: hidden;
   background: var(--black-2);
   border-top: 1px solid rgba(212,168,67,0.12);
@@ -1225,6 +1227,11 @@ body.overdrive .track-item.active {
   </div>
 </nav>
 
+<!-- FAN WALL TICKER -->
+<div class="dedication-ticker" id="dedicationTicker" aria-label="Fan dedications">
+  <div class="dedication-track" id="dedicationTrack"></div>
+</div>
+
 <!-- HERO -->
 <section id="hero">
   <!-- Announcement banner (se muestra/oculta desde public-app.js) -->
@@ -1255,11 +1262,6 @@ body.overdrive .track-item.active {
     </a>
   </div>
 </section>
-
-<!-- FAN WALL TICKER -->
-<div class="dedication-ticker" id="dedicationTicker" aria-label="Fan dedications">
-  <div class="dedication-track" id="dedicationTrack"></div>
-</div>
 
 <!-- STORY -->
 <section id="story">
