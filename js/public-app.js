@@ -205,6 +205,18 @@ function escTicker(s) {
   }[c]));
 }
 
+const STATUS_META = {
+  'pendiente':      { label: 'PENDING',        cls: 'pending' },
+  'en produccion':  { label: 'IN PRODUCTION',  cls: 'in-production' },
+  'publicado':      { label: 'PUBLISHED',      cls: 'published' },
+};
+
+function statusBadge(status) {
+  const meta = STATUS_META[status];
+  if (!meta) return '';
+  return `<span class="dedication-status ${meta.cls}">${meta.label}</span>`;
+}
+
 function renderTicker(items) {
   const ticker = document.getElementById('dedicationTicker');
   const track  = document.getElementById('dedicationTrack');
@@ -217,13 +229,13 @@ function renderTicker(items) {
   }
 
   const html = items
-    .map((label) => {
-      // label = "NAME: MESSAGE" o "NAME"
+    .map((item) => {
+      const { label, status } = item;
       const idx = label.indexOf(': ');
-      if (idx === -1) return `<span class="dedication-item"><strong>${escTicker(label)}</strong></span>`;
+      if (idx === -1) return `<span class="dedication-item"><strong>${escTicker(label)}</strong>${statusBadge(status)}</span>`;
       const name = label.slice(0, idx);
       const msg  = label.slice(idx + 2);
-      return `<span class="dedication-item"><strong>${escTicker(name)}</strong>: ${escTicker(msg)}</span>`;
+      return `<span class="dedication-item"><strong>${escTicker(name)}</strong>: ${escTicker(msg)}${statusBadge(status)}</span>`;
     })
     .join('');
 
@@ -240,11 +252,10 @@ onSnapshot(
       const d = docSnap.data();
       if (d.status === 'sin_verificar') return; // ocultar no verificadas
       if (!d.name) return;
-      items.push(
-        d.message && String(d.message).trim()
-          ? d.name + ': ' + String(d.message).trim()
-          : d.name
-      );
+      const label = d.message && String(d.message).trim()
+        ? d.name + ': ' + String(d.message).trim()
+        : d.name;
+      items.push({ label, status: d.status || 'pendiente' });
     });
     renderTicker(items);
   },

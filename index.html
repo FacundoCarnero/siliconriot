@@ -1136,6 +1136,19 @@ body.overdrive .track-item.active {
   color: var(--white-dim);
 }
 .dedication-item strong { color: var(--gold); font-weight: 600; }
+.dedication-status {
+  margin-left: 0.4rem;
+  font-size: 0.55rem;
+  letter-spacing: 1px;
+  font-weight: 600;
+  padding: 0.1rem 0.4rem;
+  border-radius: 2px;
+  border: 1px solid;
+  vertical-align: middle;
+}
+.dedication-status.pending       { color: var(--gold);        border-color: rgba(212,168,67,0.4); }
+.dedication-status.in-production { color: #5bc0de;            border-color: rgba(91,192,222,0.4); }
+.dedication-status.published     { color: #4ade80;            border-color: rgba(74,222,128,0.4); }
 
 /* ============================================================
    RESPONSIVE
