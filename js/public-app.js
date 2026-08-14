@@ -258,6 +258,10 @@ function renderTicker(items) {
   ticker.classList.add('active');
 }
 
+// Render inicial: muestra los ejemplos decorativos de inmediato,
+// sin esperar a Firestore. Cuando llegan las reales, se mezclan.
+renderTicker([]);
+
 onSnapshot(
   FAN_WALL_COLLECTION,
   (snapshot) => {
