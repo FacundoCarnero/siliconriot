@@ -1619,6 +1619,7 @@ document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 const albums = [
   {
     name: 'A Night in Neo-City',
+    order: 0,
     cover: 'assets/album-cover.jpg',
     tracks: [
       { title: 'NEON FANTASY',      yt: 'bTm1gv7oBus',  duration: '2:44' },
@@ -1632,6 +1633,7 @@ const albums = [
   },
   {
     name: 'Neon Ghosts & Iron Dreams',
+    order: 1,
     cover: 'assets/neon-ghosts-cover.jpg',
     tracks: [
       { title: 'CIRCUIT BREAKER',       yt: 'y8jb6WOFd4M', duration: '2:59' },
@@ -1678,16 +1680,17 @@ function renderAlbumTabs() {
 // Firestore entrega datos no vacíos, clampa índices y re-renderiza.
 window.__setPublicAlbums = function (loaded) {
   if (!Array.isArray(loaded) || !loaded.length) return; // conservar fallback
-  // Merge: álbumes de Firestore con tracks utilizables + álbumes del
-  // fallback hardcodeado que Firestore aún no cubre (por nombre). Así
-  // nunca se pierde un álbum mientras los datos de Firestore estén
-  // incompletos; cuando Firestore tenga todo, el fallback queda inactivo.
+  // Merge: el fallback conserva el orden/base; Firestore reemplaza los
+  // álbumes que ya existen y aporta sus créditos/datos actualizados.
   const usable = loaded.filter((a) => a && Array.isArray(a.tracks) && a.tracks.length > 0);
-  const merged = usable.slice();
-  albums.forEach((fallback) => {
-    const exists = merged.some((a) => a.name === fallback.name);
-    if (!exists) merged.push(fallback);
+  const merged = albums.map((fallback) => {
+    const firestoreAlbum = usable.find((a) => a.name === fallback.name);
+    return firestoreAlbum || fallback;
   });
+  usable.forEach((firestoreAlbum) => {
+    if (!merged.some((a) => a.name === firestoreAlbum.name)) merged.push(firestoreAlbum);
+  });
+  merged.sort((a, b) => (a.order ?? Number.MAX_SAFE_INTEGER) - (b.order ?? Number.MAX_SAFE_INTEGER));
   if (!merged.length) return; // conservar fallback hardcodeado
   albums.length = 0;
   merged.forEach((a) => albums.push(a));

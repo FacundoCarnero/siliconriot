@@ -850,12 +850,13 @@ let unsubAlbums = null;
 function listenAlbums() {
   if (unsubAlbums) return;
   unsubAlbums = onSnapshot(
-    query(ALBUMS_COLLECTION, orderBy('order', 'asc')),
+    ALBUMS_COLLECTION,
     (snapshot) => {
       albumsData = [];
       snapshot.forEach((docSnap) => {
         albumsData.push({ _id: docSnap.id, ...docSnap.data() });
       });
+      albumsData.sort((a, b) => (a.order ?? Number.MAX_SAFE_INTEGER) - (b.order ?? Number.MAX_SAFE_INTEGER));
       renderAlbums();
       // Si la tabla de dedications ya se renderizó sin albumsData,
       // repoblar los selectores de track con las opciones completas.

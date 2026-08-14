@@ -345,15 +345,17 @@ function normalizeAlbum(docSnap) {
   return {
     name: d.title || docSnap.id,
     cover: d.cover || '',
+    order: Number.isFinite(d.order) ? d.order : Number.MAX_SAFE_INTEGER,
     tracks,
   };
 }
 
 onSnapshot(
-  query(ALBUMS_COLLECTION, orderBy('order', 'asc')),
+  ALBUMS_COLLECTION,
   (snapshot) => {
     const albums = [];
     snapshot.forEach((docSnap) => albums.push(normalizeAlbum(docSnap)));
+    albums.sort((a, b) => a.order - b.order);
     if (albums.length) deliverPublicAlbums(albums);
   },
   (err) => {
