@@ -253,8 +253,9 @@ function renderTicker(items) {
     })
     .join('');
 
-  // Duplicado para que el loop translateX(-50%) sea continuo
-  track.innerHTML = `<span style="display:inline-block;padding-right:1.5rem;color:var(--gold-dim);letter-spacing:3px;">// FAN WALL</span>${html}<span style="display:inline-block;width:3rem;"></span>${html}`;
+  // Duplicado para que el loop translateX(-50%) sea continuo.
+  // La etiqueta fija "// YOUR IDEAS" vive en el HTML, no acá.
+  track.innerHTML = html + '<span style="display:inline-block;width:3rem;"></span>' + html;
   ticker.classList.add('active');
 }
 

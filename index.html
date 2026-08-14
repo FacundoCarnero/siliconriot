@@ -1110,15 +1110,39 @@ body.overdrive .track-item.active {
   position: relative;
   z-index: 50;
   margin-top: 64px; /* deja espacio para el nav fixed */
-  overflow: hidden;
+  display: flex;
+  align-items: center;
   background: var(--black-2);
   border-top: 1px solid rgba(212,168,67,0.12);
   border-bottom: 1px solid rgba(212,168,67,0.12);
-  padding: 0.55rem 0;
-  white-space: nowrap;
+  padding: 0;
+  overflow: hidden;
   display: none;
 }
-.dedication-ticker.active { display: block; }
+.dedication-ticker.active { display: flex; }
+.dedication-label {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(90deg, var(--gold) 0%, var(--gold-dim) 100%);
+  color: var(--black);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 3px;
+  padding: 0.55rem 1.2rem;
+  white-space: nowrap;
+  text-transform: uppercase;
+  z-index: 2;
+  box-shadow: 8px 0 16px rgba(0,0,0,0.4);
+}
+.dedication-label i { font-size: 0.85rem; }
+.dedication-viewport {
+  flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  padding-left: 1rem;
+}
 .dedication-track {
   display: inline-block;
   animation: dedicationScroll 40s linear infinite;
@@ -1229,7 +1253,10 @@ body.overdrive .track-item.active {
 
 <!-- FAN WALL TICKER -->
 <div class="dedication-ticker" id="dedicationTicker" aria-label="Fan dedications">
-  <div class="dedication-track" id="dedicationTrack"></div>
+  <span class="dedication-label">// YOUR IDEAS</span>
+  <div class="dedication-viewport">
+    <div class="dedication-track" id="dedicationTrack"></div>
+  </div>
 </div>
 
 <!-- HERO -->
