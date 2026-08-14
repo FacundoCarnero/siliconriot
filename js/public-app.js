@@ -195,6 +195,62 @@ async function submitDedication(name, message, email) {
   }
 }
 
+// ─── 3b. Fan Wall Ticker ────────────────────────────────────
+// Muestra las ideas/frases que mandaron los fans (solo las
+// verificadas por email) en un banner deslizante.
+
+function escTicker(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+  }[c]));
+}
+
+function renderTicker(items) {
+  const ticker = document.getElementById('dedicationTicker');
+  const track  = document.getElementById('dedicationTrack');
+  if (!ticker || !track) return;
+
+  if (!items.length) {
+    ticker.classList.remove('active');
+    track.innerHTML = '';
+    return;
+  }
+
+  const html = items
+    .map((label) => {
+      // label = "NAME: MESSAGE" o "NAME"
+      const idx = label.indexOf(': ');
+      if (idx === -1) return `<span class="dedication-item"><strong>${escTicker(label)}</strong></span>`;
+      const name = label.slice(0, idx);
+      const msg  = label.slice(idx + 2);
+      return `<span class="dedication-item"><strong>${escTicker(name)}</strong>: ${escTicker(msg)}</span>`;
+    })
+    .join('');
+
+  // Duplicado para que el loop translateX(-50%) sea continuo
+  track.innerHTML = `<span style="display:inline-block;padding-right:1.5rem;color:var(--gold-dim);letter-spacing:3px;">// FAN WALL</span>${html}<span style="display:inline-block;width:3rem;"></span>${html}`;
+  ticker.classList.add('active');
+}
+
+onSnapshot(
+  DEDICATIONS_COLLECTION,
+  (snapshot) => {
+    const items = [];
+    snapshot.forEach((docSnap) => {
+      const d = docSnap.data();
+      if (d.status === 'sin_verificar') return; // ocultar no verificadas
+      if (!d.name) return;
+      items.push(
+        d.message && String(d.message).trim()
+          ? d.name + ': ' + String(d.message).trim()
+          : d.name
+      );
+    });
+    renderTicker(items);
+  },
+  (err) => { console.warn('[PublicApp] Fan wall ticker error:', err); }
+);
+
 // ─── 4. Exponer al scope global ────────────────────────────
 window.__firebaseReady = true;
 window.__saveVIPPass = saveVIPPassToFirestore;

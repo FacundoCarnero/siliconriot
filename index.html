@@ -1104,6 +1104,40 @@ body.overdrive .track-item.active {
 }
 
 /* ============================================================
+   DEDICATION TICKER
+   ============================================================ */
+.dedication-ticker {
+  position: relative;
+  overflow: hidden;
+  background: var(--black-2);
+  border-top: 1px solid rgba(212,168,67,0.12);
+  border-bottom: 1px solid rgba(212,168,67,0.12);
+  padding: 0.55rem 0;
+  white-space: nowrap;
+  display: none;
+}
+.dedication-ticker.active { display: block; }
+.dedication-track {
+  display: inline-block;
+  animation: dedicationScroll 40s linear infinite;
+  will-change: transform;
+}
+.dedication-ticker:hover .dedication-track { animation-play-state: paused; }
+@keyframes dedicationScroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.dedication-item {
+  display: inline-block;
+  margin-right: 3rem;
+  font-size: 0.65rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--white-dim);
+}
+.dedication-item strong { color: var(--gold); font-weight: 600; }
+
+/* ============================================================
    RESPONSIVE
    ============================================================ */
 @media (max-width: 860px) {
@@ -1208,6 +1242,11 @@ body.overdrive .track-item.active {
     </a>
   </div>
 </section>
+
+<!-- FAN WALL TICKER -->
+<div class="dedication-ticker" id="dedicationTicker" aria-label="Fan dedications">
+  <div class="dedication-track" id="dedicationTrack"></div>
+</div>
 
 <!-- STORY -->
 <section id="story">
